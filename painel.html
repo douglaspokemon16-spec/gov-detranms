@@ -316,7 +316,7 @@
             </div>
             
             <div style="margin-top: 20px; font-size: 12px; color: #666;">
-                <p><strong>Credenciais padrão:</strong> dg / vasco1898</p>
+                <p><strong>Acesso restrito</strong> - Apenas pessoal autorizado</p>
                 <p style="color: #ff9800; margin-top: 10px;">
                     <i class="fas fa-server"></i> Verifique se o servidor está rodando
                 </p>
@@ -383,7 +383,7 @@
                 </div>
                 <div class="header-right">
                     <div style="text-align: right; margin-right: 15px;">
-                        <strong id="currentUser">Administrador</strong>
+                        <!-- Nome removido por segurança -->
                         <small style="display: block;" id="serverStatus">Conectando...</small>
                     </div>
                     <button class="btn-logout" onclick="logout()">
@@ -828,8 +828,8 @@
                     localStorage.setItem('detran_admin_nome', data.nome);
                     localStorage.setItem('last_login', new Date().toISOString());
                     
-                    document.getElementById('currentUser').textContent = data.nome || data.usuario;
-                    document.getElementById('serverStatus').textContent = 'Conectado';
+                    document.getElementById('currentUser').textContent = '🔐 Painel Ativo';
+                    document.getElementById('serverStatus').textContent = 'Sistema Online';
                     document.getElementById('serverStatusInfo').textContent = 'Online';
                     
                     showDashboard();
@@ -929,8 +929,7 @@
                 if (savedToken && savedUser) {
                     authToken = savedToken;
                     currentUser = savedUser;
-                    document.getElementById('currentUser').textContent = 
-                        localStorage.getItem('detran_admin_nome') || savedUser;
+                    document.getElementById('currentUser').textContent = '🔐 Painel Ativo';
                 } else {
                     return;
                 }
@@ -1558,8 +1557,7 @@
             if (savedToken && savedUser) {
                 authToken = savedToken;
                 currentUser = savedUser;
-                document.getElementById('currentUser').textContent = 
-                    localStorage.getItem('detran_admin_nome') || savedUser;
+                document.getElementById('currentUser').textContent = '🔐 Painel Ativo';
                 showDashboard();
                 carregarDashboard();
             } else {
