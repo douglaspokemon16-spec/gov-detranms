@@ -900,50 +900,42 @@ app.get('/health', (req, res) => {
 });
 
 // ============================================
-// ROTA PADRÃO PARA ARQUIVOS ESTÁTICOS - CORRIGIDO
+// SERVE ARQUIVOS ESTÁTICOS - SIMPLIFICADO
 // ============================================
+app.use(express.static(__dirname));
 
-// Rota para a raiz
+// Rota para index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Rota para painel
+// Rota para painel.html
 app.get('/painel.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'painel.html'));
 });
 
-// Rota catch-all no FINAL - COM /* CORRETO
-app.get('/*', (req, res) => {
-    // Se for API, não redireciona
+// Rota catch-all para SPA (ignora APIs)
+app.get('*', (req, res) => {
+    // Ignora rotas de API
     if (req.path.startsWith('/api/') || 
         req.path.startsWith('/consultar') || 
         req.path.startsWith('/health')) {
         return res.status(404).json({ erro: 'Rota não encontrada' });
     }
     
-    // Tenta servir arquivo estático
-    const filePath = path.join(__dirname, req.path);
-    
-    fs.access(filePath, fs.constants.F_OK, (err) => {
-        if (err) {
-            // Se não existir, serve index.html (SPA)
-            res.sendFile(path.join(__dirname, 'index.html'));
-        } else {
-            // Se existir, serve o arquivo
-            res.sendFile(filePath);
-        }
-    });
+    // Serve index.html para outras rotas (SPA)
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ============================================
-// INICIA O SERVIDOR
+// INICIA O SERVIDOR - FORMA CORRETA PARA RENDER
 // ============================================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
+
+const server = app.listen(PORT, () => {
     console.log('============================================');
     console.log('✅ Servidor DETRAN MS rodando na porta: ' + PORT);
-    console.log('🌐 Acesse: https://gov-detranms.onrender.com');
+    console.log('🌐 Acesse: http://localhost:' + PORT);
     console.log('👨‍💼 Painel Admin: /painel.html');
     console.log('📊 Dados salvos em: /data/');
     console.log('⏰ Timer PIX: 15 minutos');
@@ -954,3 +946,6 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log('📱 Sistema PRONTO para uso em qualquer dispositivo!');
     console.log('============================================');
 });
+
+// Export para Render (opcional)
+module.exports = app;
