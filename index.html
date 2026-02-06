@@ -13,11 +13,6 @@
             margin: 0 auto;
         }
         .hidden { display: none; }
-        #loading {
-            text-align: center; 
-            padding: 20px; 
-            color: #0066cc;
-        }
         .error { 
             color: red; 
             text-align: center; 
@@ -49,6 +44,60 @@
         
         .btn-voltar:hover {
             background: #f0f0f0;
+        }
+        
+        /* ========== SPINNER MÉDIO ========== */
+        .spinner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            min-width: 200px;
+            min-height: 200px;
+        }
+        
+        .spinner-medium {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #0066cc;
+            border-right: 6px solid #28a44c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .spinner-text {
+            color: #0066cc;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin: 0;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Formulário esmaecido durante loading */
+        .form-loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        /* Esconder rodapé duplicado nos resultados */
+        #resultadosContainer footer {
+            display: none !important;
         }
     </style>
 </head>
@@ -114,7 +163,7 @@
                 <div class="flex items-center gap-4 max-[600px]:flex-col max-[600px]:gap-2">
                     <svg stroke="#28a44c" fill="#28a44c" stroke-width="0" viewBox="0 0 16 16" class="text-success-500 size-12 md:size-14 lg:size-14 self-center flex-shrink-0 xl:size-14 undefined" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                         <path d="M14.5 3a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-13a.5.5 0 01-.5-.5v-9a.5.5 0 01.5-.5zm-13-1A1.5 1.5 0 000 3.5v9A1.5 1.5 0 001.5 14h13a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0014.5 2z" stroke="none"></path>
-                        <path d="M7 5.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5m-1.496-.854a.5.5 0 010 .708l-1.5 1.5a.5.5 0 01-.708 0l-.5-.5a.5.5 0 11.708-.708l.146.147 1.146-1.147a.5.5 0 01.708 0M7 9.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5m-1.496-.854a.5.5 0 010 .708l-1.5 1.5a.5.5 0 01-.708 0l-.5-.5a.5.5 0 01.708-.708l.146.147 1.146-1.147a.5.5 0 01.708 0" stroke="none"></path>
+                        <path d="M7 5.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5m-1.496-.854a.5.5 0 010 .708l-1.5 1.5a.5.5 0 01-.708 0l-.5-.5a.5.5 0 11.708-.708l.146.147 1.146-1.147a.5.5 0 01.708 0M7 9.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5m-1.496-.854a.5.5 0 010 .708l-1.5 1.5a.5.5 0 01-.708 0l-.5-.5a.5.5 0 11.708-.708l.146.147 1.146-1.147a.5.5 0 01.708 0" stroke="none"></path>
                     </svg>
                     <h2 class="font-bold text-[30px] uppercase text-284e8a max-[600px]:text-center">
                         Consulta de Débitos, Multas e Licenciamento
@@ -147,9 +196,12 @@
                                required>
                     </div>
 
-                    <!-- Mensagens de status -->
+                    <!-- SPINNER MÉDIO (CORREÇÃO SOLICITADA) -->
                     <div id="loading" class="hidden">
-                        <p>🔍 Consultando débitos...</p>
+                        <div class="spinner-container">
+                            <div class="spinner-medium"></div>
+                            <p class="spinner-text">Consultando sistema Detran...</p>
+                        </div>
                     </div>
                     <div id="error" class="error hidden"></div>
 
@@ -220,13 +272,14 @@
                     return;
                 }
 
-                // Mostrar loading
+                // Mostrar spinner médio e esmaecer formulário
                 loading.classList.remove('hidden');
+                formularioContainer.classList.add('form-loading');
                 errorDiv.classList.add('hidden');
 
                 try {
-                    // Enviar para SEU backend - URL SIMPLES PARA SERVIDOR LINUX
-                    const response = await fetch('/consultar', {  // ← LINHA CORRIGIDA AQUI! (/consultar)
+                    // Enviar para SEU backend
+                    const response = await fetch('/consultar', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -251,6 +304,7 @@
                     showError('Erro ao consultar: ' + error.message);
                 } finally {
                     loading.classList.add('hidden');
+                    formularioContainer.classList.remove('form-loading');
                 }
             });
 
@@ -258,6 +312,8 @@
             btnCancelar.addEventListener('click', function() {
                 form.reset();
                 errorDiv.classList.add('hidden');
+                loading.classList.add('hidden');
+                formularioContainer.classList.remove('form-loading');
             });
 
             function showError(mensagem) {
@@ -278,7 +334,7 @@
                 // 4. Adicionar conteúdo dos resultados
                 resultadosContainer.innerHTML = html;
                 
-                // 5. Adicionar botão "Nova Consulta"
+                // 5. Adicionar botão "Nova Consulta" ANTES do rodapé
                 const botaoVoltar = document.createElement('div');
                 botaoVoltar.className = 'text-center mt-8 mb-6';
                 botaoVoltar.innerHTML = `
@@ -288,10 +344,17 @@
                     </button>
                 `;
                 
-                // Inserir botão no final dos resultados
-                resultadosContainer.appendChild(botaoVoltar);
+                // Inserir botão no final, mas antes de qualquer rodapé duplicado
+                const resultadosDiv = resultadosContainer.querySelector('div') || resultadosContainer;
+                resultadosDiv.appendChild(botaoVoltar);
                 
-                // 6. Mostrar container de resultados
+                // 6. Remover rodapés duplicados que possam vir do backend
+                const rodapes = resultadosContainer.querySelectorAll('footer');
+                if (rodapes.length > 0) {
+                    rodapes.forEach(rodape => rodape.remove());
+                }
+                
+                // 7. Mostrar container de resultados
                 resultadosContainer.classList.remove('hidden');
             }
 
@@ -310,8 +373,10 @@
                 // 4. Atualizar título do menu
                 menuTitulo.textContent = 'Consulta de Débitos';
                 
-                // 5. Limpar erros
+                // 5. Limpar erros e loading
                 errorDiv.classList.add('hidden');
+                loading.classList.add('hidden');
+                formularioContainer.classList.remove('form-loading');
             }
         });
     </script>
