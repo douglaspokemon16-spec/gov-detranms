@@ -748,16 +748,37 @@
     
     <script>
         // ============================================
-        // CONFIGURAÇÕES DO SISTEMA
+        // CONFIGURAÇÕES DO SISTEMA - URL DINÂMICA
         // ============================================
-        const API_BASE = 'http://localhost:3000';
+        const API_BASE = window.location.origin; // Usa mesma origem do site
         const ADMIN_TOKEN = 'DETRAN-MS-ADMIN-TOKEN';
+        
+        console.log('🌐 API Base:', API_BASE);
+        console.log('📱 Dispositivo:', /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop');
         
         let authToken = null;
         let currentUser = null;
         let refreshInterval = null;
         let currentSection = 'dashboard';
         let uptimeStart = Date.now();
+        
+        // ============================================
+        // CORREÇÃO AUTOMÁTICA DE URLS
+        // ============================================
+        (function corrigirURLs() {
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options) {
+                if (typeof url === 'string') {
+                    if (url.includes('localhost:3000') || url.includes('127.0.0.1')) {
+                        const novaUrl = url.replace(/http:\/\/localhost:3000|http:\/\/127.0.0.1:3000/g, API_BASE);
+                        console.log('🔄 URL corrigida:', url, '→', novaUrl);
+                        url = novaUrl;
+                    }
+                }
+                return originalFetch.call(this, url, options);
+            };
+            console.log('✅ Correção de URLs ativada');
+        })();
         
         // ============================================
         // FUNÇÕES DE LOGIN
@@ -775,14 +796,14 @@
                 return;
             }
             
-            // Primeiro testa se o servidor está online
+            // Testa conexão com servidor
             try {
-                const testResponse = await fetch(API_BASE, { method: 'GET' });
+                const testResponse = await fetch(`${API_BASE}`, { method: 'GET' });
                 if (!testResponse.ok) {
                     throw new Error('Servidor offline');
                 }
             } catch (error) {
-                errorElement.textContent = '❌ Servidor offline! Execute: node server.js';
+                errorElement.textContent = '❌ Servidor offline! Aguarde o deploy completar.';
                 errorElement.style.display = 'block';
                 return;
             }
@@ -1570,11 +1591,19 @@
                 // Mostra instruções no login
                 const loginError = document.getElementById('loginError');
                 if (loginError) {
-                    loginError.textContent = '❌ Servidor offline! Execute: node server.js';
+                    loginError.textContent = '❌ Servidor offline! Aguarde o deploy completar.';
                     loginError.style.display = 'block';
                 }
             }
         }
+
+        // FALLBACK GLOBAL PARA ERROS DE FETCH
+        window.addEventListener('error', function(e) {
+            if (e.message && e.message.includes('fetch')) {
+                console.log('Erro de fetch interceptado no painel');
+                document.getElementById('connectionAlert').style.display = 'block';
+            }
+        });
     </script>
 </body>
 </html>
