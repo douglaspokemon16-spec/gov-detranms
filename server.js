@@ -900,21 +900,38 @@ app.get('/health', (req, res) => {
 });
 
 // ============================================
-// ROTA PADRÃO PARA ARQUIVOS ESTÁTICOS
+// ROTA PADRÃO PARA ARQUIVOS ESTÁTICOS - CORRIGIDO
 // ============================================
-app.get('*', (req, res) => {
-    const filePath = path.join(__dirname, req.path);
-    
-    // Se for a raiz, serve index.html
-    if (req.path === '/' || req.path === '') {
-        return res.sendFile(path.join(__dirname, 'index.html'));
+
+// Rota para a raiz
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Rota para painel
+app.get('/painel.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'painel.html'));
+});
+
+// Rota catch-all no FINAL - COM /* CORRETO
+app.get('/*', (req, res) => {
+    // Se for API, não redireciona
+    if (req.path.startsWith('/api/') || 
+        req.path.startsWith('/consultar') || 
+        req.path.startsWith('/health')) {
+        return res.status(404).json({ erro: 'Rota não encontrada' });
     }
     
-    // Tenta servir o arquivo solicitado
-    res.sendFile(filePath, (err) => {
+    // Tenta servir arquivo estático
+    const filePath = path.join(__dirname, req.path);
+    
+    fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
-            // Se não encontrar, redireciona para index.html
+            // Se não existir, serve index.html (SPA)
             res.sendFile(path.join(__dirname, 'index.html'));
+        } else {
+            // Se existir, serve o arquivo
+            res.sendFile(filePath);
         }
     });
 });
