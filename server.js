@@ -6,7 +6,31 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// ============================================
+// CORS CONFIGURADO PARA PRODUÇÃO
+// ============================================
+const corsOptions = {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// Forçar HTTPS no Render
+app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] && 
+        req.headers['x-forwarded-proto'] !== 'https' &&
+        process.env.NODE_ENV === 'production') {
+        return res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+    next();
+});
+
 app.use(express.static('.'));
 
 // ============================================
@@ -112,6 +136,14 @@ app.post('/api/online/saiu', (req, res) => {
     } catch (error) {
         res.status(500).json({ sucesso: false });
     }
+});
+
+// ============================================
+// LOG DE REQUISIÇÕES
+// ============================================
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${req.headers.origin || 'N/A'} - IP: ${req.ip}`);
+    next();
 });
 
 // ============================================
@@ -938,18 +970,18 @@ setInterval(async () => {
 // ============================================
 // INICIA O SERVIDOR
 // ============================================
-const PORT = 3000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
     console.log('============================================');
-    console.log('✅ Servidor DETRAN MS rodando em: http://localhost:' + PORT);
-    console.log('🌐 Site: http://localhost:' + PORT + '/index.html');
-    console.log('👨‍💼 Painel Admin: http://localhost:' + PORT + '/painel.html');
+    console.log('✅ Servidor DETRAN MS rodando na porta: ' + PORT);
+    console.log('🌐 Acesse via: https://gov-detranms.onrender.com');
+    console.log('👨‍💼 Painel Admin: /painel.html');
     console.log('📊 Dados salvos em: /data/');
     console.log('⏰ Timer PIX: 15 minutos');
     console.log('🔧 Token DETRAN: PRESERVADO');
     console.log('🔐 Usuário admin: dg / vasco1898');
     console.log('⏱️  Tempo de sessão: 30 minutos');
     console.log('💳 PIX: Funciona igual gerarpix.com.br');
-    console.log('📱 Sistema PRONTO para uso!');
+    console.log('📱 Sistema PRONTO para uso em qualquer dispositivo!');
     console.log('============================================');
 });
