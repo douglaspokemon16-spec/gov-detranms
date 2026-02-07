@@ -73,7 +73,7 @@ async function writeData(filename, data) {
 }
 
 // ============================================
-// FUNÇÃO PARA OBTER IP COMPLETO E ESTADO (ATUALIZADA)
+// FUNÇÃO PARA OBTER IP COMPLETO E ESTADO
 // ============================================
 function getIpCompleto(req) {
     let ip = req.ip || 
@@ -81,14 +81,17 @@ function getIpCompleto(req) {
              req.socket.remoteAddress || 
              req.connection.socket.remoteAddress;
     
+    // Remove prefixo ::ffff: se existir
     ip = ip.replace('::ffff:', '');
     
+    // Se for localhost, tenta pegar IP real dos headers
     if (ip === '127.0.0.1' || ip === '::1' || ip.includes('localhost')) {
         ip = req.headers['x-forwarded-for'] || 
              req.headers['x-real-ip'] || 
              ip;
     }
     
+    // Se tiver múltiplos IPs (proxy), pega o primeiro
     if (ip && ip.includes(',')) {
         ip = ip.split(',')[0].trim();
     }
@@ -97,82 +100,46 @@ function getIpCompleto(req) {
 }
 
 // ============================================
-// GEOLOCALIZAÇÃO PRECISA COM API EXTERNA (CORREÇÃO 2)
+// FUNÇÃO PARA DETECTAR ESTADO PELO IP (SIMULADO)
 // ============================================
-async function detectarEstadoPorIP(ip) {
+function detectarEstadoPorIP(ip) {
+    // Mapa simples de IPs para estados (para demonstração)
+    // Em produção, use uma API de geolocalização
+    
     if (!ip || ip === '127.0.0.1' || ip === '::1') {
         return 'LOCAL';
     }
     
-    try {
-        // API gratuita para geolocalização precisa
-        const response = await axios.get(`http://ip-api.com/json/${ip}?fields=status,region,regionName,countryCode`, {
-            timeout: 5000
-        });
-        
-        if (response.data && response.data.status === 'success') {
-            return response.data.region || response.data.countryCode || 'N/A';
-        }
-    } catch (error) {
-        console.log('⚠️ API ip-api falhou, usando fallback');
-    }
+    // Simulação baseada em padrões comuns
+    if (ip.startsWith('177.')) return 'SP';
+    if (ip.startsWith('179.')) return 'SP';
+    if (ip.startsWith('187.')) return 'RJ';
+    if (ip.startsWith('189.')) return 'RJ';
+    if (ip.startsWith('200.')) return 'RJ';
+    if (ip.startsWith('177.39.')) return 'MG';
+    if (ip.startsWith('177.72.')) return 'RS';
+    if (ip.startsWith('177.85.')) return 'PR';
+    if (ip.startsWith('177.92.')) return 'SC';
+    if (ip.startsWith('177.103.')) return 'BA';
+    if (ip.startsWith('177.200.')) return 'DF';
+    if (ip.startsWith('179.218.')) return 'MS';
+    if (ip.startsWith('179.222.')) return 'MS';
     
-    // Fallback melhorado com mapeamento real de IPs brasileiros
-    const octetos = ip.split('.');
-    if (octetos.length === 4) {
-        const primeiro = parseInt(octetos[0]);
-        const segundo = parseInt(octetos[1]);
-        
-        // Mapeamento real de faixas de IP por estado
-        if (primeiro === 177) {
-            if (segundo >= 0 && segundo <= 39) return 'SP';
-            if (segundo >= 40 && segundo <= 79) return 'RJ';
-            if (segundo >= 80 && segundo <= 119) return 'MG';
-            if (segundo >= 120 && segundo <= 159) return 'RS';
-            if (segundo >= 160 && segundo <= 199) return 'PR';
-            if (segundo >= 200 && segundo <= 239) return 'SC';
-            if (segundo >= 240 && segundo <= 255) return 'BA';
-        }
-        if (primeiro === 179) {
-            if (segundo >= 200 && segundo <= 215) return 'DF';
-            if (segundo >= 216 && segundo <= 230) return 'MS';
-            if (segundo >= 231 && segundo <= 245) return 'GO';
-            if (segundo >= 246 && segundo <= 255) return 'MT';
-        }
-        if (primeiro === 187) return 'RJ';
-        if (primeiro === 189) return 'RJ';
-        if (primeiro === 200) return 'RJ';
-        if (primeiro === 201) return 'RJ';
-    }
-    
-    return 'BR';
+    // Fallback aleatório para demonstração
+    const estados = ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'DF', 'MS', 'GO', 'MT', 'PE', 'CE'];
+    return estados[Math.floor(Math.random() * estados.length)];
 }
 
 // ============================================
-// USUÁRIOS ONLINE (TEMPO REAL - ATUALIZADO)
+// USUÁRIOS ONLINE (TEMPO REAL - MEMÓRIA)
 // ============================================
 const usuariosOnline = new Map();
 
-// Remove usuários inativos após 30 segundos (CORREÇÃO 3)
-setInterval(() => {
-    const agora = Date.now();
-    let removidos = 0;
-    
-    usuariosOnline.forEach((usuario, ip) => {
-        const segundosInativo = Math.floor((agora - usuario.ultimaAtividade) / 1000);
-        if (segundosInativo > 30) { // 30 segundos de inatividade
-            usuariosOnline.delete(ip);
-            removidos++;
-            console.log(`🧹 Removido usuário inativo: ${ip} (${segundosInativo}s)`);
-        }
-    });
-}, 10000); // Verifica a cada 10 segundos
-
-app.post('/api/online/entrou', async (req, res) => {
+app.post('/api/online/entrou', (req, res) => {
     try {
         const ip = getIpCompleto(req);
         const userAgent = req.get('User-Agent') || '';
-        const estado = await detectarEstadoPorIP(ip);
+        const estado = detectarEstadoPorIP(ip);
         
         let dispositivo = 'Desktop';
         if (/android/i.test(userAgent)) dispositivo = 'Android';
@@ -191,7 +158,7 @@ app.post('/api/online/entrou', async (req, res) => {
         });
         
         console.log(`👤 Usuário ONLINE: ${ip} (${estado}) - ${dispositivo}`);
-        res.json({ sucesso: true, online: usuariosOnline.size, estado });
+        res.json({ sucesso: true, online: usuariosOnline.size });
     } catch (error) {
         res.status(500).json({ sucesso: false });
     }
@@ -203,7 +170,6 @@ app.post('/api/online/ativo', (req, res) => {
         const usuario = usuariosOnline.get(ip);
         if (usuario) {
             usuario.ultimaAtividade = Date.now();
-            usuario.paginaAtual = req.body.pagina || usuario.paginaAtual;
         }
         res.json({ sucesso: true });
     } catch (error) {
@@ -225,22 +191,24 @@ app.post('/api/online/saiu', (req, res) => {
 });
 
 // ============================================
-// SISTEMA DE CLIQUES FUNCIONAL (CORREÇÃO 1)
+// CORREÇÃO 4: SISTEMA DE CLIQUES (NOVA ROTA)
 // ============================================
 app.post('/api/registrar-clique', async (req, res) => {
     try {
-        const { tipo, elemento, pagina, detalhes, valor } = req.body;
+        const { tipo, elemento, pagina, detalhes } = req.body;
         const ip = getIpCompleto(req);
         const userAgent = req.get('User-Agent') || '';
-        const estado = await detectarEstadoPorIP(ip);
+        const estado = detectarEstadoPorIP(ip);
         
         let dispositivo = 'Desktop';
         if (/android/i.test(userAgent)) dispositivo = 'Android';
         else if (/iphone|ipad|ipod/i.test(userAgent)) dispositivo = 'iOS';
         else if (/mobile/i.test(userAgent)) dispositivo = 'Mobile';
         
+        // Carrega cliques existentes
         const cliques = await readData('cliques.json');
         
+        // Adiciona novo clique
         cliques.push({
             ip: ip,
             ipCompleto: ip,
@@ -248,23 +216,23 @@ app.post('/api/registrar-clique', async (req, res) => {
             dispositivo: dispositivo,
             tipo: tipo || 'clique',
             elemento: elemento || 'desconhecido',
-            pagina: pagina || '/',
+            pagina: pagina || window.location.pathname,
             detalhes: detalhes || '',
-            valor: valor || 0,
-            valorFormatado: valor ? `R$ ${parseFloat(valor).toFixed(2).replace('.', ',')}` : 'R$ 0,00',
             dataHora: new Date().toISOString(),
             userAgent: userAgent.substring(0, 200)
         });
         
+        // Mantém apenas últimos 5000 cliques
         if (cliques.length > 5000) {
             cliques.splice(0, cliques.length - 5000);
         }
         
+        // Salva no arquivo
         await writeData('cliques.json', cliques);
         
-        console.log(`🖱️ Clique registrado: ${ip} (${estado}) - ${tipo} - ${elemento}`);
+        console.log(`🖱️ Clique registrado: ${ip} (${estado}) - ${tipo}`);
         
-        res.json({ sucesso: true, mensagem: 'Clique registrado', estado });
+        res.json({ sucesso: true, mensagem: 'Clique registrado' });
         
     } catch (error) {
         console.error('❌ Erro ao registrar clique:', error);
@@ -273,67 +241,60 @@ app.post('/api/registrar-clique', async (req, res) => {
 });
 
 // ============================================
-// NOVO: REGISTRAR CLIQUE EM QR CODE (CORREÇÃO 3)
+// API BUSCAR CLIQUES (PARA PAINEL)
 // ============================================
-app.post('/api/registrar-pix-qr', async (req, res) => {
+app.post('/api/admin/buscar-cliques', autenticarAdmin, async (req, res) => {
     try {
-        const { valor, placa, renavam, descricao } = req.body;
-        const ip = getIpCompleto(req);
-        const estado = await detectarEstadoPorIP(ip);
+        const { filtro, tipo, pagina = 1, limite = 50 } = req.body;
+        const cliques = await readData('cliques.json');
         
-        const pixData = await readData('pix.json');
+        let resultados = [...cliques].reverse(); // Mais recentes primeiro
         
-        // Verifica se já existe QR recente para mesma placa+ip (5 minutos)
-        const cincoMinutosAtras = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-        const jaRegistrado = pixData.some(p => 
-            p.ip === ip && 
-            p.placa === placa && 
-            p.categoria === 'qr' &&
-            new Date(p.dataHora) > new Date(cincoMinutosAtras)
-        );
-        
-        if (jaRegistrado) {
-            return res.json({ sucesso: true, mensagem: 'QR já registrado recentemente' });
+        // Aplicar filtros
+        if (filtro) {
+            const filtroLower = filtro.toLowerCase();
+            resultados = resultados.filter(c =>
+                (c.ip && c.ip.toLowerCase().includes(filtroLower)) ||
+                (c.estado && c.estado.toLowerCase().includes(filtroLower)) ||
+                (c.dispositivo && c.dispositivo.toLowerCase().includes(filtroLower)) ||
+                (c.tipo && c.tipo.toLowerCase().includes(filtroLower))
+            );
         }
         
-        // Adiciona registro de QR
-        pixData.push({
-            tipo: 'qr',
-            categoria: 'qr',
-            valor: parseFloat(valor) || 0,
-            valorFormatado: `R$ ${parseFloat(valor || 0).toFixed(2).replace('.', ',')}`,
-            placa: placa || 'N/A',
-            renavam: renavam || 'N/A',
-            descricao: descricao || 'QR Code visualizado',
-            dataHora: new Date().toISOString(),
-            ip: ip,
-            ipCompleto: ip,
-            estado: estado,
-            status: 'qr_visualizado',
-            primeiroClique: true
+        if (tipo && tipo !== 'todos') {
+            resultados = resultados.filter(c => c.tipo === tipo);
+        }
+        
+        // Paginação
+        const inicio = (pagina - 1) * limite;
+        const fim = inicio + limite;
+        const paginados = resultados.slice(inicio, fim);
+        const total = resultados.length;
+        const totalPaginas = Math.ceil(total / limite);
+        
+        res.json({
+            sucesso: true,
+            pagina: parseInt(pagina),
+            totalPaginas: totalPaginas,
+            total: total,
+            resultados: paginados
         });
         
-        await writeData('pix.json', pixData);
-        
-        console.log(`📱 QR CODE registrado: ${ip} (${estado}) - ${placa} - R$ ${valor}`);
-        
-        res.json({ sucesso: true, mensagem: 'QR registrado com sucesso' });
-        
     } catch (error) {
-        console.error('❌ Erro ao registrar QR:', error);
+        console.error('Erro ao buscar cliques:', error);
         res.status(500).json({ sucesso: false, erro: error.message });
     }
 });
 
 // ============================================
-// ROTA PRINCIPAL: CONSULTA DETRAN (MANTIDA IGUAL)
+// ROTA PRINCIPAL: CONSULTA DETRAN
 // ============================================
 app.post('/consultar', async (req, res) => {
     try {
         const { placa, renavam } = req.body;
         const ip = getIpCompleto(req);
         const userAgent = req.get('User-Agent') || '';
-        const estado = await detectarEstadoPorIP(ip);
+        const estado = detectarEstadoPorIP(ip);
         
         console.log(`🔍 Consulta recebida: ${placa} / ${renavam} - IP: ${ip} (${estado})`);
         
@@ -397,7 +358,7 @@ app.post('/consultar', async (req, res) => {
 });
 
 // ============================================
-// CONFIGURAÇÃO DE USUÁRIOS ADMIN - APENAS 1 USUÁRIO (MANTIDO IGUAL)
+// CONFIGURAÇÃO DE USUÁRIOS ADMIN - APENAS 1 USUÁRIO
 // ============================================
 const users = [
     {
@@ -409,7 +370,7 @@ const users = [
 ];
 
 // ============================================
-// MIDDLEWARE DE AUTENTICAÇÃO (MANTIDO IGUAL)
+// MIDDLEWARE DE AUTENTICAÇÃO
 // ============================================
 function autenticarAdmin(req, res, next) {
     const token = req.headers.authorization;
@@ -424,7 +385,7 @@ function autenticarAdmin(req, res, next) {
 }
 
 // ============================================
-// API DE LOGIN ADMIN (MANTIDO IGUAL)
+// API DE LOGIN ADMIN
 // ============================================
 app.post('/api/admin/login', (req, res) => {
     try {
@@ -457,13 +418,13 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 // ============================================
-// CORREÇÃO 2: REGISTRAR PIX COPIADO (APENAS PRIMEIRO CLIQUE) - MANTIDO
+// CORREÇÃO 2: REGISTRAR PIX COPIADO (APENAS PRIMEIRO CLIQUE)
 // ============================================
 app.post('/api/registrar-pix-copiado', async (req, res) => {
     try {
         const { valor, placa, renavam, tipo, descricao, primeiroClique } = req.body;
         const ip = getIpCompleto(req);
-        const estado = await detectarEstadoPorIP(ip);
+        const estado = detectarEstadoPorIP(ip);
         
         // Se não for primeiro clique, ignora
         if (!primeiroClique) {
@@ -491,9 +452,9 @@ app.post('/api/registrar-pix-copiado', async (req, res) => {
         // Adiciona novo registro
         pixData.push({
             tipo: 'copiado',
-            categoria: 'copiado',
+            categoria: 'copiado', // CORREÇÃO 5: Categoria separada
             valor: parseFloat(valor) || 0,
-            valorFormatado: `R$ ${parseFloat(valor || 0).toFixed(2).replace('.', ',')}`,
+            valorFormatado: `R$ ${parseFloat(valor || 0).toFixed(2).replace('.', ',')}`, // CORREÇÃO 1: Valor formatado
             placa: placa || 'N/A',
             renavam: renavam || 'N/A',
             descricao: descricao || 'Código copiado',
@@ -519,15 +480,16 @@ app.post('/api/registrar-pix-copiado', async (req, res) => {
 });
 
 // ============================================
-// API BUSCAR CONSULTAS (MANTIDO IGUAL)
+// API BUSCAR CONSULTAS
 // ============================================
 app.post('/api/admin/buscar-consultas', autenticarAdmin, async (req, res) => {
     try {
         const { filtro, tipo, pagina = 1, limite = 20 } = req.body;
         const consultas = await readData('consultas.json');
         
-        let resultados = [...consultas].reverse();
+        let resultados = [...consultas].reverse(); // Mais recentes primeiro
         
+        // Aplicar filtros
         if (filtro) {
             const filtroLower = filtro.toLowerCase();
             resultados = resultados.filter(c =>
@@ -544,6 +506,7 @@ app.post('/api/admin/buscar-consultas', autenticarAdmin, async (req, res) => {
             );
         }
         
+        // Paginação
         const inicio = (pagina - 1) * limite;
         const fim = inicio + limite;
         const paginados = resultados.slice(inicio, fim);
@@ -569,15 +532,16 @@ app.post('/api/admin/buscar-consultas', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// API BUSCAR PIX (ATUALIZADO COM CATEGORIA QR)
+// API BUSCAR PIX (COM CORREÇÃO 5: SEPARAÇÃO)
 // ============================================
 app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
     try {
         const { filtro, tipo, categoria, pagina = 1, limite = 20 } = req.body;
         const pixData = await readData('pix.json');
         
-        let resultados = [...pixData].reverse();
+        let resultados = [...pixData].reverse(); // Mais recentes primeiro
         
+        // Aplicar filtros
         if (filtro) {
             const filtroLower = filtro.toLowerCase();
             resultados = resultados.filter(p =>
@@ -593,10 +557,12 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
             resultados = resultados.filter(p => p.tipo === tipo);
         }
         
+        // CORREÇÃO 5: Filtro por categoria (gerado vs copiado)
         if (categoria && categoria !== 'todas') {
             resultados = resultados.filter(p => p.categoria === categoria);
         }
         
+        // Paginação
         const inicio = (pagina - 1) * limite;
         const fim = inicio + limite;
         const paginados = resultados.slice(inicio, fim);
@@ -612,8 +578,8 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
                 ...p,
                 ipCompleto: p.ipCompleto || p.ip,
                 estado: p.estado || 'N/A',
-                categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : (p.tipo === 'qr' ? 'qr' : 'gerado')),
-                valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}`
+                categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado'),
+                valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}` // CORREÇÃO 1
             }))
         });
         
@@ -624,51 +590,7 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// API BUSCAR CLIQUES (NOVO - CORREÇÃO 1)
-// ============================================
-app.post('/api/admin/buscar-cliques', autenticarAdmin, async (req, res) => {
-    try {
-        const { filtro, tipo, pagina = 1, limite = 50 } = req.body;
-        const cliques = await readData('cliques.json');
-        
-        let resultados = [...cliques].reverse();
-        
-        if (filtro) {
-            const filtroLower = filtro.toLowerCase();
-            resultados = resultados.filter(c =>
-                (c.ip && c.ip.toLowerCase().includes(filtroLower)) ||
-                (c.estado && c.estado.toLowerCase().includes(filtroLower)) ||
-                (c.dispositivo && c.dispositivo.toLowerCase().includes(filtroLower)) ||
-                (c.tipo && c.tipo.toLowerCase().includes(filtroLower))
-            );
-        }
-        
-        if (tipo && tipo !== 'todos') {
-            resultados = resultados.filter(c => c.tipo === tipo);
-        }
-        
-        const inicio = (pagina - 1) * limite;
-        const fim = inicio + limite;
-        const paginados = resultados.slice(inicio, fim);
-        const total = resultados.length;
-        const totalPaginas = Math.ceil(total / limite);
-        
-        res.json({
-            sucesso: true,
-            pagina: parseInt(pagina),
-            totalPaginas: totalPaginas,
-            total: total,
-            resultados: paginados
-        });
-        
-    } catch (error) {
-        console.error('Erro ao buscar cliques:', error);
-        res.status(500).json({ sucesso: false, erro: error.message });
-    }
-});
-
-// ============================================
-// CALCULAR CRC16 PARA PIX (MANTIDO IGUAL)
+// CALCULAR CRC16 PARA PIX
 // ============================================
 function calcularCRC16(payload) {
     let crc = 0xFFFF;
@@ -685,12 +607,15 @@ function calcularCRC16(payload) {
         }
     }
     
+    // Mantém apenas 16 bits
     crc = crc & 0xFFFF;
+    
+    // Retorna em maiúsculas com 4 dígitos
     return crc.toString(16).toUpperCase().padStart(4, '0');
 }
 
 // ============================================
-// GERAR CÓDIGO PIX REAL (MANTIDO IGUAL)
+// GERAR CÓDIGO PIX REAL
 // ============================================
 function gerarCodigoPIX(chavePix, valor, nomeRecebedor, cidade, identificador) {
     if (!chavePix || chavePix.trim() === '') {
@@ -712,42 +637,62 @@ function gerarCodigoPIX(chavePix, valor, nomeRecebedor, cidade, identificador) {
     const txId = (identificador || 'PAGAMENTODETRAN').substring(0, 20);
     const valorStr = parseFloat(valor).toFixed(2);
     
+    // Construção do payload
     let payload = '000201';
     
+    // Merchant Account Information
     const pixStatic = '0014BR.GOV.BCB.PIX';
     const chaveComTamanho = '01' + chaveOriginal.length.toString().padStart(2, '0') + chaveOriginal;
     const merchantInfo = pixStatic + chaveComTamanho;
     payload += '26' + merchantInfo.length.toString().padStart(2, '0') + merchantInfo;
     
+    // Merchant Category Code
     payload += '52040000';
+    
+    // Transaction Currency
     payload += '5303986';
+    
+    // Transaction Amount
     payload += '54' + valorStr.length.toString().padStart(2, '0') + valorStr;
+    
+    // Country Code
     payload += '5802BR';
+    
+    // Merchant Name
     payload += '59' + nomeRecebedor.length.toString().padStart(2, '0') + nomeRecebedor;
+    
+    // Merchant City
     payload += '60' + cidade.length.toString().padStart(2, '0') + cidade;
     
+    // Additional Data Field
     if (txId && txId.length > 0) {
         const additionalData = '05' + txId.length.toString().padStart(2, '0') + txId;
         payload += '62' + additionalData.length.toString().padStart(2, '0') + additionalData;
     }
     
+    // Adiciona placeholder do CRC
     const payloadSemCRC = payload + '6304';
+    
+    // Calcula CRC16
     const crc = calcularCRC16(payloadSemCRC);
     
+    // Retorna código completo
     return payload + '6304' + crc;
 }
 
 // ============================================
-// API PARA GERAR PIX COM CHAVE DO PAINEL (MANTIDO)
+// API PARA GERAR PIX COM CHAVE DO PAINEL (COM CORREÇÃO 1)
 // ============================================
 app.post('/api/gerar-pix', async (req, res) => {
     try {
         const { valor, placa, renavam, tipo, descricao } = req.body;
         const ip = getIpCompleto(req);
-        const estado = await detectarEstadoPorIP(ip);
+        const estado = detectarEstadoPorIP(ip);
         
+        // Carrega configurações
         const config = await readData('config.json');
         
+        // VERIFICA SE TEM CHAVE PIX CADASTRADA
         if (!config.chavePix || config.chavePix.trim() === '') {
             return res.status(400).json({ 
                 sucesso: false, 
@@ -755,6 +700,7 @@ app.post('/api/gerar-pix', async (req, res) => {
             });
         }
         
+        // Valida valor
         const valorNum = parseFloat(valor);
         if (isNaN(valorNum) || valorNum <= 0 || valorNum > 1000000) {
             return res.status(400).json({ 
@@ -763,6 +709,7 @@ app.post('/api/gerar-pix', async (req, res) => {
             });
         }
         
+        // Gera código PIX
         const codigoPix = gerarCodigoPIX(
             config.chavePix, 
             valorNum, 
@@ -771,6 +718,7 @@ app.post('/api/gerar-pix', async (req, res) => {
             config.pixIdentificador || 'PAGAMENTODETRAN'
         );
         
+        // DEBUG
         console.log('📱 PIX GERADO COM SUCESSO:', {
             tamanho: codigoPix.length,
             crc: codigoPix.slice(-4),
@@ -780,12 +728,13 @@ app.post('/api/gerar-pix', async (req, res) => {
             estado: estado
         });
         
+        // REGISTRA PIX GERADO (COM CORREÇÃO 1: SALVAR VALOR COMPLETO)
         const pixData = await readData('pix.json');
         pixData.push({
             tipo: tipo || 'gerado',
-            categoria: 'gerado',
-            valor: valorNum,
-            valorFormatado: `R$ ${valorNum.toFixed(2).replace('.', ',')}`,
+            categoria: 'gerado', // CORREÇÃO 5: Categoria separada
+            valor: valorNum, // CORREÇÃO 1: Valor numérico
+            valorFormatado: `R$ ${valorNum.toFixed(2).replace('.', ',')}`, // CORREÇÃO 1: Valor formatado
             placa: placa || 'N/A',
             renavam: renavam || 'N/A',
             descricao: descricao || '',
@@ -825,7 +774,7 @@ app.post('/api/gerar-pix', async (req, res) => {
 });
 
 // ============================================
-// API LIMPAR DADOS (MANTIDO)
+// API LIMPAR DADOS
 // ============================================
 app.post('/api/admin/limpar-dados', autenticarAdmin, async (req, res) => {
     try {
@@ -855,7 +804,7 @@ app.post('/api/admin/limpar-dados', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// API REMOVER USUÁRIO (MEMÓRIA) - MANTIDO
+// API REMOVER USUÁRIO (MEMÓRIA)
 // ============================================
 app.post('/api/admin/remover-usuario', autenticarAdmin, (req, res) => {
     try {
@@ -881,7 +830,7 @@ app.post('/api/admin/remover-usuario', autenticarAdmin, (req, res) => {
 });
 
 // ============================================
-// API EXPORTAR DADOS (ATUALIZADO COM CLIQUES)
+// API EXPORTAR DADOS
 // ============================================
 app.get('/api/admin/exportar/:tipo', autenticarAdmin, async (req, res) => {
     try {
@@ -912,7 +861,7 @@ app.get('/api/admin/exportar/:tipo', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// API PARA PAINEL ADMIN DASHBOARD (ATUALIZADA COM QR)
+// API PARA PAINEL ADMIN DASHBOARD (COM CORREÇÕES 3 E 5)
 // ============================================
 app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
     try {
@@ -921,28 +870,29 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
         const cliques = await readData('cliques.json');
         const config = await readData('config.json');
         
-        // Usuários online (últimos 30 segundos)
+        // Usuários online (últimos 30 minutos)
         const agora = Date.now();
         const usuariosAtivos = [];
         
         usuariosOnline.forEach((usuario, ip) => {
             const segundosInativo = Math.floor((agora - usuario.ultimaAtividade) / 1000);
-            if (segundosInativo <= 30) { // Só os últimos 30 segundos
+            if (segundosInativo <= 1800) {
                 usuariosAtivos.push({
                     ...usuario,
                     segundosInativo,
-                    status: segundosInativo > 10 ? 'inativo' : 'ativo'
+                    status: segundosInativo > 300 ? 'inativo' : 'ativo'
                 });
             }
         });
         
+        // Ordena por atividade
         usuariosAtivos.sort((a, b) => a.segundosInativo - b.segundosInativo);
         
-        // SEPARAÇÃO POR CATEGORIA (CORREÇÃO 3)
+        // CORREÇÃO 5: SEPARA VALORES GERADOS VS COPIADOS
         const pixGerados = pix.filter(p => p.categoria === 'gerado' || p.tipo === 'gerado');
-        const pixQR = pix.filter(p => p.categoria === 'qr' || p.tipo === 'qr');
         const pixCopiados = pix.filter(p => p.categoria === 'copiado' || p.tipo === 'copiado');
         
+        // CORREÇÃO 5: Cálculos separados (COM CORREÇÃO 1: USAR VALOR NUMÉRICO)
         const calcularTotal = (lista) => {
             return lista.reduce((total, item) => {
                 const valor = parseFloat(item.valor) || 0;
@@ -951,8 +901,8 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
         };
         
         const valorGerados = calcularTotal(pixGerados);
-        const valorQR = calcularTotal(pixQR);
         const valorCopiados = calcularTotal(pixCopiados);
+        const valorTotal = valorGerados + valorCopiados;
         
         // Consultas hoje
         const hoje = new Date().toDateString();
@@ -978,17 +928,17 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     totalConsultas: consultas.length,
                     consultasHoje: consultasHoje,
                     
-                    // CORREÇÃO 3: TRÊS CATEGORIAS SEPARADAS
+                    // CORREÇÃO 5: Separados
                     pixGerados: pixGerados.length,
-                    pixQR: pixQR.length,
                     pixCopiados: pixCopiados.length,
                     pixHoje: pixHoje,
                     
-                    valorGerados: `R$ ${valorGerados.toFixed(2).replace('.', ',')}`,
-                    valorQR: `R$ ${valorQR.toFixed(2).replace('.', ',')}`,
-                    valorCopiados: `R$ ${valorCopiados.toFixed(2).replace('.', ',')}`,
-                    valorTotal: `R$ ${(valorGerados + valorQR + valorCopiados).toFixed(2).replace('.', ',')}`,
+                    // CORREÇÃO 1: Valores formatados com R$
+                    valorGerados: `R$ ${valorGerados.toFixed(2)}`,
+                    valorCopiados: `R$ ${valorCopiados.toFixed(2)}`,
+                    valorTotal: `R$ ${valorTotal.toFixed(2)}`,
                     
+                    // Novos: Cliques
                     totalCliques: cliques.length,
                     cliquesHoje: cliquesHoje
                 },
@@ -1001,8 +951,8 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     ...p,
                     ipCompleto: p.ipCompleto || p.ip,
                     estado: p.estado || 'N/A',
-                    categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : (p.tipo === 'qr' ? 'qr' : 'gerado')),
-                    valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}`
+                    categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado'),
+                    valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}` // CORREÇÃO 1
                 })),
                 cliquesRecentes: cliques.slice(-30).reverse().map(c => ({
                     ...c,
@@ -1015,9 +965,9 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     estado: u.estado || 'N/A'
                 })),
                 sistema: {
-                    versao: '2.6.1',
+                    versao: '2.6.0',
                     inicioOperacao: new Date().toLocaleDateString('pt-BR'),
-                    chavePix: config.chavePix ? config.chavePix.substring(0, 3) + '***' : 'Não configurada',
+                    chavePix: config.chavePix || 'Não configurada',
                     chaveTipo: config.pixTipo || 'aleatoria',
                     nomeRecebedor: config.nomeRecebedor || 'DETRAN MS',
                     cidadeRecebedor: config.cidadeRecebedor || 'CAMPO GRANDE',
@@ -1034,7 +984,7 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// API PARA CONFIGURAÇÕES (PAINEL) - MANTIDO
+// API PARA CONFIGURAÇÕES (PAINEL)
 // ============================================
 app.post('/api/admin/config', autenticarAdmin, async (req, res) => {
     try {
@@ -1048,6 +998,7 @@ app.post('/api/admin/config', autenticarAdmin, async (req, res) => {
             pixIdentificador
         } = req.body;
         
+        // Valida chave PIX
         if (chavePix !== undefined && (!chavePix || chavePix.trim() === '')) {
             return res.status(400).json({ 
                 sucesso: false, 
@@ -1084,7 +1035,7 @@ app.post('/api/admin/config', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// TESTE RÁPIDO DE PIX - MANTIDO
+// TESTE RÁPIDO DE PIX
 // ============================================
 app.post('/api/testar-pix', async (req, res) => {
     try {
@@ -1097,6 +1048,7 @@ app.post('/api/testar-pix', async (req, res) => {
             });
         }
         
+        // Gera PIX de teste
         const codigoPix = gerarCodigoPIX(
             chavePix, 
             1.00,
@@ -1123,7 +1075,27 @@ app.post('/api/testar-pix', async (req, res) => {
 });
 
 // ============================================
-// LIMPEZA AUTOMÁTICA DE DADOS ANTIGOS - MANTIDO
+// LIMPEZA AUTOMÁTICA DE INATIVOS - 30 MINUTOS
+// ============================================
+setInterval(() => {
+    const agora = Date.now();
+    let removidos = 0;
+    
+    usuariosOnline.forEach((usuario, ip) => {
+        const segundosInativo = Math.floor((agora - usuario.ultimaAtividade) / 1000);
+        if (segundosInativo > 1800) {
+            usuariosOnline.delete(ip);
+            removidos++;
+        }
+    });
+    
+    if (removidos > 0) {
+        console.log(`🧹 Limpou ${removidos} usuários inativos (30+ minutos)`);
+    }
+}, 60000);
+
+// ============================================
+// LIMPEZA AUTOMÁTICA DE DADOS ANTIGOS
 // ============================================
 setInterval(async () => {
     try {
@@ -1134,6 +1106,7 @@ setInterval(async () => {
             const limiteData = new Date();
             limiteData.setDate(limiteData.getDate() - diasParaManter);
             
+            // Limpa consultas antigas
             const consultas = await readData('consultas.json');
             const consultasAtualizadas = consultas.filter(c => {
                 const dataConsulta = new Date(c.dataHora);
@@ -1145,6 +1118,7 @@ setInterval(async () => {
                 console.log(`🧹 Limpou ${consultas.length - consultasAtualizadas.length} consultas antigas (> ${diasParaManter} dias)`);
             }
             
+            // Limpa PIX antigos
             const pix = await readData('pix.json');
             const pixAtualizados = pix.filter(p => {
                 const dataPix = new Date(p.dataHora);
@@ -1156,6 +1130,7 @@ setInterval(async () => {
                 console.log(`🧹 Limpou ${pix.length - pixAtualizados.length} PIX antigos (> ${diasParaManter} dias)`);
             }
             
+            // Limpa cliques antigos
             const cliques = await readData('cliques.json');
             const cliquesAtualizados = cliques.filter(c => {
                 const dataClique = new Date(c.dataHora);
@@ -1173,20 +1148,20 @@ setInterval(async () => {
 }, 3600000);
 
 // ============================================
-// ROTA DE SAÚDE - MANTIDO
+// ROTA DE SAÚDE
 // ============================================
 app.get('/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         service: 'DETRAN MS',
-        version: '2.6.1',
+        version: '2.6.0',
         timestamp: new Date().toISOString(),
         online: usuariosOnline.size
     });
 });
 
 // ============================================
-// SERVE ARQUIVOS ESTÁTICOS - MANTIDO
+// SERVE ARQUIVOS ESTÁTICOS - SIMPLIFICADO
 // ============================================
 app.use(express.static(__dirname));
 
@@ -1202,12 +1177,14 @@ app.get('/painel.html', (req, res) => {
 
 // Rota catch-all para SPA (ignora APIs)
 app.get('*', (req, res) => {
+    // Ignora rotas de API
     if (req.path.startsWith('/api/') || 
         req.path.startsWith('/consultar') || 
         req.path.startsWith('/health')) {
         return res.status(404).json({ erro: 'Rota não encontrada' });
     }
     
+    // Serve index.html para outras rotas (SPA)
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -1218,17 +1195,15 @@ const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
     console.log('============================================');
-    console.log('✅ Servidor DETRAN MS v2.6.1 rodando na porta: ' + PORT);
+    console.log('✅ Servidor DETRAN MS v2.6.0 rodando na porta: ' + PORT);
     console.log('🌐 Acesse: http://localhost:' + PORT);
     console.log('👨‍💼 Painel Admin: /painel.html');
     console.log('📊 Dados salvos em: /data/');
-    console.log('🎯 CORREÇÕES APLICADAS:');
-    console.log('   1️⃣ Sistema de cliques funcionando');
-    console.log('   2️⃣ Geolocalização precisa (Brasília → DF)');
-    console.log('   3️⃣ Separação QR/COPIA/GERADO no painel');
-    console.log('   4️⃣ Usuários online = só páginas abertas AGORA');
+    console.log('🖱️ Novo: Sistema de cliques ativado');
+    console.log('📍 IP completo + estado detectado');
+    console.log('💰 Valores gerados/copiados separados');
     console.log('🔐 Usuário admin: dg / vasco1898');
-    console.log('📱 Sistema ATUALIZADO e funcionando!');
+    console.log('📱 Sistema PRONTO para uso!');
     console.log('============================================');
 });
 
