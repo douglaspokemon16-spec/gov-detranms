@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -861,101 +862,6 @@
             registrarEntrada();
             setInterval(manterAtivo, 30000);
             window.addEventListener('beforeunload', registrarSaida);
-        })();
-
-        // =========================================
-        // SISTEMA DE CLIQUES FUNCIONAL (CORREÇÃO 1)
-        // =========================================
-        (function registrarCliquesGlobais() {
-            console.log('🖱️ Sistema de cliques ativado');
-            
-            // Registra cliques em todos os botões e links
-            document.addEventListener('click', function(e) {
-                let elemento = e.target;
-                
-                // Encontra o elemento clicável mais próximo
-                if (elemento.tagName !== 'BUTTON' && elemento.tagName !== 'A') {
-                    elemento = elemento.closest('button') || elemento.closest('a');
-                }
-                
-                if (!elemento) return;
-                
-                const texto = elemento.textContent?.trim() || elemento.innerText?.trim() || '';
-                const tag = elemento.tagName.toLowerCase();
-                const id = elemento.id || 'sem-id';
-                const classe = elemento.className || 'sem-classe';
-                
-                // Evita registrar cliques em elementos do sistema
-                if (id.includes('spinner') || id.includes('loading') || id.includes('modal') || 
-                    classe.includes('spinner') || classe.includes('loading')) {
-                    return;
-                }
-                
-                // Determina o tipo de clique
-                let tipo = 'clique';
-                if (tag === 'button') {
-                    if (texto.toLowerCase().includes('pagar') || id.includes('pagar')) {
-                        tipo = 'botao_pagar';
-                    } else if (texto.toLowerCase().includes('consultar') || id.includes('consultar')) {
-                        tipo = 'botao_consultar';
-                    } else if (texto.toLowerCase().includes('copiar') || id.includes('copiar')) {
-                        tipo = 'botao_copiar';
-                    } else if (texto.toLowerCase().includes('qr') || id.includes('qr')) {
-                        tipo = 'botao_qr';
-                    } else {
-                        tipo = 'botao';
-                    }
-                } else if (tag === 'a') {
-                    tipo = 'link';
-                }
-                
-                // Envia o clique para o servidor
-                fetch('/api/registrar-clique', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        tipo: tipo,
-                        elemento: `${tag}#${id}.${classe.substring(0, 20)}`,
-                        pagina: window.location.pathname,
-                        detalhes: texto.substring(0, 50),
-                        valor: dadosPagamentoAtual?.valor || 0
-                    })
-                }).catch(err => console.error('Erro ao registrar clique:', err));
-            });
-            
-            console.log('✅ Sistema de cliques configurado');
-        })();
-
-        // =========================================
-        // REGISTRAR CLIQUE NO QR CODE (CORREÇÃO 3)
-        // =========================================
-        (function registrarCliqueQR() {
-            // Captura o clique original no botão QR
-            const originalQRClick = document.getElementById('btnQRCode')?.onclick;
-            
-            document.getElementById('btnQRCode').onclick = function(e) {
-                // Executa a função original
-                if (originalQRClick) originalQRClick.call(this, e);
-                
-                // Registra o clique no QR Code
-                if (dadosPagamentoAtual) {
-                    fetch('/api/registrar-pix-qr', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            valor: dadosPagamentoAtual.valor,
-                            placa: dadosPagamentoAtual.placa,
-                            renavam: dadosPagamentoAtual.renavam,
-                            descricao: 'QR Code visualizado no modal PIX',
-                            tipo: 'qr'
-                        })
-                    }).then(res => res.json())
-                      .then(data => console.log('QR registrado:', data))
-                      .catch(err => console.error('Erro ao registrar QR:', err));
-                }
-            };
-            
-            console.log('✅ Clique QR registrador configurado');
         })();
 
         // =========================================
