@@ -454,6 +454,7 @@ app.post('/api/registrar-pix-copiado', async (req, res) => {
             tipo: 'copiado',
             categoria: 'copiado', // CORREÇÃO 5: Categoria separada
             valor: parseFloat(valor) || 0,
+            valorFormatado: `R$ ${parseFloat(valor || 0).toFixed(2).replace('.', ',')}`, // CORREÇÃO 1: Valor formatado
             placa: placa || 'N/A',
             renavam: renavam || 'N/A',
             descricao: descricao || 'Código copiado',
@@ -577,7 +578,8 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
                 ...p,
                 ipCompleto: p.ipCompleto || p.ip,
                 estado: p.estado || 'N/A',
-                categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado')
+                categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado'),
+                valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}` // CORREÇÃO 1
             }))
         });
         
@@ -679,7 +681,7 @@ function gerarCodigoPIX(chavePix, valor, nomeRecebedor, cidade, identificador) {
 }
 
 // ============================================
-// API PARA GERAR PIX COM CHAVE DO PAINEL
+// API PARA GERAR PIX COM CHAVE DO PAINEL (COM CORREÇÃO 1)
 // ============================================
 app.post('/api/gerar-pix', async (req, res) => {
     try {
@@ -726,12 +728,13 @@ app.post('/api/gerar-pix', async (req, res) => {
             estado: estado
         });
         
-        // Registra PIX gerado
+        // REGISTRA PIX GERADO (COM CORREÇÃO 1: SALVAR VALOR COMPLETO)
         const pixData = await readData('pix.json');
         pixData.push({
             tipo: tipo || 'gerado',
             categoria: 'gerado', // CORREÇÃO 5: Categoria separada
-            valor: valorNum,
+            valor: valorNum, // CORREÇÃO 1: Valor numérico
+            valorFormatado: `R$ ${valorNum.toFixed(2).replace('.', ',')}`, // CORREÇÃO 1: Valor formatado
             placa: placa || 'N/A',
             renavam: renavam || 'N/A',
             descricao: descricao || '',
@@ -889,7 +892,7 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
         const pixGerados = pix.filter(p => p.categoria === 'gerado' || p.tipo === 'gerado');
         const pixCopiados = pix.filter(p => p.categoria === 'copiado' || p.tipo === 'copiado');
         
-        // CORREÇÃO 5: Cálculos separados
+        // CORREÇÃO 5: Cálculos separados (COM CORREÇÃO 1: USAR VALOR NUMÉRICO)
         const calcularTotal = (lista) => {
             return lista.reduce((total, item) => {
                 const valor = parseFloat(item.valor) || 0;
@@ -930,6 +933,7 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     pixCopiados: pixCopiados.length,
                     pixHoje: pixHoje,
                     
+                    // CORREÇÃO 1: Valores formatados com R$
                     valorGerados: `R$ ${valorGerados.toFixed(2)}`,
                     valorCopiados: `R$ ${valorCopiados.toFixed(2)}`,
                     valorTotal: `R$ ${valorTotal.toFixed(2)}`,
@@ -947,7 +951,8 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     ...p,
                     ipCompleto: p.ipCompleto || p.ip,
                     estado: p.estado || 'N/A',
-                    categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado')
+                    categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado'),
+                    valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}` // CORREÇÃO 1
                 })),
                 cliquesRecentes: cliques.slice(-30).reverse().map(c => ({
                     ...c,
