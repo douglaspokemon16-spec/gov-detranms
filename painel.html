@@ -7,40 +7,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ESTILOS MANTIDOS DO SEU PAINEL ORIGINAL */
+        /* ========================================= */
+        /* CORREÇÃO 6: TEMA HACKER/CYBER NO LOGIN */
+        /* ========================================= */
         :root {
             --primary-color: #005a9c;
             --secondary-color: #32BCAD;
-            --danger-color: #dc3545;
-            --warning-color: #ff9800;
-            --success-color: #28a745;
+            --hacker-green: #00ff00;
+            --hacker-cyan: #00ffff;
+            --hacker-purple: #9d00ff;
+            --danger-color: #ff0033;
+            --warning-color: #ffaa00;
+            --success-color: #00ff88;
             --sidebar-width: 250px;
+            --matrix-green: #00ff41;
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Courier New', 'Consolas', monospace; }
         
-        body { background: #f5f7fa; min-height: 100vh; }
+        body { background: #0a0a0a; min-height: 100vh; color: #f0f0f0; }
         
         .app-container { display: flex; min-height: 100vh; }
         
         .sidebar {
             width: var(--sidebar-width);
-            background: linear-gradient(180deg, #005a9c 0%, #003d6b 100%);
-            color: white;
+            background: linear-gradient(180deg, #001122 0%, #000811 100%);
+            color: var(--hacker-green);
             position: fixed;
             height: 100vh;
             overflow-y: auto;
             z-index: 1000;
+            border-right: 1px solid var(--hacker-green);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
         }
         
         .sidebar-header {
             padding: 20px;
             text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+            background: rgba(0, 20, 40, 0.8);
         }
         
-        .sidebar-header img { height: 50px; margin-bottom: 10px; }
-        .sidebar-header h3 { font-size: 16px; font-weight: 600; }
+        .sidebar-header img { height: 50px; margin-bottom: 10px; filter: hue-rotate(90deg) brightness(1.5); }
+        .sidebar-header h3 { font-size: 16px; font-weight: 600; color: var(--hacker-cyan); text-shadow: 0 0 5px var(--hacker-cyan); }
         
         .sidebar-menu { padding: 20px 0; }
         
@@ -48,65 +57,106 @@
             display: flex;
             align-items: center;
             padding: 15px 25px;
-            color: rgba(255,255,255,0.8);
+            color: rgba(0, 255, 0, 0.8);
             text-decoration: none;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
         }
         
         .menu-item:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
+            background: rgba(0, 255, 0, 0.1);
+            color: var(--hacker-green);
             padding-left: 30px;
+            border-left: 3px solid var(--hacker-green);
+            text-shadow: 0 0 8px var(--hacker-green);
         }
         
         .menu-item.active {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border-left: 4px solid var(--secondary-color);
+            background: rgba(0, 255, 0, 0.15);
+            color: var(--hacker-green);
+            border-left: 4px solid var(--hacker-cyan);
+            text-shadow: 0 0 10px var(--hacker-green);
         }
         
         .menu-item i { font-size: 20px; width: 30px; margin-right: 15px; }
         
         .menu-badge {
-            background: var(--secondary-color);
+            background: var(--hacker-purple);
             color: white;
             font-size: 11px;
             padding: 2px 8px;
             border-radius: 10px;
             margin-left: auto;
+            box-shadow: 0 0 5px var(--hacker-purple);
         }
         
         .main-content {
             flex: 1;
             margin-left: var(--sidebar-width);
             padding: 20px;
+            background: #0a0a0a;
         }
         
         .content-header {
-            background: white;
-            border-radius: 15px;
+            background: rgba(0, 20, 40, 0.9);
+            border-radius: 8px;
             padding: 20px;
             margin-bottom: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            position: relative;
+            overflow: hidden;
         }
         
-        .header-left h1 { color: var(--primary-color); font-size: 24px; margin-bottom: 5px; }
-        .header-left p { color: #666; font-size: 14px; }
+        .content-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--hacker-green), transparent);
+            animation: scanline 3s linear infinite;
+        }
+        
+        @keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .header-left h1 { 
+            color: var(--hacker-cyan); 
+            font-size: 24px; 
+            margin-bottom: 5px; 
+            text-shadow: 0 0 10px var(--hacker-cyan);
+        }
+        .header-left p { color: #aaa; font-size: 14px; }
         
         .btn-logout {
-            background: var(--danger-color);
+            background: linear-gradient(135deg, #ff0033, #cc0022);
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(255, 0, 51, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #ff3355, #ff0022);
+            box-shadow: 0 0 15px rgba(255, 0, 51, 0.8);
+            transform: translateY(-2px);
         }
         
         .metrics-grid {
@@ -117,12 +167,20 @@
         }
         
         .metric-card {
-            background: white;
-            border-radius: 12px;
+            background: rgba(0, 20, 40, 0.9);
+            border-radius: 8px;
             padding: 25px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.3);
+            border-color: var(--hacker-green);
         }
         
         .metric-card::before {
@@ -134,10 +192,10 @@
             height: 4px;
         }
         
-        .metric-card.blue::before { background: var(--primary-color); }
-        .metric-card.green::before { background: var(--success-color); }
+        .metric-card.blue::before { background: var(--hacker-cyan); }
+        .metric-card.green::before { background: var(--hacker-green); }
         .metric-card.orange::before { background: var(--warning-color); }
-        .metric-card.purple::before { background: #6f42c1; }
+        .metric-card.purple::before { background: var(--hacker-purple); }
         
         .metric-header {
             display: flex;
@@ -146,15 +204,28 @@
             margin-bottom: 15px;
         }
         
-        .metric-title { font-size: 14px; color: #666; text-transform: uppercase; }
-        .metric-value { font-size: 36px; font-weight: 700; color: #333; margin-bottom: 10px; }
+        .metric-title { 
+            font-size: 14px; 
+            color: #aaa; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .metric-value { 
+            font-size: 36px; 
+            font-weight: 700; 
+            color: var(--hacker-green);
+            text-shadow: 0 0 10px var(--hacker-green);
+            margin-bottom: 10px;
+        }
         
         .dashboard-section {
-            background: white;
-            border-radius: 12px;
+            background: rgba(0, 20, 40, 0.9);
+            border-radius: 8px;
             padding: 25px;
             margin-bottom: 30px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 0, 0.2);
         }
         
         .hidden { display: none !important; }
@@ -165,50 +236,77 @@
             align-items: center;
             margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid rgba(0, 255, 0, 0.3);
         }
         
         .section-title {
-            color: var(--primary-color);
+            color: var(--hacker-cyan);
             font-size: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
+            text-shadow: 0 0 5px var(--hacker-cyan);
         }
         
         .table-container {
             overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 255, 0, 0.2);
         }
         
         .data-table {
             width: 100%;
             border-collapse: collapse;
             min-width: 800px;
+            background: rgba(0, 10, 20, 0.8);
         }
         
-        .data-table thead { background: var(--primary-color); color: white; }
-        .data-table th { padding: 15px; text-align: left; font-weight: 600; font-size: 14px; }
-        .data-table td { padding: 15px; font-size: 14px; border-bottom: 1px solid #e9ecef; }
-        .data-table tbody tr:hover { background: #f8f9fa; }
+        .data-table thead { 
+            background: rgba(0, 40, 80, 0.9); 
+            color: var(--hacker-green);
+            border-bottom: 2px solid var(--hacker-green);
+        }
+        
+        .data-table th { 
+            padding: 15px; 
+            text-align: left; 
+            font-weight: 600; 
+            font-size: 14px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .data-table td { 
+            padding: 15px; 
+            font-size: 14px; 
+            border-bottom: 1px solid rgba(0, 255, 0, 0.1); 
+            color: #ddd;
+        }
+        
+        .data-table tbody tr:hover { 
+            background: rgba(0, 255, 0, 0.05); 
+            color: var(--hacker-green);
+        }
         
         .status-badge {
             padding: 5px 10px;
-            border-radius: 20px;
+            border-radius: 3px;
             font-size: 12px;
             font-weight: 600;
             display: inline-block;
+            font-family: 'Courier New', monospace;
         }
         
-        .status-badge.success { background: #d4edda; color: #155724; }
-        .status-badge.info { background: #d1ecf1; color: #0c5460; }
-        .status-badge.warning { background: #fff3cd; color: #856404; }
+        .status-badge.success { background: rgba(0, 255, 136, 0.2); color: var(--success-color); border: 1px solid var(--success-color); }
+        .status-badge.info { background: rgba(0, 255, 255, 0.2); color: var(--hacker-cyan); border: 1px solid var(--hacker-cyan); }
+        .status-badge.warning { background: rgba(255, 170, 0, 0.2); color: var(--warning-color); border: 1px solid var(--warning-color); }
+        .status-badge.danger { background: rgba(255, 0, 51, 0.2); color: var(--danger-color); border: 1px solid var(--danger-color); }
         
-        .loading { text-align: center; padding: 40px; color: #666; }
+        .loading { text-align: center; padding: 40px; color: var(--hacker-cyan); }
         .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
+            border: 4px solid rgba(0, 255, 0, 0.1);
+            border-top: 4px solid var(--hacker-green);
+            border-right: 4px solid var(--hacker-cyan);
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -221,105 +319,330 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* LOGIN SCREEN */
+        /* ========================================= */
+        /* CORREÇÃO 6: LOGIN SCREEN HACKER THEME */
+        /* ========================================= */
         #loginScreen {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Efeito Matrix no fundo */
+        #loginScreen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(transparent 90%, rgba(0, 255, 0, 0.1) 100%),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 0, 0.05) 3px, rgba(0, 255, 0, 0.05) 4px);
+            animation: matrix 20s linear infinite;
+            opacity: 0.3;
+        }
+        
+        @keyframes matrix {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 1000px; }
         }
         
         .login-box {
-            background: white;
+            background: rgba(0, 20, 40, 0.95);
             padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.3);
             max-width: 400px;
             width: 100%;
             text-align: center;
+            border: 1px solid var(--hacker-green);
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(5px);
         }
         
-        .login-logo { font-size: 48px; color: #005a9c; margin-bottom: 20px; }
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--hacker-green), var(--hacker-cyan), var(--hacker-purple), var(--hacker-green));
+            z-index: -1;
+            border-radius: 7px;
+            animation: borderGlow 3s linear infinite;
+            background-size: 400% 400%;
+        }
+        
+        @keyframes borderGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .login-logo { 
+            font-size: 48px; 
+            color: var(--hacker-green);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--hacker-green);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
         
         .login-input {
             width: 100%;
             padding: 12px 15px;
             margin: 10px 0;
-            border: 2px solid #e1e1e1;
-            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 0, 0.5);
+            border-radius: 3px;
             font-size: 16px;
+            background: rgba(0, 10, 20, 0.8);
+            color: var(--hacker-green);
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+        
+        .login-input:focus {
+            outline: none;
+            border-color: var(--hacker-cyan);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .login-input::placeholder {
+            color: rgba(0, 255, 0, 0.5);
         }
         
         .login-btn {
-            background: linear-gradient(135deg, #005a9c, #0083cc);
-            color: white;
+            background: linear-gradient(135deg, var(--hacker-green), var(--hacker-cyan));
+            color: #000;
             border: none;
             padding: 14px;
             width: 100%;
-            border-radius: 8px;
+            border-radius: 3px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
         
-        .login-btn:hover { background: linear-gradient(135deg, #004080, #006699); }
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .login-btn:hover::before {
+            left: 100%;
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(135deg, var(--hacker-cyan), var(--hacker-green));
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.7);
+            transform: translateY(-2px);
+        }
         
         #loginError {
-            color: #dc3545;
-            background: #f8d7da;
+            color: var(--danger-color);
+            background: rgba(255, 0, 51, 0.1);
             padding: 10px;
-            border-radius: 5px;
+            border-radius: 3px;
             margin-top: 15px;
             display: none;
+            border: 1px solid var(--danger-color);
+            font-family: 'Courier New', monospace;
         }
         
-        /* ALERTA DE CONEXÃO */
+        /* ========================================= */
+        /* CORREÇÃO 7: REMOVER CREDENCIAIS VISÍVEIS */
+        /* ========================================= */
+        .credential-warning {
+            margin-top: 20px;
+            font-size: 12px;
+            color: rgba(255, 170, 0, 0.7);
+            border: 1px solid rgba(255, 170, 0, 0.3);
+            padding: 10px;
+            border-radius: 3px;
+            background: rgba(255, 170, 0, 0.05);
+        }
+        
+        /* ALERTA DE CONEXÃO HACKER */
         .connection-alert {
             position: fixed;
             top: 10px;
             right: 10px;
-            background: #dc3545;
+            background: rgba(255, 0, 51, 0.9);
             color: white;
             padding: 10px 15px;
-            border-radius: 5px;
+            border-radius: 3px;
             z-index: 9999;
             display: none;
+            border: 1px solid var(--danger-color);
+            box-shadow: 0 0 15px rgba(255, 0, 51, 0.5);
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* ========================================= */
+        /* CORREÇÃO 3: IP COMPLETO + ESTADO NO PAINEL */
+        /* ========================================= */
+        .ip-display {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: rgba(0, 20, 40, 0.8);
+            padding: 3px 8px;
+            border-radius: 3px;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            display: inline-block;
+            margin: 2px;
+        }
+        
+        .estado-badge {
+            background: rgba(0, 100, 255, 0.2);
+            color: #66aaff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid rgba(0, 100, 255, 0.5);
+        }
+        
+        /* ========================================= */
+        /* NOVA SEÇÃO: CLIQUES (CORREÇÃO 4) */
+        /* ========================================= */
+        .cliques-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .clique-stat-card {
+            background: rgba(0, 20, 40, 0.8);
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+        
+        .clique-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--hacker-cyan);
+            margin-bottom: 5px;
+        }
+        
+        .clique-stat-label {
+            font-size: 12px;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+        
+        /* ========================================= */
+        /* SEPARAÇÃO DE VALORES (CORREÇÃO 5) */
+        /* ========================================= */
+        .valores-separados {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .valor-card {
+            background: rgba(0, 20, 40, 0.8);
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid;
+        }
+        
+        .valor-card.gerados {
+            border-color: var(--hacker-cyan);
+        }
+        
+        .valor-card.copiados {
+            border-color: var(--hacker-purple);
+        }
+        
+        .valor-titulo {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .valor-numero {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .valor-gerados {
+            color: var(--hacker-cyan);
+            text-shadow: 0 0 10px var(--hacker-cyan);
+        }
+        
+        .valor-copiados {
+            color: var(--hacker-purple);
+            text-shadow: 0 0 10px var(--hacker-purple);
         }
     </style>
 </head>
 <body>
     <!-- ALERTA DE CONEXÃO -->
     <div id="connectionAlert" class="connection-alert">
-        <i class="fas fa-wifi-slash"></i> Servidor offline
+        <i class="fas fa-wifi-slash"></i> SERVIDOR OFFLINE
     </div>
     
-    <!-- TELA DE LOGIN -->
+    <!-- ========================================= -->
+    <!-- CORREÇÃO 6: TELA DE LOGIN HACKER -->
+    <!-- ========================================= -->
     <div id="loginScreen">
         <div class="login-box">
             <div class="login-logo">
-                <i class="fas fa-car"></i>
+                <i class="fas fa-terminal"></i>
             </div>
-            <h2 style="color: #005a9c; margin-bottom: 10px;">Painel Administrativo</h2>
-            <p style="color: #666; margin-bottom: 30px;">Sistema DETRAN MS - Dashboard Real</p>
+            <h2 style="color: var(--hacker-green); margin-bottom: 10px; text-shadow: 0 0 10px var(--hacker-green);">
+                <i class="fas fa-shield-alt"></i> SISTEMA ADMIN DETRAN MS
+            </h2>
+            <p style="color: #aaa; margin-bottom: 30px; font-family: 'Courier New', monospace;">
+                [ ACESSO RESTRITO - NÍVEL 5 ]
+            </p>
             
-            <input type="text" id="username" class="login-input" placeholder="Usuário">
-            <input type="password" id="password" class="login-input" placeholder="Senha">
+            <input type="text" id="username" class="login-input" placeholder="USUÁRIO">
+            <input type="password" id="password" class="login-input" placeholder="SENHA">
             
             <button onclick="login()" class="login-btn">
-                <i class="fas fa-sign-in-alt"></i> ACESSAR PAINEL
+                <i class="fas fa-terminal"></i> ACESSAR SISTEMA
             </button>
             
             <div id="loginError">
-                Usuário ou senha incorretos!
+                <i class="fas fa-exclamation-triangle"></i> ACESSO NEGADO
             </div>
             
-            <div style="margin-top: 20px; font-size: 12px; color: #666;">
-                <p><strong>Credenciais padrão:</strong> dg / vasco1898</p>
-                <p style="color: #ff9800; margin-top: 10px;">
-                    <i class="fas fa-server"></i> Verifique se o servidor está rodando
-                </p>
+            <!-- CORREÇÃO 7: REMOVIDAS AS CREDENCIAIS VISÍVEIS -->
+            <div class="credential-warning">
+                <i class="fas fa-exclamation-circle"></i> Sistema de alta segurança<br>
+                <small>Acesso apenas para pessoal autorizado</small>
             </div>
         </div>
     </div>
@@ -330,9 +653,10 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="login-logo" style="font-size: 40px;">
-                    <i class="fas fa-car"></i>
+                    <i class="fas fa-server"></i>
                 </div>
-                <h3>DETRAN MS ADMIN</h3>
+                <h3>SISTEMA DETRAN MS</h3>
+                <small style="color: #aaa; font-size: 11px;">v2.6.0</small>
             </div>
             
             <div class="sidebar-menu">
@@ -354,6 +678,13 @@
                     <span class="menu-badge" id="pixBadge">0</span>
                 </a>
                 
+                <!-- CORREÇÃO 4: NOVA ABA CLIQUES -->
+                <a href="#" class="menu-item" onclick="showSection('cliques')">
+                    <i class="fas fa-mouse-pointer"></i>
+                    <span>Cliques</span>
+                    <span class="menu-badge" id="cliquesBadge">0</span>
+                </a>
+                
                 <a href="#" class="menu-item" onclick="showSection('usuarios')">
                     <i class="fas fa-users"></i>
                     <span>Usuários Online</span>
@@ -366,9 +697,10 @@
                 </a>
             </div>
             
-            <div style="padding: 20px; position: absolute; bottom: 0; width: 100%; border-top: 1px solid rgba(255,255,255,0.1);">
-                <div style="font-size: 11px; color: rgba(255,255,255,0.6); text-align: center;">
-                    Sistema DETRAN MS • Dados em tempo real
+            <div style="padding: 20px; position: absolute; bottom: 0; width: 100%; border-top: 1px solid rgba(0,255,0,0.3); background: rgba(0,20,40,0.8);">
+                <div style="font-size: 11px; color: rgba(0,255,0,0.6); text-align: center; font-family: 'Courier New', monospace;">
+                    <i class="fas fa-shield-alt"></i> SISTEMA PROTEGIDO<br>
+                    <small>Monitoramento 24/7</small>
                 </div>
             </div>
         </div>
@@ -378,72 +710,84 @@
             <!-- HEADER -->
             <div class="content-header">
                 <div class="header-left">
-                    <h1 id="pageTitle">Dashboard em Tempo Real</h1>
+                    <h1 id="pageTitle">SISTEMA DE MONITORAMENTO</h1>
                     <p id="lastUpdate">Aguardando conexão com servidor...</p>
                 </div>
                 <div class="header-right">
                     <div style="text-align: right; margin-right: 15px;">
-                        <strong id="currentUser">Administrador</strong>
-                        <small style="display: block;" id="serverStatus">Conectando...</small>
+                        <strong id="currentUser" style="color: var(--hacker-green);">ADMINISTRADOR</strong>
+                        <small style="display: block; color: #aaa;" id="serverStatus">CONECTANDO...</small>
                     </div>
                     <button class="btn-logout" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> SAIR
+                        <i class="fas fa-power-off"></i> SAIR
                     </button>
                 </div>
             </div>
             
             <!-- SEÇÃO: DASHBOARD -->
             <div id="section-dashboard" class="dashboard-section">
+                <!-- CORREÇÃO 5: VALORES SEPARADOS -->
+                <div class="valores-separados">
+                    <div class="valor-card gerados">
+                        <div class="valor-titulo">PIX Gerados</div>
+                        <div class="valor-numero valor-gerados" id="valorGerados">R$ 0</div>
+                    </div>
+                    <div class="valor-card copiados">
+                        <div class="valor-titulo">PIX Copiados</div>
+                        <div class="valor-numero valor-copiados" id="valorCopiados">R$ 0</div>
+                    </div>
+                </div>
+                
                 <!-- MÉTRICAS EM TEMPO REAL -->
                 <div class="metrics-grid">
                     <div class="metric-card blue">
                         <div class="metric-header">
-                            <div class="metric-title">Usuários Online Agora</div>
-                            <i class="fas fa-users metric-icon"></i>
+                            <div class="metric-title">Usuários Online</div>
+                            <i class="fas fa-users metric-icon" style="color: var(--hacker-cyan);"></i>
                         </div>
                         <div class="metric-value" id="onlineUsers">0</div>
                         <div style="font-size: 12px; color: #666;">
-                            <i class="fas fa-circle" style="color: #28a745;"></i> Ativos no sistema
+                            <i class="fas fa-circle" style="color: var(--hacker-green);"></i> Ativos no sistema
                         </div>
                     </div>
                     
                     <div class="metric-card green">
                         <div class="metric-header">
                             <div class="metric-title">Total PIX Gerados</div>
-                            <i class="fas fa-qrcode metric-icon"></i>
+                            <i class="fas fa-qrcode metric-icon" style="color: var(--hacker-green);"></i>
                         </div>
                         <div class="metric-value" id="totalPix">0</div>
                         <div style="font-size: 12px; color: #666;">
-                            <i class="fas fa-circle" style="color: #28a745;"></i> Hoje: <span id="pixHoje">0</span>
+                            <i class="fas fa-circle" style="color: var(--hacker-green);"></i> Hoje: <span id="pixHoje">0</span>
                         </div>
                     </div>
                     
                     <div class="metric-card orange">
                         <div class="metric-header">
                             <div class="metric-title">PIX Copiados</div>
-                            <i class="fas fa-copy metric-icon"></i>
+                            <i class="fas fa-copy metric-icon" style="color: var(--warning-color);"></i>
                         </div>
                         <div class="metric-value" id="pixCopiados">0</div>
                         <div style="font-size: 12px; color: #666;">
-                            <i class="fas fa-circle" style="color: #ff9800;"></i> Códigos utilizados
+                            <i class="fas fa-circle" style="color: var(--warning-color);"></i> Códigos utilizados
                         </div>
                     </div>
                     
                     <div class="metric-card purple">
                         <div class="metric-header">
-                            <div class="metric-title">Valor Total PIX</div>
-                            <i class="fas fa-money-bill-wave metric-icon"></i>
+                            <div class="metric-title">Total Cliques</div>
+                            <i class="fas fa-mouse-pointer metric-icon" style="color: var(--hacker-purple);"></i>
                         </div>
-                        <div class="metric-value" id="totalValor">R$ 0</div>
+                        <div class="metric-value" id="totalCliques">0</div>
                         <div style="font-size: 12px; color: #666;">
-                            <i class="fas fa-circle" style="color: #9c27b0;"></i> Em processamento
+                            <i class="fas fa-circle" style="color: var(--hacker-purple);"></i> Hoje: <span id="cliquesHoje">0</span>
                         </div>
                     </div>
                 </div>
                 
                 <!-- CONSULTAS RECENTES -->
                 <div class="dashboard-section" style="margin-top: 20px;">
-                    <h3 style="color: #005a9c; margin-bottom: 20px;">
+                    <h3 style="color: var(--hacker-cyan); margin-bottom: 20px;">
                         <i class="fas fa-history"></i> Últimas Consultas
                     </h3>
                     <div class="table-container">
@@ -452,14 +796,13 @@
                                 <tr>
                                     <th>Data/Hora</th>
                                     <th>Placa</th>
-                                    <th>RENAVAM</th>
-                                    <th>IP</th>
+                                    <th>IP/Estado</th>
                                     <th>Dispositivo</th>
                                 </tr>
                             </thead>
                             <tbody id="recentConsultas">
                                 <tr>
-                                    <td colspan="5" style="text-align: center; padding: 30px; color: #666;">
+                                    <td colspan="4" style="text-align: center; padding: 30px; color: #666;">
                                         <i class="fas fa-spinner fa-spin"></i> Carregando consultas...
                                     </td>
                                 </tr>
@@ -476,7 +819,7 @@
                         <i class="fas fa-search"></i>
                         Histórico Completo de Consultas
                     </div>
-                    <button class="btn-logout" onclick="exportarConsultas()" style="background: #28a745;">
+                    <button class="btn-logout" onclick="exportarConsultas()" style="background: var(--hacker-green);">
                         <i class="fas fa-download"></i> EXPORTAR
                     </button>
                 </div>
@@ -493,7 +836,9 @@
                                 <th>Data/Hora</th>
                                 <th>Placa</th>
                                 <th>RENAVAM</th>
-                                <th>IP</th>
+                                <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
+                                <th>IP Completo</th>
+                                <th>Estado</th>
                                 <th>Dispositivo</th>
                                 <th>Status</th>
                             </tr>
@@ -505,8 +850,8 @@
                 </div>
                 
                 <div id="consultasEmpty" class="hidden" style="text-align: center; padding: 40px; color: #666;">
-                    <i class="fas fa-database" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
-                    <h3 style="margin-bottom: 10px;">Banco de dados vazio</h3>
+                    <i class="fas fa-database" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3; color: var(--hacker-cyan);"></i>
+                    <h3 style="margin-bottom: 10px; color: #aaa;">Banco de dados vazio</h3>
                     <p>Quando usuários fizerem consultas no site, aparecerão aqui.</p>
                 </div>
             </div>
@@ -518,27 +863,28 @@
                         <i class="fas fa-qrcode"></i>
                         Histórico de PIX Gerados
                     </div>
-                    <button class="btn-logout" onclick="exportarPix()" style="background: #17a2b8;">
+                    <button class="btn-logout" onclick="exportarPix()" style="background: var(--hacker-cyan);">
                         <i class="fas fa-file-export"></i> EXPORTAR
                     </button>
                 </div>
                 
+                <!-- CORREÇÃO 5: CONTADORES SEPARADOS -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
-                    <div style="background: #e8f4fc; padding: 15px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: bold; color: #005a9c;" id="pixCountTotal">0</div>
-                        <div style="font-size: 12px; color: #666;">Total PIX</div>
+                    <div style="background: rgba(0, 255, 255, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--hacker-cyan);">
+                        <div style="font-size: 24px; font-weight: bold; color: var(--hacker-cyan);" id="pixCountTotal">0</div>
+                        <div style="font-size: 12px; color: #aaa;">Total PIX</div>
                     </div>
-                    <div style="background: #e8f6ef; padding: 15px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: bold; color: #28a745;" id="pixCountGerados">0</div>
-                        <div style="font-size: 12px; color: #666;">Gerados</div>
+                    <div style="background: rgba(0, 255, 0, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--hacker-green);">
+                        <div style="font-size: 24px; font-weight: bold; color: var(--hacker-green);" id="pixCountGerados">0</div>
+                        <div style="font-size: 12px; color: #aaa;">Gerados</div>
                     </div>
-                    <div style="background: #fff3e0; padding: 15px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: bold; color: #ff9800;" id="pixCountCopiados">0</div>
-                        <div style="font-size: 12px; color: #666;">Copiados</div>
+                    <div style="background: rgba(157, 0, 255, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--hacker-purple);">
+                        <div style="font-size: 24px; font-weight: bold; color: var(--hacker-purple);" id="pixCountCopiados">0</div>
+                        <div style="font-size: 12px; color: #aaa;">Copiados</div>
                     </div>
-                    <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 24px; font-weight: bold; color: #9c27b0;" id="pixCountReais">0</div>
-                        <div style="font-size: 12px; color: #666;">Com chave real</div>
+                    <div style="background: rgba(255, 170, 0, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--warning-color);">
+                        <div style="font-size: 24px; font-weight: bold; color: var(--warning-color);" id="pixCountReais">0</div>
+                        <div style="font-size: 12px; color: #aaa;">Com chave real</div>
                     </div>
                 </div>
                 
@@ -556,8 +902,9 @@
                                 <th>Valor</th>
                                 <th>Placa</th>
                                 <th>RENAVAM</th>
-                                <th>Chave PIX</th>
-                                <th>IP</th>
+                                <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
+                                <th>IP/Estado</th>
+                                <th>Categoria</th>
                             </tr>
                         </thead>
                         <tbody id="pixBody">
@@ -567,9 +914,114 @@
                 </div>
                 
                 <div id="pixEmpty" class="hidden" style="text-align: center; padding: 40px; color: #666;">
-                    <i class="fas fa-qrcode" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
-                    <h3 style="margin-bottom: 10px;">Nenhum PIX registrado</h3>
+                    <i class="fas fa-qrcode" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3; color: var(--hacker-cyan);"></i>
+                    <h3 style="margin-bottom: 10px; color: #aaa;">Nenhum PIX registrado</h3>
                     <p>Quando PIX forem gerados no site, aparecerão aqui.</p>
+                </div>
+            </div>
+            
+            <!-- ========================================= -->
+            <!-- CORREÇÃO 4: NOVA SEÇÃO CLIQUES -->
+            <!-- ========================================= -->
+            <div id="section-cliques" class="dashboard-section hidden">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-mouse-pointer"></i>
+                        Monitoramento de Cliques
+                    </div>
+                    <button class="btn-logout" onclick="exportarCliques()" style="background: var(--hacker-purple);">
+                        <i class="fas fa-download"></i> EXPORTAR
+                    </button>
+                </div>
+                
+                <!-- ESTATÍSTICAS DE CLIQUES -->
+                <div class="cliques-stats">
+                    <div class="clique-stat-card">
+                        <div class="clique-stat-value" id="cliquesTotal">0</div>
+                        <div class="clique-stat-label">Total Cliques</div>
+                    </div>
+                    <div class="clique-stat-card">
+                        <div class="clique-stat-value" id="cliquesHojeSection">0</div>
+                        <div class="clique-stat-label">Cliques Hoje</div>
+                    </div>
+                    <div class="clique-stat-card">
+                        <div class="clique-stat-value" id="cliquesUnicos">0</div>
+                        <div class="clique-stat-label">IPs Únicos</div>
+                    </div>
+                    <div class="clique-stat-card">
+                        <div class="clique-stat-value" id="cliquesPIX">0</div>
+                        <div class="clique-stat-label">Cliques em PIX</div>
+                    </div>
+                </div>
+                
+                <!-- FILTROS -->
+                <div style="background: rgba(0, 20, 40, 0.8); padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid rgba(0, 255, 0, 0.2);">
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 12px;">Tipo</label>
+                            <select id="filtroTipoClique" style="padding: 8px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;">
+                                <option value="todos">Todos os tipos</option>
+                                <option value="pix">PIX</option>
+                                <option value="consulta">Consulta</option>
+                                <option value="botao">Botão</option>
+                                <option value="link">Link</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 12px;">Estado</label>
+                            <select id="filtroEstadoClique" style="padding: 8px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;">
+                                <option value="todos">Todos os estados</option>
+                                <option value="SP">SP</option>
+                                <option value="RJ">RJ</option>
+                                <option value="MG">MG</option>
+                                <option value="RS">RS</option>
+                                <option value="PR">PR</option>
+                                <option value="SC">SC</option>
+                                <option value="BA">BA</option>
+                                <option value="MS">MS</option>
+                                <option value="DF">DF</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 12px;">Buscar IP</label>
+                            <input type="text" id="filtroIPClique" placeholder="Digite um IP..." style="padding: 8px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px; width: 200px;">
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <button onclick="carregarCliquesCompletos()" class="btn-logout" style="background: var(--hacker-green); padding: 8px 15px;">
+                                <i class="fas fa-filter"></i> FILTRAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="loading" id="cliquesLoading">
+                        <div class="loading-spinner"></div>
+                        <p>Carregando cliques do banco de dados...</p>
+                    </div>
+                    
+                    <table class="data-table" id="cliquesTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>IP Completo</th>
+                                <th>Estado</th>
+                                <th>Tipo</th>
+                                <th>Elemento</th>
+                                <th>Página</th>
+                                <th>Dispositivo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cliquesBody">
+                            <!-- Dados reais do banco -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="cliquesEmpty" class="hidden" style="text-align: center; padding: 40px; color: #666;">
+                    <i class="fas fa-mouse-pointer" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3; color: var(--hacker-purple);"></i>
+                    <h3 style="margin-bottom: 10px; color: #aaa;">Nenhum clique registrado</h3>
+                    <p>Quando usuários clicarem no site, aparecerão aqui.</p>
                 </div>
             </div>
             
@@ -580,7 +1032,7 @@
                         <i class="fas fa-users"></i>
                         Usuários Online em Tempo Real
                     </div>
-                    <button class="btn-logout" onclick="atualizarUsuarios()" style="background: #6f42c1;">
+                    <button class="btn-logout" onclick="atualizarUsuarios()" style="background: var(--hacker-purple);">
                         <i class="fas fa-sync-alt"></i> ATUALIZAR
                     </button>
                 </div>
@@ -590,13 +1042,14 @@
                     <p>Monitorando usuários online...</p>
                 </div>
                 
-                <div id="usuariosGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+                <!-- CORREÇÃO 3: MOSTRAR IP COMPLETO + ESTADO -->
+                <div id="usuariosGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
                     <!-- Usuários online em tempo real -->
                 </div>
                 
                 <div id="usuariosEmpty" class="hidden" style="text-align: center; padding: 40px; color: #666;">
-                    <i class="fas fa-users" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
-                    <h3 style="margin-bottom: 10px;">Nenhum usuário online</h3>
+                    <i class="fas fa-users" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3; color: var(--hacker-cyan);"></i>
+                    <h3 style="margin-bottom: 10px; color: #aaa;">Nenhum usuário online</h3>
                     <p>Quando usuários acessarem o sistema, aparecerão aqui.</p>
                     <p style="font-size: 12px; color: #999; margin-top: 10px;">
                         <i class="fas fa-info-circle"></i> Usuários são removidos após 30 minutos de inatividade
@@ -613,53 +1066,53 @@
                     </div>
                 </div>
                 
-                <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                    <h4 style="margin-bottom: 15px; color: #005a9c;">
+                <div style="background: rgba(0, 20, 40, 0.8); border-radius: 5px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(0, 255, 0, 0.2);">
+                    <h4 style="margin-bottom: 15px; color: var(--hacker-cyan);">
                         <i class="fas fa-info-circle"></i> Status do Sistema
                     </h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                         <div>
-                            <div style="font-size: 12px; color: #666;">Servidor</div>
-                            <div style="font-weight: bold; color: #28a745;" id="serverStatusInfo">Online</div>
+                            <div style="font-size: 12px; color: #aaa;">Servidor</div>
+                            <div style="font-weight: bold; color: var(--hacker-green);" id="serverStatusInfo">Online</div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; color: #666;">Banco de Dados</div>
-                            <div style="font-weight: bold; color: #28a745;" id="dbStatusInfo">Ativo</div>
+                            <div style="font-size: 12px; color: #aaa;">Banco de Dados</div>
+                            <div style="font-weight: bold; color: var(--hacker-green);" id="dbStatusInfo">Ativo</div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; color: #666;">Memória Usada</div>
-                            <div style="font-weight: bold;" id="memoryUsage">0 MB</div>
+                            <div style="font-size: 12px; color: #aaa;">Memória Usada</div>
+                            <div style="font-weight: bold; color: var(--hacker-cyan);" id="memoryUsage">0 MB</div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; color: #666;">Uptime</div>
-                            <div style="font-weight: bold;" id="uptimeInfo">00:00:00</div>
+                            <div style="font-size: 12px; color: #aaa;">Uptime</div>
+                            <div style="font-weight: bold; color: var(--hacker-purple);" id="uptimeInfo">00:00:00</div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- TESTE RÁPIDO DE PIX -->
-                <div style="background: #e8f4fc; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-                    <h5 style="color: #005a9c; margin-bottom: 10px;">
-                        <i class="fas fa-vial-virus"></i> Teste Rápido de PIX
+                <div style="background: rgba(0, 40, 80, 0.5); border-radius: 5px; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(0, 255, 0, 0.2);">
+                    <h5 style="color: var(--hacker-cyan); margin-bottom: 10px;">
+                        <i class="fas fa-vial"></i> Teste Rápido de PIX
                     </h5>
-                    <button onclick="testarPIXRapido()" class="login-btn" style="background: #28a745; width: auto;">
+                    <button onclick="testarPIXRapido()" class="login-btn" style="background: var(--hacker-green); width: auto; padding: 10px 20px;">
                         <i class="fas fa-bolt"></i> TESTAR GERAÇÃO PIX
                     </button>
                     <div id="testePIXResult" style="margin-top: 10px;"></div>
                 </div>
                 
                 <!-- CONFIGURAÇÃO DE PIX COMPLETA -->
-                <div style="background: white; border-radius: 8px; padding: 20px; border: 1px solid #e9ecef;">
-                    <h4 style="margin-bottom: 15px; color: #005a9c;">
+                <div style="background: rgba(0, 20, 40, 0.8); border-radius: 5px; padding: 20px; border: 1px solid rgba(0, 255, 0, 0.2);">
+                    <h4 style="margin-bottom: 15px; color: var(--hacker-cyan);">
                         <i class="fas fa-qrcode"></i> Configuração Completa PIX
                     </h4>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                         <div>
-                            <label style="display: block; margin-bottom: 5px; color: #666; font-weight: 600;">
+                            <label style="display: block; margin-bottom: 5px; color: #aaa; font-weight: 600;">
                                 Tipo de Chave
                             </label>
-                            <select id="pixTipo" style="width: 100%; padding: 10px; border: 2px solid #e1e1e1; border-radius: 8px;">
+                            <select id="pixTipo" style="width: 100%; padding: 10px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;">
                                 <option value="aleatoria">Chave Aleatória</option>
                                 <option value="cpf">CPF</option>
                                 <option value="cnpj">CNPJ</option>
@@ -669,49 +1122,49 @@
                         </div>
                         
                         <div>
-                            <label style="display: block; margin-bottom: 5px; color: #666; font-weight: 600;">
+                            <label style="display: block; margin-bottom: 5px; color: #aaa; font-weight: 600;">
                                 Chave PIX
                             </label>
                             <input type="text" id="pixChave" 
-                                   style="width: 100%; padding: 10px; border: 2px solid #e1e1e1; border-radius: 8px;" 
+                                   style="width: 100%; padding: 10px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;" 
                                    placeholder="Ex: 068.542.791-94 ou email@exemplo.com">
                         </div>
                     </div>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                         <div>
-                            <label style="display: block; margin-bottom: 5px; color: #666; font-weight: 600;">
+                            <label style="display: block; margin-bottom: 5px; color: #aaa; font-weight: 600;">
                                 Nome do Beneficiário (max 25)
                             </label>
                             <input type="text" id="pixNome" maxlength="25"
-                                   style="width: 100%; padding: 10px; border: 2px solid #e1e1e1; border-radius: 8px;" 
+                                   style="width: 100%; padding: 10px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;" 
                                    placeholder="Ex: DETRAN MS" value="DETRAN MS">
                         </div>
                         
                         <div>
-                            <label style="display: block; margin-bottom: 5px; color: #666; font-weight: 600;">
+                            <label style="display: block; margin-bottom: 5px; color: #aaa; font-weight: 600;">
                                 Cidade (max 15)
                             </label>
                             <input type="text" id="pixCidade" maxlength="15"
-                                   style="width: 100%; padding: 10px; border: 2px solid #e1e1e1; border-radius: 8px;" 
+                                   style="width: 100%; padding: 10px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;" 
                                    placeholder="Ex: CAMPO GRANDE" value="CAMPO GRANDE">
                         </div>
                     </div>
                     
                     <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; color: #666; font-weight: 600;">
+                        <label style="display: block; margin-bottom: 5px; color: #aaa; font-weight: 600;">
                             Identificador da Transação (opcional, max 20)
                         </label>
                         <input type="text" id="pixIdentificador" maxlength="20"
-                               style="width: 100%; padding: 10px; border: 2px solid #e1e1e1; border-radius: 8px;" 
+                               style="width: 100%; padding: 10px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;" 
                                placeholder="Ex: PAGAMENTODETRAN" value="PAGAMENTODETRAN">
-                        <small style="color: #666; font-size: 12px;">
+                        <small style="color: #aaa; font-size: 12px;">
                             Aparece no extrato do pagador (sem espaços)
                         </small>
                     </div>
                     
                     <div style="display: flex; gap: 10px;">
-                        <button onclick="testarChavePIX()" class="login-btn" style="flex: 1; background: #17a2b8;">
+                        <button onclick="testarChavePIX()" class="login-btn" style="flex: 1; background: var(--hacker-cyan); color: #000;">
                             <i class="fas fa-vial"></i> TESTAR CHAVE
                         </button>
                         <button onclick="salvarConfigPIXCompleta()" class="login-btn" style="flex: 2;">
@@ -719,25 +1172,28 @@
                         </button>
                     </div>
                     
-                    <div id="pixTestResult" style="margin-top: 15px; display: none; padding: 10px; border-radius: 5px;"></div>
+                    <div id="pixTestResult" style="margin-top: 15px; display: none; padding: 10px; border-radius: 3px;"></div>
                 </div>
                 
                 <!-- LIMPEZA DE DADOS -->
-                <div style="background: #fff3cd; border-radius: 8px; padding: 20px; margin-top: 20px; border: 1px solid #ffc107;">
-                    <h4 style="margin-bottom: 15px; color: #856404;">
+                <div style="background: rgba(255, 170, 0, 0.1); border-radius: 5px; padding: 20px; margin-top: 20px; border: 1px solid var(--warning-color);">
+                    <h4 style="margin-bottom: 15px; color: var(--warning-color);">
                         <i class="fas fa-trash-alt"></i> Limpeza de Dados
                     </h4>
-                    <p style="color: #856404; margin-bottom: 15px; font-size: 14px;">
+                    <p style="color: rgba(255, 170, 0, 0.8); margin-bottom: 15px; font-size: 14px;">
                         <i class="fas fa-exclamation-triangle"></i> Atenção: Estas ações não podem ser desfeitas!
                     </p>
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button onclick="limparDados('consultas')" class="btn-logout" style="background: #6c757d;">
+                        <button onclick="limparDados('consultas')" class="btn-logout" style="background: #666;">
                             <i class="fas fa-broom"></i> Limpar Consultas
                         </button>
-                        <button onclick="limparDados('pix')" class="btn-logout" style="background: #6c757d;">
+                        <button onclick="limparDados('pix')" class="btn-logout" style="background: #666;">
                             <i class="fas fa-qrcode"></i> Limpar PIX
                         </button>
-                        <button onclick="limparDados('tudo')" class="btn-logout" style="background: #dc3545;">
+                        <button onclick="limparDados('cliques')" class="btn-logout" style="background: #666;">
+                            <i class="fas fa-mouse-pointer"></i> Limpar Cliques
+                        </button>
+                        <button onclick="limparDados('tudo')" class="btn-logout" style="background: var(--danger-color);">
                             <i class="fas fa-fire"></i> Limpar Tudo
                         </button>
                     </div>
@@ -791,7 +1247,7 @@
             errorElement.style.display = 'none';
             
             if (!username || !password) {
-                errorElement.textContent = 'Preencha usuário e senha!';
+                errorElement.textContent = 'PREENCHA USUÁRIO E SENHA!';
                 errorElement.style.display = 'block';
                 return;
             }
@@ -800,10 +1256,10 @@
             try {
                 const testResponse = await fetch(`${API_BASE}`, { method: 'GET' });
                 if (!testResponse.ok) {
-                    throw new Error('Servidor offline');
+                    throw new Error('SERVIDOR OFFLINE');
                 }
             } catch (error) {
-                errorElement.textContent = '❌ Servidor offline! Aguarde o deploy completar.';
+                errorElement.textContent = '❌ SERVIDOR OFFLINE! AGUARDE O DEPLOY COMPLETAR.';
                 errorElement.style.display = 'block';
                 return;
             }
@@ -829,8 +1285,8 @@
                     localStorage.setItem('last_login', new Date().toISOString());
                     
                     document.getElementById('currentUser').textContent = data.nome || data.usuario;
-                    document.getElementById('serverStatus').textContent = 'Conectado';
-                    document.getElementById('serverStatusInfo').textContent = 'Online';
+                    document.getElementById('serverStatus').textContent = 'CONECTADO';
+                    document.getElementById('serverStatusInfo').textContent = 'ONLINE';
                     
                     showDashboard();
                     carregarDashboard();
@@ -838,18 +1294,18 @@
                     // Esconde alerta de conexão
                     document.getElementById('connectionAlert').style.display = 'none';
                 } else {
-                    errorElement.textContent = data.mensagem || 'Credenciais inválidas!';
+                    errorElement.textContent = data.mensagem || 'CREDENCIAIS INVÁLIDAS!';
                     errorElement.style.display = 'block';
                 }
             } catch (error) {
-                errorElement.textContent = 'Erro de conexão com o servidor';
+                errorElement.textContent = 'ERRO DE CONEXÃO COM O SERVIDOR';
                 errorElement.style.display = 'block';
                 console.error('Login error:', error);
             }
         }
         
         function logout() {
-            if (confirm('Tem certeza que deseja sair do painel?')) {
+            if (confirm('TEM CERTEZA QUE DESEJA SAIR DO SISTEMA?')) {
                 authToken = null;
                 currentUser = null;
                 localStorage.removeItem('detran_admin_token');
@@ -895,13 +1351,14 @@
             
             // Atualiza título
             const titles = {
-                'dashboard': 'Dashboard em Tempo Real',
-                'consultas': 'Histórico de Consultas',
-                'pix': 'PIX Gerados',
-                'usuarios': 'Usuários Online',
-                'config': 'Configurações do Sistema'
+                'dashboard': 'SISTEMA DE MONITORAMENTO',
+                'consultas': 'HISTÓRICO DE CONSULTAS',
+                'pix': 'PIX GERADOS',
+                'cliques': 'MONITORAMENTO DE CLIQUES',
+                'usuarios': 'USUÁRIOS ONLINE',
+                'config': 'CONFIGURAÇÕES DO SISTEMA'
             };
-            document.getElementById('pageTitle').textContent = titles[sectionId] || 'Painel';
+            document.getElementById('pageTitle').textContent = titles[sectionId] || 'PAINEL';
             
             currentSection = sectionId;
             
@@ -910,6 +1367,8 @@
                 carregarConsultasCompletas();
             } else if (sectionId === 'pix') {
                 carregarPixCompletos();
+            } else if (sectionId === 'cliques') {
+                carregarCliquesCompletos();
             } else if (sectionId === 'usuarios') {
                 carregarUsuariosOnline();
             } else if (sectionId === 'config') {
@@ -955,17 +1414,17 @@
                 if (data.sucesso) {
                     atualizarDashboard(data.dados);
                     document.getElementById('lastUpdate').textContent = 
-                        `Atualizado: ${new Date().toLocaleTimeString('pt-BR')}`;
-                    document.getElementById('serverStatus').textContent = 'Online';
-                    document.getElementById('serverStatusInfo').textContent = 'Online';
-                    document.getElementById('dbStatusInfo').textContent = 'Ativo';
+                        `ATUALIZADO: ${new Date().toLocaleTimeString('pt-BR')}`;
+                    document.getElementById('serverStatus').textContent = 'ONLINE';
+                    document.getElementById('serverStatusInfo').textContent = 'ONLINE';
+                    document.getElementById('dbStatusInfo').textContent = 'ATIVO';
                     
                     // Esconde alerta de conexão
                     document.getElementById('connectionAlert').style.display = 'none';
                 }
             } catch (error) {
                 console.error('Erro ao carregar dashboard:', error);
-                document.getElementById('serverStatus').textContent = 'Offline';
+                document.getElementById('serverStatus').textContent = 'OFFLINE';
                 document.getElementById('connectionAlert').style.display = 'block';
             }
         }
@@ -980,12 +1439,18 @@
             document.getElementById('totalPix').textContent = stats.pixGerados || 0;
             document.getElementById('pixCopiados').textContent = stats.pixCopiados || 0;
             document.getElementById('pixHoje').textContent = stats.pixHoje || 0;
-            document.getElementById('totalValor').textContent = stats.valorTotal || 'R$ 0';
+            document.getElementById('totalCliques').textContent = stats.totalCliques || 0;
+            document.getElementById('cliquesHoje').textContent = stats.cliquesHoje || 0;
+            
+            // CORREÇÃO 5: VALORES SEPARADOS
+            document.getElementById('valorGerados').textContent = stats.valorGerados || 'R$ 0';
+            document.getElementById('valorCopiados').textContent = stats.valorCopiados || 'R$ 0';
             
             // Atualiza badges do menu
             document.getElementById('onlineBadge').textContent = stats.usuariosOnline || 0;
             document.getElementById('consultasBadge').textContent = stats.totalConsultas || 0;
             document.getElementById('pixBadge').textContent = stats.pixGerados || 0;
+            document.getElementById('cliquesBadge').textContent = stats.totalCliques || 0;
             document.getElementById('usuariosBadge').textContent = stats.usuariosOnline || 0;
             
             // Atualiza memória
@@ -996,6 +1461,11 @@
             // Atualiza últimas consultas
             if (dados.consultasCompletas && dados.consultasCompletas.length > 0) {
                 atualizarUltimasConsultas(dados.consultasCompletas);
+            }
+            
+            // Atualiza cliques recentes
+            if (dados.cliquesRecentes && dados.cliquesRecentes.length > 0) {
+                atualizarCliquesRecentes(dados.cliquesRecentes);
             }
         }
         
@@ -1009,11 +1479,18 @@
                 <tr>
                     <td>${new Date(consulta.dataHora).toLocaleString('pt-BR')}</td>
                     <td><span class="status-badge success">${consulta.placa || 'N/A'}</span></td>
-                    <td><strong>${consulta.renavam || 'N/A'}</strong></td>
-                    <td><small>${consulta.ip || 'N/A'}</small></td>
+                    <td>
+                        <div class="ip-display">${consulta.ipCompleto || consulta.ip || 'N/A'}</div>
+                        <span class="estado-badge">${consulta.estado || 'N/A'}</span>
+                    </td>
                     <td><span class="status-badge info">${consulta.dispositivo || 'Desconhecido'}</span></td>
                 </tr>
             `).join('');
+        }
+        
+        function atualizarCliquesRecentes(cliques) {
+            // Pode ser usado para mostrar cliques recentes no dashboard
+            console.log('Cliques recentes:', cliques.length);
         }
         
         // ============================================
@@ -1069,7 +1546,9 @@
                     <td>${new Date(consulta.dataHora).toLocaleString('pt-BR')}</td>
                     <td><span class="status-badge success">${consulta.placa || 'N/A'}</span></td>
                     <td><strong>${consulta.renavam || 'N/A'}</strong></td>
-                    <td><small>${consulta.ip || 'N/A'}</small></td>
+                    <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
+                    <td><div class="ip-display">${consulta.ipCompleto || consulta.ip || 'N/A'}</div></td>
+                    <td><span class="estado-badge">${consulta.estado || 'N/A'}</span></td>
                     <td><span class="status-badge info">${consulta.dispositivo || 'Desconhecido'}</span></td>
                     <td><span class="status-badge success">Registrada</span></td>
                 </tr>
@@ -1107,7 +1586,8 @@
                     },
                     body: JSON.stringify({
                         pagina: 1,
-                        limite: 50
+                        limite: 50,
+                        categoria: 'todas'
                     })
                 });
                 
@@ -1141,15 +1621,25 @@
                 else if (pix.tipo === 'copiado') tipoBadge = '<span class="status-badge warning">Copiado</span>';
                 else if (pix.tipo === 'real') tipoBadge = '<span class="status-badge info">Real</span>';
                 
+                // CORREÇÃO 5: Categoria
+                const categoria = pix.categoria || (pix.tipo === 'copiado' ? 'copiado' : 'gerado');
+                const categoriaBadge = categoria === 'copiado' 
+                    ? '<span class="status-badge" style="background: rgba(157,0,255,0.2); color: var(--hacker-purple); border-color: var(--hacker-purple);">Copiado</span>'
+                    : '<span class="status-badge" style="background: rgba(0,255,255,0.2); color: var(--hacker-cyan); border-color: var(--hacker-cyan);">Gerado</span>';
+                
                 return `
                     <tr>
                         <td>${new Date(pix.dataHora).toLocaleString('pt-BR')}</td>
                         <td>${tipoBadge}</td>
-                        <td><strong style="color: #28a745;">R$ ${parseFloat(pix.valor || 0).toFixed(2).replace('.', ',')}</strong></td>
+                        <td><strong style="color: ${categoria === 'copiado' ? 'var(--hacker-purple)' : 'var(--hacker-cyan)'};">R$ ${parseFloat(pix.valor || 0).toFixed(2).replace('.', ',')}</strong></td>
                         <td>${pix.placa || 'N/A'}</td>
                         <td>${pix.renavam || 'N/A'}</td>
-                        <td><small>${pix.chavePix ? '***' + pix.chavePix.slice(-4) : 'Padrão'}</small></td>
-                        <td><small>${pix.ip || 'N/A'}</small></td>
+                        <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
+                        <td>
+                            <div class="ip-display">${pix.ipCompleto || pix.ip || 'N/A'}</div>
+                            <span class="estado-badge">${pix.estado || 'N/A'}</span>
+                        </td>
+                        <td>${categoriaBadge}</td>
                     </tr>
                 `;
             }).join('');
@@ -1160,8 +1650,8 @@
         }
         
         function atualizarContadoresPix(pixList) {
-            const pixGerados = pixList.filter(p => p.tipo === 'gerado' || p.tipo === 'real').length;
-            const pixCopiados = pixList.filter(p => p.tipo === 'copiado').length;
+            const pixGerados = pixList.filter(p => p.categoria === 'gerado' || p.tipo === 'gerado').length;
+            const pixCopiados = pixList.filter(p => p.categoria === 'copiado' || p.tipo === 'copiado').length;
             const pixReais = pixList.filter(p => p.tipo === 'real').length;
             
             document.getElementById('pixCountTotal').textContent = pixList.length;
@@ -1174,6 +1664,118 @@
             document.getElementById('pixLoading').style.display = 'none';
             document.getElementById('pixTable').style.display = 'none';
             document.getElementById('pixEmpty').classList.remove('hidden');
+        }
+        
+        // ============================================
+        // CORREÇÃO 4: CARREGAR CLIQUES COMPLETOS
+        // ============================================
+        async function carregarCliquesCompletos() {
+            const loading = document.getElementById('cliquesLoading');
+            const table = document.getElementById('cliquesTable');
+            const empty = document.getElementById('cliquesEmpty');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            empty.classList.add('hidden');
+            
+            try {
+                const filtroTipo = document.getElementById('filtroTipoClique').value;
+                const filtroEstado = document.getElementById('filtroEstadoClique').value;
+                const filtroIP = document.getElementById('filtroIPClique').value;
+                
+                const response = await fetch(`${API_BASE}/api/admin/buscar-cliques`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken
+                    },
+                    body: JSON.stringify({
+                        pagina: 1,
+                        limite: 50,
+                        tipo: filtroTipo === 'todos' ? null : filtroTipo,
+                        filtro: filtroIP || null
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.sucesso && data.resultados.length > 0) {
+                        // Aplica filtro de estado no frontend
+                        let resultadosFiltrados = data.resultados;
+                        if (filtroEstado !== 'todos') {
+                            resultadosFiltrados = resultadosFiltrados.filter(c => c.estado === filtroEstado);
+                        }
+                        
+                        exibirCliquesCompletos(resultadosFiltrados);
+                        atualizarEstatisticasCliques(resultadosFiltrados);
+                    } else {
+                        mostrarCliquesVazios();
+                    }
+                } else {
+                    mostrarCliquesVazios();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar cliques:', error);
+                mostrarCliquesVazios();
+            }
+        }
+        
+        function exibirCliquesCompletos(cliquesList) {
+            const tbody = document.getElementById('cliquesBody');
+            const loading = document.getElementById('cliquesLoading');
+            const table = document.getElementById('cliquesTable');
+            const empty = document.getElementById('cliquesEmpty');
+            
+            tbody.innerHTML = cliquesList.map(clique => {
+                let tipoBadge = '';
+                if (clique.tipo === 'pix') tipoBadge = '<span class="status-badge" style="background: rgba(0,255,0,0.2); color: var(--hacker-green); border-color: var(--hacker-green);">PIX</span>';
+                else if (clique.tipo === 'consulta') tipoBadge = '<span class="status-badge" style="background: rgba(0,255,255,0.2); color: var(--hacker-cyan); border-color: var(--hacker-cyan);">Consulta</span>';
+                else if (clique.tipo === 'botao') tipoBadge = '<span class="status-badge" style="background: rgba(255,170,0,0.2); color: var(--warning-color); border-color: var(--warning-color);">Botão</span>';
+                else tipoBadge = '<span class="status-badge" style="background: rgba(157,0,255,0.2); color: var(--hacker-purple); border-color: var(--hacker-purple);">Link</span>';
+                
+                return `
+                    <tr>
+                        <td>${new Date(clique.dataHora).toLocaleString('pt-BR')}</td>
+                        <td><div class="ip-display">${clique.ipCompleto || clique.ip || 'N/A'}</div></td>
+                        <td><span class="estado-badge">${clique.estado || 'N/A'}</span></td>
+                        <td>${tipoBadge}</td>
+                        <td><small>${clique.elemento || 'N/A'}</small></td>
+                        <td><small>${clique.pagina || '/'}</small></td>
+                        <td><span class="status-badge info">${clique.dispositivo || 'Desconhecido'}</span></td>
+                    </tr>
+                `;
+            }).join('');
+            
+            loading.style.display = 'none';
+            table.style.display = 'table';
+            empty.classList.add('hidden');
+        }
+        
+        function atualizarEstatisticasCliques(cliquesList) {
+            const ipsUnicos = [...new Set(cliquesList.map(c => c.ip))].length;
+            const cliquesPIX = cliquesList.filter(c => c.tipo === 'pix').length;
+            
+            document.getElementById('cliquesTotal').textContent = cliquesList.length;
+            document.getElementById('cliquesUnicos').textContent = ipsUnicos;
+            document.getElementById('cliquesPIX').textContent = cliquesPIX;
+            
+            // Cliques hoje
+            const hoje = new Date().toDateString();
+            const cliquesHoje = cliquesList.filter(c => 
+                new Date(c.dataHora).toDateString() === hoje
+            ).length;
+            document.getElementById('cliquesHojeSection').textContent = cliquesHoje;
+        }
+        
+        function mostrarCliquesVazios() {
+            document.getElementById('cliquesLoading').style.display = 'none';
+            document.getElementById('cliquesTable').style.display = 'none';
+            document.getElementById('cliquesEmpty').classList.remove('hidden');
+        }
+        
+        function exportarCliques() {
+            window.open(`${API_BASE}/api/admin/exportar/cliques?token=${authToken}`, '_blank');
         }
         
         // ============================================
@@ -1226,25 +1828,30 @@
                 if (user.dispositivo === 'Android') dispositivoIcon = 'fa-android';
                 if (user.dispositivo === 'iOS') dispositivoIcon = 'fa-apple';
                 
-                let statusColor = '#28a745';
-                if (user.segundosInativo > 300) statusColor = '#ff9800';
-                if (user.segundosInativo > 900) statusColor = '#dc3545';
+                let statusColor = 'var(--hacker-green)';
+                if (user.segundosInativo > 300) statusColor = 'var(--warning-color)';
+                if (user.segundosInativo > 900) statusColor = 'var(--danger-color)';
                 
                 return `
-                    <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; border-left: 4px solid ${statusColor};">
+                    <div style="background: rgba(0, 20, 40, 0.8); border-radius: 5px; padding: 15px; border-left: 4px solid ${statusColor}; border: 1px solid rgba(0, 255, 0, 0.2);">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <div style="font-weight: 600; color: #333;">
-                                <i class="fas fa-user"></i> ${user.ip || 'IP Desconhecido'}
+                            <div style="font-weight: 600; color: var(--hacker-cyan);">
+                                <i class="fas fa-user"></i> 
+                                <!-- CORREÇÃO 3: IP COMPLETO -->
+                                <div class="ip-display">${user.ipCompleto || user.ip || 'IP Desconhecido'}</div>
                             </div>
                             <i class="fab ${dispositivoIcon}" style="color: #666;"></i>
                         </div>
-                        <div style="color: #666; font-size: 13px; margin-bottom: 5px;">
+                        <div style="color: #aaa; font-size: 13px; margin-bottom: 5px;">
                             <i class="fas fa-laptop"></i> ${user.dispositivo || 'Desconhecido'}
                         </div>
-                        <div style="color: #666; font-size: 12px; margin-bottom: 5px;">
+                        <div style="color: #aaa; font-size: 13px; margin-bottom: 5px;">
+                            <i class="fas fa-map-marker-alt"></i> Estado: <span class="estado-badge">${user.estado || 'N/A'}</span>
+                        </div>
+                        <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">
                             <i class="fas fa-globe"></i> ${user.paginaAtual || '/'}
                         </div>
-                        <div style="color: #666; font-size: 12px;">
+                        <div style="color: ${statusColor}; font-size: 12px; font-weight: bold;">
                             <i class="far fa-clock"></i> Inativo há ${user.segundosInativo || 0}s
                         </div>
                     </div>
@@ -1301,7 +1908,7 @@
             const pixIdentificador = document.getElementById('pixIdentificador').value.trim();
             
             if (!pixChave) {
-                alert('Digite uma chave PIX válida!');
+                alert('DIGITE UMA CHAVE PIX VÁLIDA!');
                 return;
             }
             
@@ -1324,19 +1931,19 @@
                 const data = await response.json();
                 
                 if (data.sucesso) {
-                    alert('✅ Configuração PIX salva com sucesso!');
+                    alert('✅ CONFIGURAÇÃO PIX SALVA COM SUCESSO!');
                     document.getElementById('pixTestResult').innerHTML = `
-                        <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
-                            <i class="fas fa-check-circle"></i> Configuração salva! Os próximos PIX usarão estas informações.
+                        <div style="background: rgba(0,255,0,0.1); color: var(--hacker-green); padding: 10px; border-radius: 3px; border: 1px solid var(--hacker-green);">
+                            <i class="fas fa-check-circle"></i> CONFIGURAÇÃO SALVA! OS PRÓXIMOS PIX USARÃO ESTAS INFORMAÇÕES.
                         </div>
                     `;
                     document.getElementById('pixTestResult').style.display = 'block';
                 } else {
-                    alert('❌ Erro ao salvar: ' + (data.mensagem || 'Erro desconhecido'));
+                    alert('❌ ERRO AO SALVAR: ' + (data.mensagem || 'ERRO DESCONHECIDO'));
                 }
             } catch (error) {
                 console.error('Erro ao salvar configuração PIX:', error);
-                alert('❌ Erro de conexão ao salvar configuração');
+                alert('❌ ERRO DE CONEXÃO AO SALVAR CONFIGURAÇÃO');
             }
         }
         
@@ -1344,7 +1951,7 @@
             const pixChave = document.getElementById('pixChave').value.trim();
             
             if (!pixChave) {
-                alert('Digite uma chave PIX para testar!');
+                alert('DIGITE UMA CHAVE PIX PARA TESTAR!');
                 return;
             }
             
@@ -1361,10 +1968,10 @@
                 
                 if (data.sucesso) {
                     document.getElementById('pixTestResult').innerHTML = `
-                        <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
-                            <i class="fas fa-check-circle"></i> ✅ Chave PIX VÁLIDA!<br>
+                        <div style="background: rgba(0,255,0,0.1); color: var(--hacker-green); padding: 10px; border-radius: 3px; border: 1px solid var(--hacker-green);">
+                            <i class="fas fa-check-circle"></i> ✅ CHAVE PIX VÁLIDA!<br>
                             <small>Pode gerar códigos PIX reais com esta chave.</small>
-                            <div style="margin-top: 10px; font-size: 12px; background: white; padding: 8px; border-radius: 3px;">
+                            <div style="margin-top: 10px; font-size: 12px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 3px;">
                                 <strong>CRC:</strong> ${data.crc}<br>
                                 <strong>Tamanho:</strong> ${data.tamanho} caracteres<br>
                                 <strong>Primeiros 30:</strong> ${data.codigoPix.substring(0, 30)}...
@@ -1373,8 +1980,8 @@
                     `;
                 } else {
                     document.getElementById('pixTestResult').innerHTML = `
-                        <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
-                            <i class="fas fa-exclamation-triangle"></i> ❌ Erro: ${data.mensagem || 'Chave inválida'}
+                        <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
+                            <i class="fas fa-exclamation-triangle"></i> ❌ ERRO: ${data.mensagem || 'CHAVE INVÁLIDA'}
                         </div>
                     `;
                 }
@@ -1382,8 +1989,8 @@
                 
             } catch (error) {
                 document.getElementById('pixTestResult').innerHTML = `
-                    <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
-                        <i class="fas fa-exclamation-triangle"></i> ❌ Erro de conexão com servidor
+                    <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
+                        <i class="fas fa-exclamation-triangle"></i> ❌ ERRO DE CONEXÃO COM SERVIDOR
                     </div>
                 `;
                 document.getElementById('pixTestResult').style.display = 'block';
@@ -1393,7 +2000,7 @@
         // TESTE RÁPIDO DE PIX
         async function testarPIXRapido() {
             const resultDiv = document.getElementById('testePIXResult');
-            resultDiv.innerHTML = '<div style="color: #666;"><i class="fas fa-spinner fa-spin"></i> Testando geração de PIX...</div>';
+            resultDiv.innerHTML = '<div style="color: var(--hacker-cyan);"><i class="fas fa-spinner fa-spin"></i> TESTANDO GERAÇÃO DE PIX...</div>';
             
             try {
                 const response = await fetch(`${API_BASE}/api/gerar-pix`, {
@@ -1412,9 +2019,9 @@
                 
                 if (data.sucesso) {
                     resultDiv.innerHTML = `
-                        <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
+                        <div style="background: rgba(0,255,0,0.1); color: var(--hacker-green); padding: 10px; border-radius: 3px; border: 1px solid var(--hacker-green);">
                             <i class="fas fa-check-circle"></i> <strong>✅ PIX GERADO COM SUCESSO!</strong>
-                            <div style="margin-top: 10px; font-size: 12px; background: white; padding: 8px; border-radius: 3px; overflow-wrap: break-word;">
+                            <div style="margin-top: 10px; font-size: 12px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 3px; overflow-wrap: break-word;">
                                 <strong>Tamanho:</strong> ${data.codigoPix.length} caracteres<br>
                                 <strong>CRC:</strong> ${data.codigoPix.slice(-4)}<br>
                                 <strong>Início:</strong> ${data.codigoPix.substring(0, 50)}...<br>
@@ -1422,27 +2029,27 @@
                                 <strong>Chave:</strong> ${data.chavePix}<br>
                                 <strong>Identificador:</strong> ${data.identificador}
                             </div>
-                            <button onclick="copiarTestePIX('${data.codigoPix}')" style="margin-top: 10px; padding: 5px 10px; background: #ff9800; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                                <i class="fas fa-copy"></i> Copiar PIX de Teste
+                            <button onclick="copiarTestePIX('${data.codigoPix}')" style="margin-top: 10px; padding: 5px 10px; background: var(--warning-color); color: #000; border: none; border-radius: 3px; cursor: pointer; font-family: 'Courier New', monospace;">
+                                <i class="fas fa-copy"></i> COPIAR PIX DE TESTE
                             </button>
-                            <button onclick="testarQRCode('${data.codigoPix}')" style="margin-top: 10px; padding: 5px 10px; background: #005a9c; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                                <i class="fas fa-qrcode"></i> Ver QR Code
+                            <button onclick="testarQRCode('${data.codigoPix}')" style="margin-top: 10px; padding: 5px 10px; background: var(--hacker-cyan); color: #000; border: none; border-radius: 3px; cursor: pointer; font-family: 'Courier New', monospace;">
+                                <i class="fas fa-qrcode"></i> VER QR CODE
                             </button>
                         </div>
                     `;
                 } else {
                     resultDiv.innerHTML = `
-                        <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
+                        <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
                             <i class="fas fa-exclamation-triangle"></i> <strong>❌ ERRO:</strong> ${data.mensagem || data.erro}
                             <div style="margin-top: 10px; font-size: 12px;">
-                                <strong>Solução:</strong> Configure uma chave PIX válida na seção Configurações.
+                                <strong>SOLUÇÃO:</strong> CONFIGURE UMA CHAVE PIX VÁLIDA NA SEÇÃO CONFIGURAÇÕES.
                             </div>
                         </div>
                     `;
                 }
             } catch (error) {
                 resultDiv.innerHTML = `
-                    <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
+                    <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
                         <i class="fas fa-exclamation-triangle"></i> <strong>❌ ERRO DE CONEXÃO:</strong> ${error.message}
                     </div>
                 `;
@@ -1451,7 +2058,7 @@
         
         function copiarTestePIX(codigo) {
             navigator.clipboard.writeText(codigo)
-                .then(() => alert('✅ PIX copiado! Teste em um app bancário.'))
+                .then(() => alert('✅ PIX COPIADO! TESTE EM UM APP BANCÁRIO.'))
                 .catch(() => {
                     // Fallback
                     const textArea = document.createElement('textarea');
@@ -1460,7 +2067,7 @@
                     textArea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textArea);
-                    alert('✅ PIX copiado! Teste em um app bancário.');
+                    alert('✅ PIX COPIADO! TESTE EM UM APP BANCÁRIO.');
                 });
         }
         
@@ -1471,15 +2078,16 @@
         
         async function limparDados(tipo) {
             const confirmMessages = {
-                'consultas': 'Tem certeza que deseja limpar TODAS as consultas do banco?\nEsta ação NÃO pode ser desfeita!',
-                'pix': 'Tem certeza que deseja limpar TODOS os registros de PIX?\nEsta ação NÃO pode ser desfeita!',
-                'tudo': '🚨 PERIGO! 🚨\n\nIsso vai apagar TODOS os dados do sistema:\n- Consultas\n- PIX\n- Estatísticas\n\nEsta ação NÃO pode ser desfeita!\n\nDigite "APAGAR TUDO" para confirmar:'
+                'consultas': 'TEM CERTEZA QUE DESEJA LIMPAR TODAS AS CONSULTAS DO BANCO?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
+                'pix': 'TEM CERTEZA QUE DESEJA LIMPAR TODOS OS REGISTROS DE PIX?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
+                'cliques': 'TEM CERTEZA QUE DESEJA LIMPAR TODOS OS CLIQUES?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
+                'tudo': '🚨 PERIGO! 🚨\n\nISSO VAI APAGAR TODOS OS DADOS DO SISTEMA:\n- CONSULTAS\n- PIX\n- CLIQUES\n- ESTATÍSTICAS\n\nESTA AÇÃO NÃO PODE SER DESFEITA!\n\nDIGITE "APAGAR TUDO" PARA CONFIRMAR:'
             };
             
             if (tipo === 'tudo') {
                 const confirmacao = prompt(confirmMessages[tipo]);
                 if (confirmacao !== 'APAGAR TUDO') {
-                    alert('Operação cancelada!');
+                    alert('OPERAÇÃO CANCELADA!');
                     return;
                 }
             } else if (!confirm(confirmMessages[tipo])) {
@@ -1506,13 +2114,15 @@
                         carregarConsultasCompletas();
                     } else if (tipo === 'pix' && currentSection === 'pix') {
                         carregarPixCompletos();
+                    } else if (tipo === 'cliques' && currentSection === 'cliques') {
+                        carregarCliquesCompletos();
                     }
                     
                     carregarDashboard();
                 }
             } catch (error) {
                 console.error('Erro ao limpar dados:', error);
-                alert('❌ Erro ao limpar dados!');
+                alert('❌ ERRO AO LIMPAR DADOS!');
             }
         }
         
@@ -1546,7 +2156,7 @@
         // INICIALIZAÇÃO
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Painel DETRAN MS inicializado');
+            console.log('🚀 SISTEMA DETRAN MS HACKER THEME INICIALIZADO');
             
             // Testa conexão com servidor
             testarConexaoServidor();
@@ -1579,19 +2189,19 @@
             try {
                 const response = await fetch(API_BASE, { method: 'GET' });
                 if (response.ok) {
-                    console.log('✅ Servidor online');
+                    console.log('✅ SERVIDOR ONLINE');
                     document.getElementById('connectionAlert').style.display = 'none';
                 } else {
-                    throw new Error('Servidor offline');
+                    throw new Error('SERVIDOR OFFLINE');
                 }
             } catch (error) {
-                console.error('❌ Servidor offline:', error);
+                console.error('❌ SERVIDOR OFFLINE:', error);
                 document.getElementById('connectionAlert').style.display = 'block';
                 
                 // Mostra instruções no login
                 const loginError = document.getElementById('loginError');
                 if (loginError) {
-                    loginError.textContent = '❌ Servidor offline! Aguarde o deploy completar.';
+                    loginError.textContent = '❌ SERVIDOR OFFLINE! AGUARDE O DEPLOY COMPLETAR.';
                     loginError.style.display = 'block';
                 }
             }
@@ -1600,7 +2210,7 @@
         // FALLBACK GLOBAL PARA ERROS DE FETCH
         window.addEventListener('error', function(e) {
             if (e.message && e.message.includes('fetch')) {
-                console.log('Erro de fetch interceptado no painel');
+                console.log('ERRO DE FETCH INTERCEPTADO NO PAINEL');
                 document.getElementById('connectionAlert').style.display = 'block';
             }
         });
