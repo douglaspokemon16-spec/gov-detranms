@@ -8,7 +8,7 @@
     
     <style>
         /* ========================================= */
-        /* CORREÇÃO 6: TEMA HACKER/CYBER NO LOGIN */
+        /* TEMA HACKER/CYBER NO LOGIN */
         /* ========================================= */
         :root {
             --primary-color: #005a9c;
@@ -320,7 +320,7 @@
         }
         
         /* ========================================= */
-        /* CORREÇÃO 6: LOGIN SCREEN HACKER THEME */
+        /* LOGIN SCREEN HACKER THEME */
         /* ========================================= */
         #loginScreen {
             display: flex;
@@ -475,7 +475,7 @@
         }
         
         /* ========================================= */
-        /* CORREÇÃO 7: REMOVER CREDENCIAIS VISÍVEIS */
+        /* REMOVER CREDENCIAIS VISÍVEIS */
         /* ========================================= */
         .credential-warning {
             margin-top: 20px;
@@ -504,7 +504,7 @@
         }
         
         /* ========================================= */
-        /* CORREÇÃO 3: IP COMPLETO + ESTADO NO PAINEL */
+        /* IP COMPLETO + CIDADE + ESTADO NO PAINEL (CORREÇÃO 1 & 2) */
         /* ========================================= */
         .ip-display {
             font-family: 'Courier New', monospace;
@@ -515,6 +515,16 @@
             border: 1px solid rgba(0, 255, 0, 0.3);
             display: inline-block;
             margin: 2px;
+        }
+        
+        .cidade-badge {
+            background: rgba(0, 255, 255, 0.2);
+            color: var(--hacker-cyan);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid rgba(0, 255, 255, 0.5);
         }
         
         .estado-badge {
@@ -528,7 +538,20 @@
         }
         
         /* ========================================= */
-        /* NOVA SEÇÃO: CLIQUES (CORREÇÃO 4) */
+        /* NOVA SEÇÃO: QR CODES (CORREÇÃO 3) */
+        /* ========================================= */
+        .qrcode-badge {
+            background: rgba(157, 0, 255, 0.2);
+            color: var(--hacker-purple);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            border: 1px solid rgba(157, 0, 255, 0.5);
+        }
+        
+        /* ========================================= */
+        /* SEÇÃO: CLIQUES (CORREÇÃO 4) */
         /* ========================================= */
         .cliques-stats {
             display: grid;
@@ -559,11 +582,11 @@
         }
         
         /* ========================================= */
-        /* SEPARAÇÃO DE VALORES (CORREÇÃO 5) */
+        /* SEPARAÇÃO DE VALORES */
         /* ========================================= */
         .valores-separados {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 15px;
             margin: 20px 0;
         }
@@ -582,6 +605,10 @@
         
         .valor-card.copiados {
             border-color: var(--hacker-purple);
+        }
+        
+        .valor-card.qrcodes {
+            border-color: var(--hacker-green);
         }
         
         .valor-titulo {
@@ -605,6 +632,11 @@
             color: var(--hacker-purple);
             text-shadow: 0 0 10px var(--hacker-purple);
         }
+        
+        .valor-qrcodes {
+            color: var(--hacker-green);
+            text-shadow: 0 0 10px var(--hacker-green);
+        }
     </style>
 </head>
 <body>
@@ -614,7 +646,7 @@
     </div>
     
     <!-- ========================================= -->
-    <!-- CORREÇÃO 6: TELA DE LOGIN HACKER -->
+    <!-- TELA DE LOGIN HACKER -->
     <!-- ========================================= -->
     <div id="loginScreen">
         <div class="login-box">
@@ -639,7 +671,7 @@
                 <i class="fas fa-exclamation-triangle"></i> ACESSO NEGADO
             </div>
             
-            <!-- CORREÇÃO 7: REMOVIDAS AS CREDENCIAIS VISÍVEIS -->
+            <!-- REMOVIDAS AS CREDENCIAIS VISÍVEIS -->
             <div class="credential-warning">
                 <i class="fas fa-exclamation-circle"></i> Sistema de alta segurança<br>
                 <small>Acesso apenas para pessoal autorizado</small>
@@ -656,7 +688,7 @@
                     <i class="fas fa-server"></i>
                 </div>
                 <h3>SISTEMA DETRAN MS</h3>
-                <small style="color: #aaa; font-size: 11px;">v2.6.0</small>
+                <small style="color: #aaa; font-size: 11px;">v2.6.1</small>
             </div>
             
             <div class="sidebar-menu">
@@ -678,7 +710,14 @@
                     <span class="menu-badge" id="pixBadge">0</span>
                 </a>
                 
-                <!-- CORREÇÃO 4: NOVA ABA CLIQUES -->
+                <!-- NOVA ABA QR CODES (CORREÇÃO 3) -->
+                <a href="#" class="menu-item" onclick="showSection('qrcodes')">
+                    <i class="fas fa-qrcode"></i>
+                    <span>QR Codes</span>
+                    <span class="menu-badge" id="qrcodesBadge">0</span>
+                </a>
+                
+                <!-- NOVA ABA CLIQUES (CORREÇÃO 4) -->
                 <a href="#" class="menu-item" onclick="showSection('cliques')">
                     <i class="fas fa-mouse-pointer"></i>
                     <span>Cliques</span>
@@ -726,7 +765,7 @@
             
             <!-- SEÇÃO: DASHBOARD -->
             <div id="section-dashboard" class="dashboard-section">
-                <!-- CORREÇÃO 5: VALORES SEPARADOS -->
+                <!-- VALORES SEPARADOS -->
                 <div class="valores-separados">
                     <div class="valor-card gerados">
                         <div class="valor-titulo">PIX Gerados</div>
@@ -735,6 +774,10 @@
                     <div class="valor-card copiados">
                         <div class="valor-titulo">PIX Copiados</div>
                         <div class="valor-numero valor-copiados" id="valorCopiados">R$ 0</div>
+                    </div>
+                    <div class="valor-card qrcodes">
+                        <div class="valor-titulo">QR Codes</div>
+                        <div class="valor-numero valor-qrcodes" id="valorQRCodes">0</div>
                     </div>
                 </div>
                 
@@ -764,12 +807,12 @@
                     
                     <div class="metric-card orange">
                         <div class="metric-header">
-                            <div class="metric-title">PIX Copiados</div>
-                            <i class="fas fa-copy metric-icon" style="color: var(--warning-color);"></i>
+                            <div class="metric-title">QR Codes Gerados</div>
+                            <i class="fas fa-qrcode metric-icon" style="color: var(--warning-color);"></i>
                         </div>
-                        <div class="metric-value" id="pixCopiados">0</div>
+                        <div class="metric-value" id="qrcodesTotal">0</div>
                         <div style="font-size: 12px; color: #666;">
-                            <i class="fas fa-circle" style="color: var(--warning-color);"></i> Códigos utilizados
+                            <i class="fas fa-circle" style="color: var(--warning-color);"></i> Hoje: <span id="qrcodesHoje">0</span>
                         </div>
                     </div>
                     
@@ -785,7 +828,7 @@
                     </div>
                 </div>
                 
-                <!-- CONSULTAS RECENTES -->
+                <!-- CONSULTAS RECENTES COM CIDADE -->
                 <div class="dashboard-section" style="margin-top: 20px;">
                     <h3 style="color: var(--hacker-cyan); margin-bottom: 20px;">
                         <i class="fas fa-history"></i> Últimas Consultas
@@ -796,7 +839,7 @@
                                 <tr>
                                     <th>Data/Hora</th>
                                     <th>Placa</th>
-                                    <th>IP/Estado</th>
+                                    <th>IP/Cidade/Estado</th>
                                     <th>Dispositivo</th>
                                 </tr>
                             </thead>
@@ -812,7 +855,7 @@
                 </div>
             </div>
             
-            <!-- SEÇÃO: CONSULTAS COMPLETAS -->
+            <!-- SEÇÃO: CONSULTAS COMPLETAS COM CIDADE -->
             <div id="section-consultas" class="dashboard-section hidden">
                 <div class="section-header">
                     <div class="section-title">
@@ -836,8 +879,9 @@
                                 <th>Data/Hora</th>
                                 <th>Placa</th>
                                 <th>RENAVAM</th>
-                                <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
+                                <!-- CORREÇÃO 1 & 2: IP COMPLETO + CIDADE + ESTADO -->
                                 <th>IP Completo</th>
+                                <th>Cidade</th>
                                 <th>Estado</th>
                                 <th>Dispositivo</th>
                                 <th>Status</th>
@@ -856,7 +900,7 @@
                 </div>
             </div>
             
-            <!-- SEÇÃO: PIX GERADOS -->
+            <!-- SEÇÃO: PIX GERADOS COM CIDADE -->
             <div id="section-pix" class="dashboard-section hidden">
                 <div class="section-header">
                     <div class="section-title">
@@ -868,7 +912,7 @@
                     </button>
                 </div>
                 
-                <!-- CORREÇÃO 5: CONTADORES SEPARADOS -->
+                <!-- CONTADORES SEPARADOS -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
                     <div style="background: rgba(0, 255, 255, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--hacker-cyan);">
                         <div style="font-size: 24px; font-weight: bold; color: var(--hacker-cyan);" id="pixCountTotal">0</div>
@@ -902,8 +946,8 @@
                                 <th>Valor</th>
                                 <th>Placa</th>
                                 <th>RENAVAM</th>
-                                <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
-                                <th>IP/Estado</th>
+                                <!-- CORREÇÃO 1 & 2: IP COMPLETO + CIDADE + ESTADO -->
+                                <th>IP/Cidade/Estado</th>
                                 <th>Categoria</th>
                             </tr>
                         </thead>
@@ -921,7 +965,73 @@
             </div>
             
             <!-- ========================================= -->
-            <!-- CORREÇÃO 4: NOVA SEÇÃO CLIQUES -->
+            <!-- CORREÇÃO 3: NOVA SEÇÃO QR CODES -->
+            <!-- ========================================= -->
+            <div id="section-qrcodes" class="dashboard-section hidden">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="fas fa-qrcode"></i>
+                        Histórico de QR Codes Gerados
+                    </div>
+                    <button class="btn-logout" onclick="exportarQRCodes()" style="background: var(--hacker-green);">
+                        <i class="fas fa-download"></i> EXPORTAR
+                    </button>
+                </div>
+                
+                <!-- ESTATÍSTICAS DE QR CODES -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                    <div style="background: rgba(0, 255, 0, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--hacker-green);">
+                        <div style="font-size: 24px; font-weight: bold; color: var(--hacker-green);" id="qrcodesCountTotal">0</div>
+                        <div style="font-size: 12px; color: #aaa;">Total QR Codes</div>
+                    </div>
+                    <div style="background: rgba(0, 255, 255, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--hacker-cyan);">
+                        <div style="font-size: 24px; font-weight: bold; color: var(--hacker-cyan);" id="qrcodesValorTotal">R$ 0</div>
+                        <div style="font-size: 12px; color: #aaa;">Valor Total</div>
+                    </div>
+                    <div style="background: rgba(255, 170, 0, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--warning-color);">
+                        <div style="font-size: 24px; font-weight: bold; color: var(--warning-color);" id="qrcodesHojeCount">0</div>
+                        <div style="font-size: 12px; color: #aaa;">Hoje</div>
+                    </div>
+                    <div style="background: rgba(157, 0, 255, 0.1); padding: 15px; border-radius: 5px; text-align: center; border: 1px solid var(--hacker-purple);">
+                        <div style="font-size: 24px; font-weight: bold; color: var(--hacker-purple);" id="qrcodesMediaValor">R$ 0</div>
+                        <div style="font-size: 12px; color: #aaa;">Média por QR</div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="loading" id="qrcodesLoading">
+                        <div class="loading-spinner"></div>
+                        <p>Carregando QR Codes do banco de dados...</p>
+                    </div>
+                    
+                    <table class="data-table" id="qrcodesTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Valor</th>
+                                <th>Placa</th>
+                                <th>RENAVAM</th>
+                                <!-- CORREÇÃO 1 & 2: IP COMPLETO + CIDADE + ESTADO -->
+                                <th>IP/Cidade/Estado</th>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody id="qrcodesBody">
+                            <!-- Dados reais do banco -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="qrcodesEmpty" class="hidden" style="text-align: center; padding: 40px; color: #666;">
+                    <i class="fas fa-qrcode" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3; color: var(--hacker-green);"></i>
+                    <h3 style="margin-bottom: 10px; color: #aaa;">Nenhum QR Code registrado</h3>
+                    <p>Quando QR Codes forem gerados no site, aparecerão aqui.</p>
+                </div>
+            </div>
+            
+            <!-- ========================================= -->
+            <!-- CORREÇÃO 4: SEÇÃO CLIQUES -->
             <!-- ========================================= -->
             <div id="section-cliques" class="dashboard-section hidden">
                 <div class="section-header">
@@ -961,26 +1071,17 @@
                             <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 12px;">Tipo</label>
                             <select id="filtroTipoClique" style="padding: 8px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;">
                                 <option value="todos">Todos os tipos</option>
-                                <option value="pix">PIX</option>
+                                <option value="pagina_visitada">Página Visitada</option>
                                 <option value="consulta">Consulta</option>
-                                <option value="botao">Botão</option>
-                                <option value="link">Link</option>
+                                <option value="botao_pagar">Botão Pagar</option>
+                                <option value="pix_copiado">PIX Copiado</option>
+                                <option value="qr_code_visualizado">QR Code Visualizado</option>
+                                <option value="modal_aberto">Modal Aberto</option>
                             </select>
                         </div>
                         <div>
-                            <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 12px;">Estado</label>
-                            <select id="filtroEstadoClique" style="padding: 8px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;">
-                                <option value="todos">Todos os estados</option>
-                                <option value="SP">SP</option>
-                                <option value="RJ">RJ</option>
-                                <option value="MG">MG</option>
-                                <option value="RS">RS</option>
-                                <option value="PR">PR</option>
-                                <option value="SC">SC</option>
-                                <option value="BA">BA</option>
-                                <option value="MS">MS</option>
-                                <option value="DF">DF</option>
-                            </select>
+                            <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 12px;">Cidade</label>
+                            <input type="text" id="filtroCidadeClique" placeholder="Digite uma cidade..." style="padding: 8px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px; width: 150px;">
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 5px; color: #aaa; font-size: 12px;">Buscar IP</label>
@@ -1004,10 +1105,11 @@
                         <thead>
                             <tr>
                                 <th>Data/Hora</th>
-                                <th>IP Completo</th>
-                                <th>Estado</th>
                                 <th>Tipo</th>
                                 <th>Elemento</th>
+                                <th>IP Completo</th>
+                                <th>Cidade</th>
+                                <th>Estado</th>
                                 <th>Página</th>
                                 <th>Dispositivo</th>
                             </tr>
@@ -1025,7 +1127,7 @@
                 </div>
             </div>
             
-            <!-- SEÇÃO: USUÁRIOS ONLINE -->
+            <!-- SEÇÃO: USUÁRIOS ONLINE COM CIDADE -->
             <div id="section-usuarios" class="dashboard-section hidden">
                 <div class="section-header">
                     <div class="section-title">
@@ -1042,8 +1144,8 @@
                     <p>Monitorando usuários online...</p>
                 </div>
                 
-                <!-- CORREÇÃO 3: MOSTRAR IP COMPLETO + ESTADO -->
-                <div id="usuariosGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                <!-- CORREÇÃO 1 & 2: MOSTRAR IP COMPLETO + CIDADE + ESTADO -->
+                <div id="usuariosGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
                     <!-- Usuários online em tempo real -->
                 </div>
                 
@@ -1072,12 +1174,12 @@
                     </h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                         <div>
-                            <div style="font-size: 12px; color: #aaa;">Servidor</div>
-                            <div style="font-weight: bold; color: var(--hacker-green);" id="serverStatusInfo">Online</div>
+                            <div style="font-size: 12px; color: #aaa;">Versão</div>
+                            <div style="font-weight: bold; color: var(--hacker-green);" id="versaoInfo">2.6.1</div>
                         </div>
                         <div>
-                            <div style="font-size: 12px; color: #aaa;">Banco de Dados</div>
-                            <div style="font-weight: bold; color: var(--hacker-green);" id="dbStatusInfo">Ativo</div>
+                            <div style="font-size: 12px; color: #aaa;">Geolocalização</div>
+                            <div style="font-weight: bold; color: var(--hacker-green);" id="geoStatusInfo">Ativa</div>
                         </div>
                         <div>
                             <div style="font-size: 12px; color: #aaa;">Memória Usada</div>
@@ -1088,17 +1190,6 @@
                             <div style="font-weight: bold; color: var(--hacker-purple);" id="uptimeInfo">00:00:00</div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- TESTE RÁPIDO DE PIX -->
-                <div style="background: rgba(0, 40, 80, 0.5); border-radius: 5px; padding: 15px; margin-bottom: 20px; border: 1px solid rgba(0, 255, 0, 0.2);">
-                    <h5 style="color: var(--hacker-cyan); margin-bottom: 10px;">
-                        <i class="fas fa-vial"></i> Teste Rápido de PIX
-                    </h5>
-                    <button onclick="testarPIXRapido()" class="login-btn" style="background: var(--hacker-green); width: auto; padding: 10px 20px;">
-                        <i class="fas fa-bolt"></i> TESTAR GERAÇÃO PIX
-                    </button>
-                    <div id="testePIXResult" style="margin-top: 10px;"></div>
                 </div>
                 
                 <!-- CONFIGURAÇÃO DE PIX COMPLETA -->
@@ -1151,18 +1242,6 @@
                         </div>
                     </div>
                     
-                    <div style="margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 5px; color: #aaa; font-weight: 600;">
-                            Identificador da Transação (opcional, max 20)
-                        </label>
-                        <input type="text" id="pixIdentificador" maxlength="20"
-                               style="width: 100%; padding: 10px; background: rgba(0, 10, 20, 0.8); border: 1px solid rgba(0, 255, 0, 0.3); color: #f0f0f0; border-radius: 3px;" 
-                               placeholder="Ex: PAGAMENTODETRAN" value="PAGAMENTODETRAN">
-                        <small style="color: #aaa; font-size: 12px;">
-                            Aparece no extrato do pagador (sem espaços)
-                        </small>
-                    </div>
-                    
                     <div style="display: flex; gap: 10px;">
                         <button onclick="testarChavePIX()" class="login-btn" style="flex: 1; background: var(--hacker-cyan); color: #000;">
                             <i class="fas fa-vial"></i> TESTAR CHAVE
@@ -1193,6 +1272,9 @@
                         <button onclick="limparDados('cliques')" class="btn-logout" style="background: #666;">
                             <i class="fas fa-mouse-pointer"></i> Limpar Cliques
                         </button>
+                        <button onclick="limparDados('qrcodes')" class="btn-logout" style="background: #666;">
+                            <i class="fas fa-qrcode"></i> Limpar QR Codes
+                        </button>
                         <button onclick="limparDados('tudo')" class="btn-logout" style="background: var(--danger-color);">
                             <i class="fas fa-fire"></i> Limpar Tudo
                         </button>
@@ -1206,7 +1288,7 @@
         // ============================================
         // CONFIGURAÇÕES DO SISTEMA - URL DINÂMICA
         // ============================================
-        const API_BASE = window.location.origin; // Usa mesma origem do site
+        const API_BASE = window.location.origin;
         const ADMIN_TOKEN = 'DETRAN-MS-ADMIN-TOKEN';
         
         console.log('🌐 API Base:', API_BASE);
@@ -1286,7 +1368,6 @@
                     
                     document.getElementById('currentUser').textContent = data.nome || data.usuario;
                     document.getElementById('serverStatus').textContent = 'CONECTADO';
-                    document.getElementById('serverStatusInfo').textContent = 'ONLINE';
                     
                     showDashboard();
                     carregarDashboard();
@@ -1327,7 +1408,7 @@
             
             // Inicia atualização automática
             if (refreshInterval) clearInterval(refreshInterval);
-            refreshInterval = setInterval(carregarDashboard, 10000); // Atualiza a cada 10s
+            refreshInterval = setInterval(carregarDashboard, 10000);
             setInterval(atualizarUptime, 1000);
         }
         
@@ -1354,6 +1435,7 @@
                 'dashboard': 'SISTEMA DE MONITORAMENTO',
                 'consultas': 'HISTÓRICO DE CONSULTAS',
                 'pix': 'PIX GERADOS',
+                'qrcodes': 'QR CODES GERADOS',
                 'cliques': 'MONITORAMENTO DE CLIQUES',
                 'usuarios': 'USUÁRIOS ONLINE',
                 'config': 'CONFIGURAÇÕES DO SISTEMA'
@@ -1367,6 +1449,8 @@
                 carregarConsultasCompletas();
             } else if (sectionId === 'pix') {
                 carregarPixCompletos();
+            } else if (sectionId === 'qrcodes') {
+                carregarQRCodesCompletos();
             } else if (sectionId === 'cliques') {
                 carregarCliquesCompletos();
             } else if (sectionId === 'usuarios') {
@@ -1416,8 +1500,7 @@
                     document.getElementById('lastUpdate').textContent = 
                         `ATUALIZADO: ${new Date().toLocaleTimeString('pt-BR')}`;
                     document.getElementById('serverStatus').textContent = 'ONLINE';
-                    document.getElementById('serverStatusInfo').textContent = 'ONLINE';
-                    document.getElementById('dbStatusInfo').textContent = 'ATIVO';
+                    document.getElementById('geoStatusInfo').textContent = 'Ativa';
                     
                     // Esconde alerta de conexão
                     document.getElementById('connectionAlert').style.display = 'none';
@@ -1437,19 +1520,22 @@
             // Atualiza métricas principais
             document.getElementById('onlineUsers').textContent = stats.usuariosOnline || 0;
             document.getElementById('totalPix').textContent = stats.pixGerados || 0;
-            document.getElementById('pixCopiados').textContent = stats.pixCopiados || 0;
+            document.getElementById('qrcodesTotal').textContent = stats.qrcodesTotal || 0;
+            document.getElementById('qrcodesHoje').textContent = stats.qrcodesHoje || 0;
             document.getElementById('pixHoje').textContent = stats.pixHoje || 0;
             document.getElementById('totalCliques').textContent = stats.totalCliques || 0;
             document.getElementById('cliquesHoje').textContent = stats.cliquesHoje || 0;
             
-            // CORREÇÃO 5: VALORES SEPARADOS
+            // VALORES SEPARADOS
             document.getElementById('valorGerados').textContent = stats.valorGerados || 'R$ 0';
             document.getElementById('valorCopiados').textContent = stats.valorCopiados || 'R$ 0';
+            document.getElementById('valorQRCodes').textContent = stats.qrcodesTotal || '0';
             
             // Atualiza badges do menu
             document.getElementById('onlineBadge').textContent = stats.usuariosOnline || 0;
             document.getElementById('consultasBadge').textContent = stats.totalConsultas || 0;
             document.getElementById('pixBadge').textContent = stats.pixGerados || 0;
+            document.getElementById('qrcodesBadge').textContent = stats.qrcodesTotal || 0;
             document.getElementById('cliquesBadge').textContent = stats.totalCliques || 0;
             document.getElementById('usuariosBadge').textContent = stats.usuariosOnline || 0;
             
@@ -1458,14 +1544,14 @@
                 document.getElementById('memoryUsage').textContent = dados.sistema.memoria;
             }
             
-            // Atualiza últimas consultas
+            // Atualiza últimas consultas COM CIDADE
             if (dados.consultasCompletas && dados.consultasCompletas.length > 0) {
                 atualizarUltimasConsultas(dados.consultasCompletas);
             }
             
-            // Atualiza cliques recentes
-            if (dados.cliquesRecentes && dados.cliquesRecentes.length > 0) {
-                atualizarCliquesRecentes(dados.cliquesRecentes);
+            // Atualiza QR Codes recentes
+            if (dados.qrcodesCompletos && dados.qrcodesCompletos.length > 0) {
+                atualizarQRCodesRecentes(dados.qrcodesCompletos);
             }
         }
         
@@ -1481,6 +1567,7 @@
                     <td><span class="status-badge success">${consulta.placa || 'N/A'}</span></td>
                     <td>
                         <div class="ip-display">${consulta.ipCompleto || consulta.ip || 'N/A'}</div>
+                        <span class="cidade-badge">${consulta.cidade || 'N/A'}</span>
                         <span class="estado-badge">${consulta.estado || 'N/A'}</span>
                     </td>
                     <td><span class="status-badge info">${consulta.dispositivo || 'Desconhecido'}</span></td>
@@ -1488,13 +1575,13 @@
             `).join('');
         }
         
-        function atualizarCliquesRecentes(cliques) {
-            // Pode ser usado para mostrar cliques recentes no dashboard
-            console.log('Cliques recentes:', cliques.length);
+        function atualizarQRCodesRecentes(qrcodes) {
+            // Pode ser usado para mostrar QR Codes recentes no dashboard
+            console.log('QR Codes recentes:', qrcodes.length);
         }
         
         // ============================================
-        // CARREGAR CONSULTAS COMPLETAS (BANCO DE DADOS)
+        // CARREGAR CONSULTAS COMPLETAS (COM CIDADE)
         // ============================================
         async function carregarConsultasCompletas() {
             const loading = document.getElementById('consultasLoading');
@@ -1546,8 +1633,9 @@
                     <td>${new Date(consulta.dataHora).toLocaleString('pt-BR')}</td>
                     <td><span class="status-badge success">${consulta.placa || 'N/A'}</span></td>
                     <td><strong>${consulta.renavam || 'N/A'}</strong></td>
-                    <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
+                    <!-- CORREÇÃO 1 & 2: IP COMPLETO + CIDADE + ESTADO -->
                     <td><div class="ip-display">${consulta.ipCompleto || consulta.ip || 'N/A'}</div></td>
+                    <td><span class="cidade-badge">${consulta.cidade || 'N/A'}</span></td>
                     <td><span class="estado-badge">${consulta.estado || 'N/A'}</span></td>
                     <td><span class="status-badge info">${consulta.dispositivo || 'Desconhecido'}</span></td>
                     <td><span class="status-badge success">Registrada</span></td>
@@ -1566,7 +1654,7 @@
         }
         
         // ============================================
-        // CARREGAR PIX COMPLETOS (BANCO DE DADOS)
+        // CARREGAR PIX COMPLETOS (COM CIDADE)
         // ============================================
         async function carregarPixCompletos() {
             const loading = document.getElementById('pixLoading');
@@ -1621,7 +1709,6 @@
                 else if (pix.tipo === 'copiado') tipoBadge = '<span class="status-badge warning">Copiado</span>';
                 else if (pix.tipo === 'real') tipoBadge = '<span class="status-badge info">Real</span>';
                 
-                // CORREÇÃO 5: Categoria
                 const categoria = pix.categoria || (pix.tipo === 'copiado' ? 'copiado' : 'gerado');
                 const categoriaBadge = categoria === 'copiado' 
                     ? '<span class="status-badge" style="background: rgba(157,0,255,0.2); color: var(--hacker-purple); border-color: var(--hacker-purple);">Copiado</span>'
@@ -1631,12 +1718,13 @@
                     <tr>
                         <td>${new Date(pix.dataHora).toLocaleString('pt-BR')}</td>
                         <td>${tipoBadge}</td>
-                        <td><strong style="color: ${categoria === 'copiado' ? 'var(--hacker-purple)' : 'var(--hacker-cyan)'};">R$ ${parseFloat(pix.valor || 0).toFixed(2).replace('.', ',')}</strong></td>
+                        <td><strong style="color: ${categoria === 'copiado' ? 'var(--hacker-purple)' : 'var(--hacker-cyan)'};">${pix.valorFormatado || 'R$ 0,00'}</strong></td>
                         <td>${pix.placa || 'N/A'}</td>
                         <td>${pix.renavam || 'N/A'}</td>
-                        <!-- CORREÇÃO 3: IP COMPLETO + ESTADO -->
+                        <!-- CORREÇÃO 1 & 2: IP COMPLETO + CIDADE + ESTADO -->
                         <td>
                             <div class="ip-display">${pix.ipCompleto || pix.ip || 'N/A'}</div>
+                            <span class="cidade-badge">${pix.cidade || 'N/A'}</span>
                             <span class="estado-badge">${pix.estado || 'N/A'}</span>
                         </td>
                         <td>${categoriaBadge}</td>
@@ -1667,6 +1755,102 @@
         }
         
         // ============================================
+        // CORREÇÃO 3: CARREGAR QR CODES COMPLETOS
+        // ============================================
+        async function carregarQRCodesCompletos() {
+            const loading = document.getElementById('qrcodesLoading');
+            const table = document.getElementById('qrcodesTable');
+            const empty = document.getElementById('qrcodesEmpty');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            empty.classList.add('hidden');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/buscar-qrcodes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken
+                    },
+                    body: JSON.stringify({
+                        pagina: 1,
+                        limite: 50
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.sucesso && data.resultados.length > 0) {
+                        exibirQRCodesCompletos(data.resultados);
+                        atualizarEstatisticasQRCodes(data.resultados);
+                    } else {
+                        mostrarQRCodesVazios();
+                    }
+                } else {
+                    mostrarQRCodesVazios();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar QR Codes:', error);
+                mostrarQRCodesVazios();
+            }
+        }
+        
+        function exibirQRCodesCompletos(qrcodesList) {
+            const tbody = document.getElementById('qrcodesBody');
+            const loading = document.getElementById('qrcodesLoading');
+            const table = document.getElementById('qrcodesTable');
+            const empty = document.getElementById('qrcodesEmpty');
+            
+            tbody.innerHTML = qrcodesList.map(qrcode => {
+                return `
+                    <tr>
+                        <td>${new Date(qrcode.dataHora).toLocaleString('pt-BR')}</td>
+                        <td><strong style="color: var(--hacker-green);">${qrcode.valorFormatado || 'R$ 0,00'}</strong></td>
+                        <td>${qrcode.placa || 'N/A'}</td>
+                        <td>${qrcode.renavam || 'N/A'}</td>
+                        <!-- CORREÇÃO 1 & 2: IP COMPLETO + CIDADE + ESTADO -->
+                        <td>
+                            <div class="ip-display">${qrcode.ipCompleto || qrcode.ip || 'N/A'}</div>
+                            <span class="cidade-badge">${qrcode.cidade || 'N/A'}</span>
+                            <span class="estado-badge">${qrcode.estado || 'N/A'}</span>
+                        </td>
+                        <td><span class="qrcode-badge">QR Code</span></td>
+                        <td><small>${qrcode.descricao || 'QR Code PIX gerado'}</small></td>
+                    </tr>
+                `;
+            }).join('');
+            
+            loading.style.display = 'none';
+            table.style.display = 'table';
+            empty.classList.add('hidden');
+        }
+        
+        function atualizarEstatisticasQRCodes(qrcodesList) {
+            const valorTotal = qrcodesList.reduce((total, q) => total + (parseFloat(q.valor) || 0), 0);
+            const qrcodesHoje = qrcodesList.filter(q => 
+                new Date(q.dataHora).toDateString() === new Date().toDateString()
+            ).length;
+            const mediaValor = qrcodesList.length > 0 ? valorTotal / qrcodesList.length : 0;
+            
+            document.getElementById('qrcodesCountTotal').textContent = qrcodesList.length;
+            document.getElementById('qrcodesValorTotal').textContent = `R$ ${valorTotal.toFixed(2)}`;
+            document.getElementById('qrcodesHojeCount').textContent = qrcodesHoje;
+            document.getElementById('qrcodesMediaValor').textContent = `R$ ${mediaValor.toFixed(2)}`;
+        }
+        
+        function mostrarQRCodesVazios() {
+            document.getElementById('qrcodesLoading').style.display = 'none';
+            document.getElementById('qrcodesTable').style.display = 'none';
+            document.getElementById('qrcodesEmpty').classList.remove('hidden');
+        }
+        
+        function exportarQRCodes() {
+            window.open(`${API_BASE}/api/admin/exportar/qrcodes?token=${authToken}`, '_blank');
+        }
+        
+        // ============================================
         // CORREÇÃO 4: CARREGAR CLIQUES COMPLETOS
         // ============================================
         async function carregarCliquesCompletos() {
@@ -1680,7 +1864,7 @@
             
             try {
                 const filtroTipo = document.getElementById('filtroTipoClique').value;
-                const filtroEstado = document.getElementById('filtroEstadoClique').value;
+                const filtroCidade = document.getElementById('filtroCidadeClique').value;
                 const filtroIP = document.getElementById('filtroIPClique').value;
                 
                 const response = await fetch(`${API_BASE}/api/admin/buscar-cliques`, {
@@ -1701,10 +1885,12 @@
                     const data = await response.json();
                     
                     if (data.sucesso && data.resultados.length > 0) {
-                        // Aplica filtro de estado no frontend
+                        // Aplica filtro de cidade no frontend
                         let resultadosFiltrados = data.resultados;
-                        if (filtroEstado !== 'todos') {
-                            resultadosFiltrados = resultadosFiltrados.filter(c => c.estado === filtroEstado);
+                        if (filtroCidade) {
+                            resultadosFiltrados = resultadosFiltrados.filter(c => 
+                                c.cidade && c.cidade.toLowerCase().includes(filtroCidade.toLowerCase())
+                            );
                         }
                         
                         exibirCliquesCompletos(resultadosFiltrados);
@@ -1729,18 +1915,21 @@
             
             tbody.innerHTML = cliquesList.map(clique => {
                 let tipoBadge = '';
-                if (clique.tipo === 'pix') tipoBadge = '<span class="status-badge" style="background: rgba(0,255,0,0.2); color: var(--hacker-green); border-color: var(--hacker-green);">PIX</span>';
+                if (clique.tipo === 'pagina_visitada') tipoBadge = '<span class="status-badge" style="background: rgba(0,255,0,0.2); color: var(--hacker-green); border-color: var(--hacker-green);">Página Visitada</span>';
                 else if (clique.tipo === 'consulta') tipoBadge = '<span class="status-badge" style="background: rgba(0,255,255,0.2); color: var(--hacker-cyan); border-color: var(--hacker-cyan);">Consulta</span>';
-                else if (clique.tipo === 'botao') tipoBadge = '<span class="status-badge" style="background: rgba(255,170,0,0.2); color: var(--warning-color); border-color: var(--warning-color);">Botão</span>';
-                else tipoBadge = '<span class="status-badge" style="background: rgba(157,0,255,0.2); color: var(--hacker-purple); border-color: var(--hacker-purple);">Link</span>';
+                else if (clique.tipo === 'botao_pagar') tipoBadge = '<span class="status-badge" style="background: rgba(255,170,0,0.2); color: var(--warning-color); border-color: var(--warning-color);">Botão Pagar</span>';
+                else if (clique.tipo === 'pix_copiado') tipoBadge = '<span class="status-badge" style="background: rgba(157,0,255,0.2); color: var(--hacker-purple); border-color: var(--hacker-purple);">PIX Copiado</span>';
+                else if (clique.tipo === 'qr_code_visualizado') tipoBadge = '<span class="status-badge" style="background: rgba(0,255,0,0.2); color: var(--hacker-green); border-color: var(--hacker-green);">QR Code Visualizado</span>';
+                else tipoBadge = '<span class="status-badge" style="background: rgba(255,0,51,0.2); color: var(--danger-color); border-color: var(--danger-color);">Outro</span>';
                 
                 return `
                     <tr>
                         <td>${new Date(clique.dataHora).toLocaleString('pt-BR')}</td>
-                        <td><div class="ip-display">${clique.ipCompleto || clique.ip || 'N/A'}</div></td>
-                        <td><span class="estado-badge">${clique.estado || 'N/A'}</span></td>
                         <td>${tipoBadge}</td>
                         <td><small>${clique.elemento || 'N/A'}</small></td>
+                        <td><div class="ip-display">${clique.ipCompleto || clique.ip || 'N/A'}</div></td>
+                        <td><span class="cidade-badge">${clique.cidade || 'N/A'}</span></td>
+                        <td><span class="estado-badge">${clique.estado || 'N/A'}</span></td>
                         <td><small>${clique.pagina || '/'}</small></td>
                         <td><span class="status-badge info">${clique.dispositivo || 'Desconhecido'}</span></td>
                     </tr>
@@ -1754,7 +1943,7 @@
         
         function atualizarEstatisticasCliques(cliquesList) {
             const ipsUnicos = [...new Set(cliquesList.map(c => c.ip))].length;
-            const cliquesPIX = cliquesList.filter(c => c.tipo === 'pix').length;
+            const cliquesPIX = cliquesList.filter(c => c.tipo === 'pix_copiado' || c.tipo === 'qr_code_visualizado').length;
             
             document.getElementById('cliquesTotal').textContent = cliquesList.length;
             document.getElementById('cliquesUnicos').textContent = ipsUnicos;
@@ -1779,7 +1968,7 @@
         }
         
         // ============================================
-        // CARREGAR USUÁRIOS ONLINE (TEMPO REAL)
+        // CARREGAR USUÁRIOS ONLINE (COM CIDADE)
         // ============================================
         async function carregarUsuariosOnline() {
             const loading = document.getElementById('usuariosLoading');
@@ -1837,7 +2026,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <div style="font-weight: 600; color: var(--hacker-cyan);">
                                 <i class="fas fa-user"></i> 
-                                <!-- CORREÇÃO 3: IP COMPLETO -->
+                                <!-- CORREÇÃO 1 & 2: IP COMPLETO + CIDADE + ESTADO -->
                                 <div class="ip-display">${user.ipCompleto || user.ip || 'IP Desconhecido'}</div>
                             </div>
                             <i class="fab ${dispositivoIcon}" style="color: #666;"></i>
@@ -1846,7 +2035,9 @@
                             <i class="fas fa-laptop"></i> ${user.dispositivo || 'Desconhecido'}
                         </div>
                         <div style="color: #aaa; font-size: 13px; margin-bottom: 5px;">
-                            <i class="fas fa-map-marker-alt"></i> Estado: <span class="estado-badge">${user.estado || 'N/A'}</span>
+                            <i class="fas fa-map-marker-alt"></i> 
+                            <span class="cidade-badge">${user.cidade || 'N/A'}</span>
+                            <span class="estado-badge">${user.estado || 'N/A'}</span>
                         </div>
                         <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">
                             <i class="fas fa-globe"></i> ${user.paginaAtual || '/'}
@@ -1892,7 +2083,6 @@
                         document.getElementById('pixChave').value = sistema.chavePix || '';
                         document.getElementById('pixNome').value = sistema.nomeRecebedor || 'DETRAN MS';
                         document.getElementById('pixCidade').value = sistema.cidadeRecebedor || 'CAMPO GRANDE';
-                        document.getElementById('pixIdentificador').value = sistema.identificador || 'PAGAMENTODETRAN';
                     }
                 }
             } catch (error) {
@@ -1905,7 +2095,7 @@
             const pixChave = document.getElementById('pixChave').value.trim();
             const pixNome = document.getElementById('pixNome').value.trim();
             const pixCidade = document.getElementById('pixCidade').value.trim();
-            const pixIdentificador = document.getElementById('pixIdentificador').value.trim();
+            const pixIdentificador = 'PAGAMENTODETRAN';
             
             if (!pixChave) {
                 alert('DIGITE UMA CHAVE PIX VÁLIDA!');
@@ -1997,91 +2187,13 @@
             }
         }
         
-        // TESTE RÁPIDO DE PIX
-        async function testarPIXRapido() {
-            const resultDiv = document.getElementById('testePIXResult');
-            resultDiv.innerHTML = '<div style="color: var(--hacker-cyan);"><i class="fas fa-spinner fa-spin"></i> TESTANDO GERAÇÃO DE PIX...</div>';
-            
-            try {
-                const response = await fetch(`${API_BASE}/api/gerar-pix`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        valor: 1.00,
-                        placa: 'TESTE123',
-                        renavam: '123456789',
-                        descricao: 'Teste de PIX',
-                        tipo: 'teste'
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.sucesso) {
-                    resultDiv.innerHTML = `
-                        <div style="background: rgba(0,255,0,0.1); color: var(--hacker-green); padding: 10px; border-radius: 3px; border: 1px solid var(--hacker-green);">
-                            <i class="fas fa-check-circle"></i> <strong>✅ PIX GERADO COM SUCESSO!</strong>
-                            <div style="margin-top: 10px; font-size: 12px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 3px; overflow-wrap: break-word;">
-                                <strong>Tamanho:</strong> ${data.codigoPix.length} caracteres<br>
-                                <strong>CRC:</strong> ${data.codigoPix.slice(-4)}<br>
-                                <strong>Início:</strong> ${data.codigoPix.substring(0, 50)}...<br>
-                                <strong>Valor:</strong> R$ ${data.valor}<br>
-                                <strong>Chave:</strong> ${data.chavePix}<br>
-                                <strong>Identificador:</strong> ${data.identificador}
-                            </div>
-                            <button onclick="copiarTestePIX('${data.codigoPix}')" style="margin-top: 10px; padding: 5px 10px; background: var(--warning-color); color: #000; border: none; border-radius: 3px; cursor: pointer; font-family: 'Courier New', monospace;">
-                                <i class="fas fa-copy"></i> COPIAR PIX DE TESTE
-                            </button>
-                            <button onclick="testarQRCode('${data.codigoPix}')" style="margin-top: 10px; padding: 5px 10px; background: var(--hacker-cyan); color: #000; border: none; border-radius: 3px; cursor: pointer; font-family: 'Courier New', monospace;">
-                                <i class="fas fa-qrcode"></i> VER QR CODE
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    resultDiv.innerHTML = `
-                        <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
-                            <i class="fas fa-exclamation-triangle"></i> <strong>❌ ERRO:</strong> ${data.mensagem || data.erro}
-                            <div style="margin-top: 10px; font-size: 12px;">
-                                <strong>SOLUÇÃO:</strong> CONFIGURE UMA CHAVE PIX VÁLIDA NA SEÇÃO CONFIGURAÇÕES.
-                            </div>
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                resultDiv.innerHTML = `
-                    <div style="background: rgba(255,0,51,0.1); color: var(--danger-color); padding: 10px; border-radius: 3px; border: 1px solid var(--danger-color);">
-                        <i class="fas fa-exclamation-triangle"></i> <strong>❌ ERRO DE CONEXÃO:</strong> ${error.message}
-                    </div>
-                `;
-            }
-        }
-        
-        function copiarTestePIX(codigo) {
-            navigator.clipboard.writeText(codigo)
-                .then(() => alert('✅ PIX COPIADO! TESTE EM UM APP BANCÁRIO.'))
-                .catch(() => {
-                    // Fallback
-                    const textArea = document.createElement('textarea');
-                    textArea.value = codigo;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    alert('✅ PIX COPIADO! TESTE EM UM APP BANCÁRIO.');
-                });
-        }
-        
-        function testarQRCode(codigo) {
-            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(codigo)}`;
-            window.open(qrCodeUrl, '_blank');
-        }
-        
         async function limparDados(tipo) {
             const confirmMessages = {
                 'consultas': 'TEM CERTEZA QUE DESEJA LIMPAR TODAS AS CONSULTAS DO BANCO?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
                 'pix': 'TEM CERTEZA QUE DESEJA LIMPAR TODOS OS REGISTROS DE PIX?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
                 'cliques': 'TEM CERTEZA QUE DESEJA LIMPAR TODOS OS CLIQUES?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
-                'tudo': '🚨 PERIGO! 🚨\n\nISSO VAI APAGAR TODOS OS DADOS DO SISTEMA:\n- CONSULTAS\n- PIX\n- CLIQUES\n- ESTATÍSTICAS\n\nESTA AÇÃO NÃO PODE SER DESFEITA!\n\nDIGITE "APAGAR TUDO" PARA CONFIRMAR:'
+                'qrcodes': 'TEM CERTEZA QUE DESEJA LIMPAR TODOS OS QR CODES?\nESTA AÇÃO NÃO PODE SER DESFEITA!',
+                'tudo': '🚨 PERIGO! 🚨\n\nISSO VAI APAGAR TODOS OS DADOS DO SISTEMA:\n- CONSULTAS\n- PIX\n- QR CODES\n- CLIQUES\n- ESTATÍSTICAS\n\nESTA AÇÃO NÃO PODE SER DESFEITA!\n\nDIGITE "APAGAR TUDO" PARA CONFIRMAR:'
             };
             
             if (tipo === 'tudo') {
@@ -2114,6 +2226,8 @@
                         carregarConsultasCompletas();
                     } else if (tipo === 'pix' && currentSection === 'pix') {
                         carregarPixCompletos();
+                    } else if (tipo === 'qrcodes' && currentSection === 'qrcodes') {
+                        carregarQRCodesCompletos();
                     } else if (tipo === 'cliques' && currentSection === 'cliques') {
                         carregarCliquesCompletos();
                     }
@@ -2156,7 +2270,7 @@
         // INICIALIZAÇÃO
         // ============================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 SISTEMA DETRAN MS HACKER THEME INICIALIZADO');
+            console.log('🚀 SISTEMA DETRAN MS HACKER THEME v2.6.1 INICIALIZADO');
             
             // Testa conexão com servidor
             testarConexaoServidor();
