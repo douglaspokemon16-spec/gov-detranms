@@ -479,6 +479,30 @@
             opacity: 0 !important;
         }
         
+        /* 3. REMOVER O MENU DE NAVEGAÇÃO COM CASINHA E "CONSULTA DE DÉBITOS" */
+        /* Este é o menu abaixo do cabeçalho que queremos remover */
+        .w-full.h-\[80px\].p-2.bg-white.border-b.border-b-c8ceda.border-solid,
+        div.w-full.h-\[80px\].p-2.bg-white.border-b.border-b-c8ceda.border-solid {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
+            opacity: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* 4. REMOVER ESPAÇO GERADO PELA REMOÇÃO DO MENU */
+        /* Subir o conteúdo principal para ocupar o espaço */
+        main.p-6.w-full.max-w-\[900px\].mx-auto.bg-white {
+            margin-top: 10px !important;
+            padding-top: 20px !important;
+        }
+        
+        /* 5. REMOVER "FALE CONOSCO", "SITE DETRAN MS", "OUVIDORIA", "TRANSPARÊNCIA" */
         /* Remover qualquer elemento filho do header que contenha esses textos */
         header.w-full.flex.flex-col * {
             position: relative;
@@ -495,15 +519,6 @@
             width: 0 !important;
             position: absolute !important;
             pointer-events: none !important;
-        }
-        
-        /* 3. REMOVER "FALE CONOSCO" */
-        /* 4. REMOVER "SITE DETRAN MS" */
-        /* 5. REMOVER "OUVIDORIA" */
-        /* 6. REMOVER "TRANSPARÊNCIA" */
-        /* Seleciona qualquer elemento que contenha esses textos */
-        * {
-            position: relative;
         }
         
         /* Garantir que esses elementos não apareçam */
@@ -528,6 +543,11 @@
             min-height: 128px;
             height: 128px;
             overflow: hidden;
+        }
+        
+        /* Ajustar o corpo para não ter espaço em branco */
+        body.font-sans {
+            padding-top: 0 !important;
         }
     </style>
 </head>
@@ -554,25 +574,11 @@
         <!-- Este bloco será removido pelo CSS acima -->
     </header>
 
-    <!-- MENU DE NAVEGAÇÃO (MANTIDO COM CASINHA E TEXTO) -->
-    <div class="w-full h-[80px] p-2 bg-white border-b border-b-c8ceda border-solid">
-        <div class="w-full h-full max-w-[1050px] mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-1">
-                <!-- CASINHA MANTIDA -->
-                <svg stroke="#2c5799" fill="#2c5799" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" class="size-6 2xl:size-7 text-secondary-600" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" stroke="none"></path>
-                </svg>
-                <!-- SETINHA MANTIDA -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-neutral-500 size-6 2xl:size-7">
-                    <path d="M9 18l6-6-6-6"></path>
-                </svg>
-                <!-- TEXTO "Consulta de Débitos" MANTIDO (APENAS ESTE DEVE APARECER) -->
-                <h2 class="uppercase font-bold text-base text-1351b4" id="menuTitulo">Consulta de Débitos</h2>
-            </div>
-        </div>
-    </div>
+    <!-- MENU DE NAVEGAÇÃO REMOVIDO (com casinha e "Consulta de Débitos") -->
+    <!-- Este menu será removido pelo CSS acima -->
 
     <!-- CONTEÚDO PRINCIPAL - FORMULÁRIO DE CONSULTA (MANTIDO) -->
+    <!-- AGORA VAI FICAR LOGO ABAIXO DO CABEÇALHO, SEM ESPAÇO VAZIO -->
     <main class="p-6 w-full max-w-[900px] mx-auto bg-white" id="formularioContainer">
         <div class="bg-eaebec flex items-start rounded-[8px] w-full">
             <div class="p-7 flex flex-col">
@@ -794,7 +800,7 @@
         const API_BASE = window.location.origin; // Usa mesma origem do site
         
         // DEBUG
-        console.log('🚀 Sistema DETRAN MS v2.6.4 iniciado');
+        console.log('🚀 Sistema DETRAN MS v2.6.5 iniciado');
         console.log('🌐 API Base:', API_BASE);
         console.log('📱 Dispositivo:', /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop');
 
@@ -933,7 +939,8 @@
                 'FALE CONOSCO',
                 'SITE DETRAN MS',
                 'OUVIDORIA',
-                'TRANSPARÊNCIA'
+                'TRANSPARÊNCIA',
+                'Consulta de Débitos' // Este também queremos remover agora
             ];
             
             // Remover elementos por texto
@@ -949,8 +956,9 @@
                         // Não remover elementos importantes
                         const elementosImportantes = [
                             'formularioContainer', 'resultadosContainer', 'modalPix',
-                            'consultaForm', 'placa', 'renavam', 'menuTitulo',
-                            'CONSULTAR', 'CANCELAR', 'Nova Consulta', 'footer'
+                            'consultaForm', 'placa', 'renavam',
+                            'CONSULTAR', 'CANCELAR', 'Nova Consulta', 'footer',
+                            'Consulta de Débitos, Multas e Licenciamento' // Este título grande QUEREMOS MANTER
                         ];
                         
                         const deveManter = elementosImportantes.some(importante => 
@@ -959,7 +967,8 @@
                             el.closest('#formularioContainer') ||
                             el.closest('#resultadosContainer') ||
                             el.closest('#modalPix') ||
-                            el.closest('footer')
+                            el.closest('footer') ||
+                            (el.textContent && el.textContent.includes('Consulta de Débitos, Multas e Licenciamento'))
                         );
                         
                         if (!deveManter && tag !== 'BODY' && tag !== 'HTML') {
@@ -991,6 +1000,21 @@
                 }
             }
             
+            // Remover o menu de navegação (casinha + "Consulta de Débitos")
+            const menuNavegacao = document.querySelector('.w-full.h-\\[80px\\].p-2.bg-white.border-b.border-b-c8ceda.border-solid');
+            if (menuNavegacao) {
+                menuNavegacao.style.display = 'none';
+                menuNavegacao.style.visibility = 'hidden';
+                menuNavegacao.style.height = '0';
+                menuNavegacao.style.width = '0';
+                menuNavegacao.style.overflow = 'hidden';
+                menuNavegacao.style.position = 'absolute';
+                menuNavegacao.style.pointerEvents = 'none';
+                menuNavegacao.style.opacity = '0';
+                menuNavegacao.style.margin = '0';
+                menuNavegacao.style.padding = '0';
+            }
+            
             console.log('✅ Elementos indesejados removidos');
         }
 
@@ -1003,13 +1027,18 @@
             // Remover elementos indesejados ao carregar
             setTimeout(removerElementosIndesejados, 100);
             
+            // Ajustar o conteúdo para subir (reduzir margem superior)
+            const formularioContainer = document.getElementById('formularioContainer');
+            if (formularioContainer) {
+                formularioContainer.style.marginTop = '10px';
+                formularioContainer.style.paddingTop = '20px';
+            }
+            
             const form = document.getElementById('consultaForm');
             const loading = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
             const btnCancelar = document.getElementById('btnCancelar');
-            const formularioContainer = document.getElementById('formularioContainer');
             const resultadosContainer = document.getElementById('resultadosContainer');
-            const menuTitulo = document.getElementById('menuTitulo');
 
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -1518,7 +1547,7 @@
             }
         });
 
-        console.log('✅ Sistema DETRAN MS v2.6.4 carregado com sucesso!');
+        console.log('✅ Sistema DETRAN MS v2.6.5 carregado com sucesso!');
     </script>
 </body>
 </html>
