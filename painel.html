@@ -6,769 +6,178 @@
     <title>Dashboard DT-MS</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ========================================= */
-        /* RESET E CONFIGURAÇÕES GERAIS */
-        /* ========================================= */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; }
+        body { background-color: #f5f7fa; color: #333; min-height: 100vh; }
         
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            min-height: 100vh;
-        }
-        
-        /* ========================================= */
-        /* HEADER SUPERIOR - IGUAL À FOTO */
-        /* ========================================= */
         .top-header {
-            background: white;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #e0e0e0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-        
-        .header-title h1 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a237e;
-            margin-bottom: 5px;
-        }
-        
-        .header-title p {
-            color: #666;
-            font-size: 14px;
-            font-weight: 400;
-        }
-        
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .btn-pix-config {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-        
-        .btn-pix-config:hover {
-            background: #45a049;
-            transform: translateY(-2px);
-        }
-        
-        .logout-btn {
-            background: #f44336;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-        
-        .logout-btn:hover {
-            background: #d32f2f;
-        }
-        
-        /* ========================================= */
-        /* DASHBOARD OVERVIEW - IDÊNTICO À FOTO */
-        /* ========================================= */
-        .dashboard-container {
-            padding: 100px 40px 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .dashboard-title {
-            font-size: 22px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-        
-        .metric-card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e8e8e8;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
-        }
-        
-        .metric-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
-        
-        .metric-title {
-            font-size: 16px;
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .metric-icon {
-            font-size: 24px;
-            color: #1a237e;
-            opacity: 0.8;
-        }
-        
-        .metric-value {
-            font-size: 36px;
-            font-weight: 700;
-            color: #1a237e;
-            margin-bottom: 10px;
-        }
-        
-        .metric-subtitle {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .metric-today {
-            font-size: 14px;
-            color: #4CAF50;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .metric-today i {
-            font-size: 12px;
-        }
-        
-        /* ========================================= */
-        /* TABELA DE PAGAMENTOS - IDÊNTICA À FOTO */
-        /* ========================================= */
-        .payments-section {
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .last-payment {
-            font-size: 14px;
-            color: #666;
-            background: #f8f9fa;
-            padding: 12px 15px;
-            border-radius: 5px;
-            margin-bottom: 25px;
-            border-left: 4px solid #1a237e;
-            font-weight: 500;
-        }
-        
-        /* BARRA DE PESQUISA - IGUAL À FOTO */
-        .search-container {
-            position: relative;
-            width: 300px;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 12px 15px 12px 45px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border 0.3s;
-            background: #f8f9fa;
-        }
-        
-        .search-input:focus {
-            outline: none;
-            border-color: #1a237e;
-            background: white;
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-        }
-        
-        /* TABELA - IDÊNTICA À FOTO */
-        .table-container {
-            overflow-x: auto;
-            border-radius: 5px;
-            border: 1px solid #e0e0e0;
-        }
-        
-        .payments-table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1200px;
-        }
-        
-        .payments-table thead {
-            background: #f8f9fa;
-        }
-        
-        .payments-table th {
-            padding: 18px 15px;
-            text-align: left;
-            font-weight: 600;
-            color: #555;
-            border-bottom: 2px solid #e0e0e0;
-            font-size: 14px;
-            font-weight: 700;
-        }
-        
-        .payments-table td {
-            padding: 18px 15px;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 14px;
-        }
-        
-        .payments-table tbody tr:hover {
-            background: #f8f9fa;
-        }
-        
-        .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            min-width: 60px;
-            text-align: center;
-        }
-        
-        .status-badge.success {
-            background: #4CAF50;
-            color: white;
-        }
-        
-        .status-badge.warning {
-            background: #ff9800;
-            color: white;
-        }
-        
-        /* ========================================= */
-        /* RODAPÉ COM DATA/HORA - IGUAL À FOTO */
-        /* ========================================= */
-        .dashboard-footer {
-            background: white;
-            padding: 20px 40px;
-            border-top: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            color: #666;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-        }
-        
-        .current-time {
-            font-weight: 600;
-            color: #333;
-            font-family: 'Courier New', monospace;
-        }
-        
-        /* ========================================= */
-        /* MODAL CONFIGURAÇÃO PIX */
-        /* ========================================= */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-        
-        .modal-overlay.active {
-            display: flex;
-        }
-        
-        .modal-pix {
-            background: white;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .modal-header {
-            background: #1a237e;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            position: relative;
-        }
-        
-        .modal-header h3 {
-            font-size: 20px;
-            margin: 0;
-        }
-        
-        .btn-fechar-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-body {
-            padding: 25px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border 0.3s;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #1a237e;
-        }
-        
-        .btn-salvar {
-            background: #1a237e;
-            color: white;
-            border: none;
-            padding: 14px;
-            width: 100%;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-        
-        .btn-salvar:hover {
-            background: #283593;
-        }
-        
-        .btn-testar {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 14px;
-            width: 100%;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-        
-        .btn-testar:hover {
-            background: #45a049;
-        }
-        
-        .resultado-teste {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            display: none;
-        }
-        
-        .resultado-teste.sucesso {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #4CAF50;
-        }
-        
-        .resultado-teste.erro {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #f44336;
-        }
-        
-        /* ========================================= */
-        /* TELA DE LOGIN */
-        /* ========================================= */
-        #loginScreen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
-        }
-        
-        .login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            width: 100%;
-        }
-        
-        .login-title {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #1a237e;
-            font-size: 24px;
-            font-weight: 700;
-        }
-        
-        .login-input {
-            width: 100%;
-            padding: 14px 15px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border 0.3s;
-        }
-        
-        .login-input:focus {
-            outline: none;
-            border-color: #1a237e;
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background: #1a237e;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.3s;
-        }
-        
-        .login-btn:hover {
-            background: #283593;
-        }
-        
-        #loginError {
-            color: #f44336;
-            text-align: center;
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 5px;
-            background: #ffebee;
-            display: none;
-        }
-        
+            background: white; padding: 20px 40px; display: flex; justify-content: space-between; 
+            align-items: center; border-bottom: 1px solid #e0e0e0; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+        }
+        .header-title h1 { font-size: 24px; font-weight: 700; color: #1a237e; margin-bottom: 5px; }
+        .header-title p { color: #666; font-size: 14px; font-weight: 400; }
+        .header-actions { display: flex; align-items: center; gap: 20px; }
+        .btn-pix-config { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; 
+            cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; 
+            transition: all 0.3s; }
+        .btn-pix-config:hover { background: #45a049; transform: translateY(-2px); }
+        .logout-btn { background: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; 
+            cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; 
+            transition: all 0.3s; }
+        .logout-btn:hover { background: #d32f2f; }
+        
+        .dashboard-container { padding: 100px 40px 40px; max-width: 1400px; margin: 0 auto; }
+        .dashboard-title { font-size: 22px; font-weight: 600; color: #333; margin-bottom: 30px; 
+            padding-bottom: 15px; border-bottom: 2px solid #e0e0e0; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+            gap: 25px; margin-bottom: 40px; }
+        .metric-card { background: white; border-radius: 10px; padding: 25px; 
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08); border: 1px solid #e8e8e8; 
+            transition: transform 0.3s, box-shadow 0.3s; }
+        .metric-card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12); }
+        .metric-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .metric-title { font-size: 16px; color: #666; font-weight: 500; }
+        .metric-icon { font-size: 24px; color: #1a237e; opacity: 0.8; }
+        .metric-value { font-size: 36px; font-weight: 700; color: #1a237e; margin-bottom: 10px; }
+        .metric-subtitle { font-size: 14px; color: #666; margin-bottom: 5px; }
+        .metric-today { font-size: 14px; color: #4CAF50; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+        .metric-today i { font-size: 12px; }
+        
+        .payments-section { background: white; border-radius: 10px; padding: 30px; 
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08); margin-bottom: 30px; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f0f0f0; }
+        .section-title { font-size: 20px; font-weight: 600; color: #333; }
+        .last-payment { font-size: 14px; color: #666; background: #f8f9fa; padding: 12px 15px; 
+            border-radius: 5px; margin-bottom: 25px; border-left: 4px solid #1a237e; font-weight: 500; }
+        .search-container { position: relative; width: 300px; }
+        .search-input { width: 100%; padding: 12px 15px 12px 45px; border: 1px solid #ddd; border-radius: 5px; 
+            font-size: 14px; transition: border 0.3s; background: #f8f9fa; }
+        .search-input:focus { outline: none; border-color: #1a237e; background: white; }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #666; }
+        
+        .table-container { overflow-x: auto; border-radius: 5px; border: 1px solid #e0e0e0; }
+        .payments-table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+        .payments-table thead { background: #f8f9fa; }
+        .payments-table th { padding: 18px 15px; text-align: left; font-weight: 600; color: #555; 
+            border-bottom: 2px solid #e0e0e0; font-size: 14px; font-weight: 700; }
+        .payments-table td { padding: 18px 15px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+        .payments-table tbody tr:hover { background: #f8f9fa; }
+        .status-badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; 
+            min-width: 60px; text-align: center; }
+        .status-badge.success { background: #4CAF50; color: white; }
+        .status-badge.warning { background: #ff9800; color: white; }
+        
+        .dashboard-footer { background: white; padding: 20px 40px; border-top: 1px solid #e0e0e0; 
+            display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #666; 
+            position: fixed; bottom: 0; left: 0; right: 0; }
+        .current-time { font-weight: 600; color: #333; font-family: 'Courier New', monospace; }
+        
+        #loginScreen { display: flex; justify-content: center; align-items: center; min-height: 100vh; 
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%); }
+        .login-box { background: white; padding: 40px; border-radius: 10px; 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); max-width: 400px; width: 100%; }
+        .login-title { text-align: center; margin-bottom: 30px; color: #1a237e; font-size: 24px; font-weight: 700; }
+        .login-input { width: 100%; padding: 14px 15px; margin: 10px 0; border: 1px solid #ddd; 
+            border-radius: 5px; font-size: 16px; transition: border 0.3s; }
+        .login-input:focus { outline: none; border-color: #1a237e; }
+        .login-btn { width: 100%; padding: 15px; background: #1a237e; color: white; border: none; 
+            border-radius: 5px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 20px; 
+            transition: background 0.3s; }
+        .login-btn:hover { background: #283593; }
+        #loginError { color: #f44336; text-align: center; margin-top: 15px; padding: 10px; 
+            border-radius: 5px; background: #ffebee; display: none; }
         .hidden { display: none !important; }
         
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #1a237e;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* ========================================= */
-        /* RESPONSIVIDADE */
-        /* ========================================= */
-        @media (max-width: 1200px) {
-            .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .top-header {
-                padding: 15px 20px;
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .header-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .dashboard-container {
-                padding: 140px 20px 80px;
-            }
-            
-            .metrics-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .search-container {
-                width: 100%;
-                margin-top: 15px;
-            }
-            
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .dashboard-footer {
-                padding: 15px 20px;
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; 
+            z-index: 2000; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal-pix { background: white; border-radius: 10px; width: 100%; max-width: 500px; 
+            max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); 
+            animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } }
+        .modal-header { background: #1a237e; color: white; padding: 20px; text-align: center; 
+            border-top-left-radius: 10px; border-top-right-radius: 10px; position: relative; }
+        .btn-fechar-modal { position: absolute; top: 15px; right: 15px; 
+            background: rgba(255, 255, 255, 0.2); border: none; color: white; width: 30px; height: 30px; 
+            border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .modal-body { padding: 25px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #555; font-weight: 600; font-size: 14px; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid #ddd; 
+            border-radius: 5px; font-size: 14px; transition: border 0.3s; }
+        .btn-salvar { background: #1a237e; color: white; border: none; padding: 14px; width: 100%; 
+            border-radius: 5px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; 
+            transition: background 0.3s; }
+        .btn-testar { background: #4CAF50; color: white; border: none; padding: 14px; width: 100%; 
+            border-radius: 5px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; 
+            transition: background 0.3s; }
+        .resultado-teste { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
+        .resultado-teste.sucesso { background: #e8f5e9; color: #2e7d32; border: 1px solid #4CAF50; }
+        .resultado-teste.erro { background: #ffebee; color: #c62828; border: 1px solid #f44336; }
     </style>
 </head>
 <body>
-    <!-- ========================================= -->
-    <!-- TELA DE LOGIN -->
-    <!-- ========================================= -->
     <div id="loginScreen">
         <div class="login-box">
             <h2 class="login-title">Dashboard DT-MS</h2>
-            <p style="text-align: center; color: #666; margin-bottom: 30px;">
-                Sistema de Monitoramento de Pagamentos
-            </p>
-            
+            <p style="text-align: center; color: #666; margin-bottom: 30px;">Sistema de Monitoramento de Pagamentos</p>
             <input type="text" id="username" class="login-input" placeholder="Usuário">
             <input type="password" id="password" class="login-input" placeholder="Senha">
-            
-            <button onclick="login()" class="login-btn">
-                <i class="fas fa-sign-in-alt"></i> ACESSAR
-            </button>
-            
-            <div id="loginError">
-                <i class="fas fa-exclamation-circle"></i> Acesso negado
-            </div>
+            <button onclick="login()" class="login-btn"><i class="fas fa-sign-in-alt"></i> ACESSAR</button>
+            <div id="loginError"><i class="fas fa-exclamation-circle"></i> Acesso negado</div>
         </div>
     </div>
     
-    <!-- ========================================= -->
-    <!-- DASHBOARD PRINCIPAL -->
-    <!-- ========================================= -->
     <div id="dashboard" style="display: none;">
-        <!-- HEADER SUPERIOR -->
         <div class="top-header">
             <div class="header-title">
                 <h1>Dashboard DT-MS</h1>
                 <p>Monitoramento em tempo real</p>
             </div>
-            
             <div class="header-actions">
-                <button class="btn-pix-config" onclick="abrirModalPix()">
-                    <i class="fas fa-qrcode"></i> CONFIGURAR PIX
-                </button>
-                
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> SAIR
-                </button>
+                <button class="btn-pix-config" onclick="abrirModalPix()"><i class="fas fa-qrcode"></i> CONFIGURAR PIX</button>
+                <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> SAIR</button>
             </div>
         </div>
         
-        <!-- ========================================= -->
-        <!-- CONTEÚDO DO DASHBOARD -->
-        <!-- ========================================= -->
         <div class="dashboard-container">
             <h2 class="dashboard-title">Overview</h2>
             
-            <!-- GRADE DE MÉTRICAS -->
             <div class="metrics-grid">
-                <!-- 1. Total pagamentos gerados -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <div class="metric-title">Total pagamentos gerados</div>
-                        <i class="fas fa-wallet metric-icon"></i>
-                    </div>
-                    <div class="metric-value" id="totalPagamentosGerados">0</div>
-                    <div class="metric-subtitle">Total de pagamentos gerados</div>
-                    <div class="metric-today">
-                        <i class="fas fa-plus"></i>
-                        <span id="pagamentosGeradosHoje">0</span> gerados hoje
-                    </div>
-                </div>
+                <div class="metric-card"><div class="metric-header"><div class="metric-title">Total pagamentos gerados</div>
+                    <i class="fas fa-wallet metric-icon"></i></div><div class="metric-value" id="totalPagamentosGerados">0</div>
+                    <div class="metric-subtitle">Total de pagamentos gerados</div><div class="metric-today">
+                    <i class="fas fa-plus"></i><span id="pagamentosGeradosHoje">0</span> gerados hoje</div></div>
                 
-                <!-- 2. Total QR copiados gerados -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <div class="metric-title">Total QR copiados gerados</div>
-                        <i class="fas fa-copy metric-icon"></i>
-                    </div>
-                    <div class="metric-value" id="totalQRCopiados">0</div>
-                    <div class="metric-subtitle">Total de QR codes copiados</div>
-                    <div class="metric-today">
-                        <i class="fas fa-plus"></i>
-                        <span id="qrcodesCopiadosHoje">0</span> copiados hoje
-                    </div>
-                </div>
+                <div class="metric-card"><div class="metric-header"><div class="metric-title">Total QR copiados gerados</div>
+                    <i class="fas fa-copy metric-icon"></i></div><div class="metric-value" id="totalQRCopiados">0</div>
+                    <div class="metric-subtitle">Total de QR codes copiados</div><div class="metric-today">
+                    <i class="fas fa-plus"></i><span id="qrcodesCopiadosHoje">0</span> copiados hoje</div></div>
                 
-                <!-- 3. Total pagamentos -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <div class="metric-title">Total pagamentos</div>
-                        <i class="fas fa-money-bill-wave metric-icon"></i>
-                    </div>
-                    <div class="metric-value" id="totalPagamentosValor">R$ 0</div>
-                    <div class="metric-subtitle">Valor total de pagamentos</div>
-                    <div class="metric-today">
-                        <i class="fas fa-plus"></i>
-                        <span id="pagamentosValorHoje">R$ 0</span> recebidos hoje
-                    </div>
-                </div>
+                <div class="metric-card"><div class="metric-header"><div class="metric-title">Total pagamentos</div>
+                    <i class="fas fa-money-bill-wave metric-icon"></i></div><div class="metric-value" id="totalPagamentosValor">R$ 0</div>
+                    <div class="metric-subtitle">Valor total de pagamentos</div><div class="metric-today">
+                    <i class="fas fa-plus"></i><span id="pagamentosValorHoje">R$ 0</span> recebidos hoje</div></div>
                 
-                <!-- 4. Total pix copiados -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <div class="metric-title">Total pix copiados</div>
-                        <i class="fas fa-qrcode metric-icon"></i>
-                    </div>
-                    <div class="metric-value" id="totalPixCopiadosValor">R$ 0</div>
-                    <div class="metric-subtitle">Valor total de PIX copiados</div>
-                    <div class="metric-today">
-                        <i class="fas fa-plus"></i>
-                        <span id="pixCopiadosValorHoje">R$ 0</span> recebidos hoje
-                    </div>
-                </div>
+                <div class="metric-card"><div class="metric-header"><div class="metric-title">Total pix copiados</div>
+                    <i class="fas fa-qrcode metric-icon"></i></div><div class="metric-value" id="totalPixCopiadosValor">R$ 0</div>
+                    <div class="metric-subtitle">Valor total de PIX copiados</div><div class="metric-today">
+                    <i class="fas fa-plus"></i><span id="pixCopiadosValorHoje">R$ 0</span> recebidos hoje</div></div>
                 
-                <!-- 5. Clicks página home -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <div class="metric-title">Clicks página home</div>
-                        <i class="fas fa-home metric-icon"></i>
-                    </div>
-                    <div class="metric-value" id="totalClicksHome">0</div>
-                    <div class="metric-subtitle">Total de cliques na home</div>
-                    <div class="metric-today">
-                        <i class="fas fa-plus"></i>
-                        <span id="clicksHomeHoje">0</span> clicks hoje
-                    </div>
-                </div>
+                <div class="metric-card"><div class="metric-header"><div class="metric-title">Clicks página home</div>
+                    <i class="fas fa-home metric-icon"></i></div><div class="metric-value" id="totalClicksHome">0</div>
+                    <div class="metric-subtitle">Total de cliques na home</div><div class="metric-today">
+                    <i class="fas fa-plus"></i><span id="clicksHomeHoje">0</span> clicks hoje</div></div>
                 
-                <!-- 6. Clicks página debitos -->
-                <div class="metric-card">
-                    <div class="metric-header">
-                        <div class="metric-title">Clicks página debitos</div>
-                        <i class="fas fa-file-invoice-dollar metric-icon"></i>
-                    </div>
-                    <div class="metric-value" id="totalClicksDebitos">0</div>
-                    <div class="metric-subtitle">Total de cliques em débitos</div>
-                    <div class="metric-today">
-                        <i class="fas fa-plus"></i>
-                        <span id="clicksDebitosHoje">0</span> clicks hoje
-                    </div>
-                </div>
+                <div class="metric-card"><div class="metric-header"><div class="metric-title">Clicks página debitos</div>
+                    <i class="fas fa-file-invoice-dollar metric-icon"></i></div><div class="metric-value" id="totalClicksDebitos">0</div>
+                    <div class="metric-subtitle">Total de cliques em débitos</div><div class="metric-today">
+                    <i class="fas fa-plus"></i><span id="clicksDebitosHoje">0</span> clicks hoje</div></div>
             </div>
             
-            <!-- ========================================= -->
-            <!-- PAGAMENTOS GERADOS RECENTEMENTE -->
-            <!-- ========================================= -->
             <div class="payments-section">
                 <div class="section-header">
                     <h3 class="section-title">Pagamentos gerados recentemente</h3>
@@ -777,100 +186,43 @@
                         <i class="fas fa-search search-icon"></i>
                     </div>
                 </div>
-                
-                <!-- ÚLTIMO PAGAMENTO -->
-                <div class="last-payment">
-                    Último pagamento lançado em <span id="ultimoPagamentoData">carregando...</span>
-                </div>
-                
-                <!-- TABELA DE PAGAMENTOS -->
+                <div class="last-payment">Último pagamento lançado em <span id="ultimoPagamentoData">carregando...</span></div>
                 <div class="table-container">
                     <table class="payments-table">
-                        <thead>
-                            <tr>
-                                <th>Valor</th>
-                                <th>Placa</th>
-                                <th>Renavam</th>
-                                <th>Localização</th>
-                                <th>Horário</th>
-                                <th>Copiado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="paymentsTableBody">
-                            <tr>
-                                <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
-                                    <div class="loading-spinner" style="margin: 0 auto 10px;"></div>
-                                    Carregando pagamentos...
-                                </td>
-                            </tr>
-                        </tbody>
+                        <thead><tr><th>Valor</th><th>Placa</th><th>Renavam</th><th>Localização</th><th>Horário</th><th>Copiado</th></tr></thead>
+                        <tbody id="paymentsTableBody"><tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando pagamentos...</td></tr></tbody>
                     </table>
                 </div>
             </div>
         </div>
         
-        <!-- RODAPÉ COM DATA/HORA -->
         <div class="dashboard-footer">
-            <div>
-                <span class="current-time" id="currentTime">9 de fev. de 2026, 20:40:37</span>
-            </div>
-            <div>
-                Sistema DT-MS v2.0 | Dashboard
-            </div>
+            <div><span class="current-time" id="currentTime">9 de fev. de 2026, 20:40:37</span></div>
+            <div>Sistema DT-MS v2.0 | Dashboard</div>
         </div>
         
-        <!-- ========================================= -->
-        <!-- MODAL CONFIGURAÇÃO PIX -->
-        <!-- ========================================= -->
         <div class="modal-overlay" id="modalPix">
             <div class="modal-pix">
                 <div class="modal-header">
                     <h3><i class="fas fa-qrcode"></i> CONFIGURAÇÃO PIX</h3>
-                    <button class="btn-fechar-modal" onclick="fecharModalPix()">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <button class="btn-fechar-modal" onclick="fecharModalPix()"><i class="fas fa-times"></i></button>
                 </div>
-                
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="pixTipo">Tipo de Chave PIX:</label>
-                        <select id="pixTipo">
-                            <option value="aleatoria">Chave Aleatória</option>
-                            <option value="cpf">CPF</option>
-                            <option value="cnpj">CNPJ</option>
-                            <option value="email">E-mail</option>
-                            <option value="telefone">Telefone</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="pixChave">Chave PIX:</label>
-                        <input type="text" id="pixChave" placeholder="Ex: 123.456.789-09 ou email@exemplo.com">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="pixNome">Nome do Recebedor (max 25):</label>
-                        <input type="text" id="pixNome" maxlength="25" value="DETRAN MS">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="pixCidade">Cidade (max 15):</label>
-                        <input type="text" id="pixCidade" maxlength="15" value="CAMPO GRANDE">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="pixIdentificador">Identificador:</label>
-                        <input type="text" id="pixIdentificador" value="PAGAMENTODETRAN">
-                    </div>
-                    
-                    <button class="btn-testar" onclick="testarChavePIX()">
-                        <i class="fas fa-vial"></i> TESTAR CHAVE PIX
-                    </button>
-                    
-                    <button class="btn-salvar" onclick="salvarConfigPIX()">
-                        <i class="fas fa-save"></i> SALVAR CONFIGURAÇÃO
-                    </button>
-                    
+                    <div class="form-group"><label for="pixTipo">Tipo de Chave PIX:</label>
+                        <select id="pixTipo"><option value="aleatoria">Chave Aleatória</option>
+                        <option value="cpf">CPF</option><option value="cnpj">CNPJ</option>
+                        <option value="email">E-mail</option><option value="telefone">Telefone</option></select></div>
+                    <div class="form-group"><label for="pixChave">Chave PIX:</label>
+                        <input type="text" id="pixChave" placeholder="Ex: 123.456.789-09 ou email@exemplo.com"></div>
+                    <div class="form-group"><label for="pixNome">Nome do Recebedor (max 25):</label>
+                        <input type="text" id="pixNome" maxlength="25" value="DETRAN MS"></div>
+                    <div class="form-group"><label for="pixCidade">Cidade (max 15):</label>
+                        <input type="text" id="pixCidade" maxlength="15" value="CAMPO GRANDE"></div>
+                    <div class="form-group"><label for="pixIdentificador">Identificador:</label>
+                        <input type="text" id="pixIdentificador" value="PAGAMENTODETRAN"></div>
+                    <button class="btn-testar" onclick="testarChavePIX()"><i class="fas fa-vial"></i> TESTAR CHAVE PIX</button>
+                    <button class="btn-salvar" onclick="salvarConfigPIX()"><i class="fas fa-save"></i> SALVAR CONFIGURAÇÃO</button>
                     <div id="resultadoTeste" class="resultado-teste"></div>
                 </div>
             </div>
@@ -878,56 +230,35 @@
     </div>
     
     <script>
-        // ============================================
-        // CONFIGURAÇÕES
-        // ============================================
         const API_BASE = window.location.origin;
         const ADMIN_TOKEN = 'DETRAN-MS-ADMIN-TOKEN';
+        let authToken = null, currentUser = null, refreshInterval = null;
         
-        let authToken = null;
-        let currentUser = null;
-        let refreshInterval = null;
-        
-        // ============================================
-        // FUNÇÕES DE LOGIN
-        // ============================================
         async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorElement = document.getElementById('loginError');
-            
             errorElement.style.display = 'none';
-            
             if (!username || !password) {
                 errorElement.textContent = 'Preencha usuário e senha!';
                 errorElement.style.display = 'block';
                 return;
             }
-            
             try {
                 const response = await fetch(`${API_BASE}/api/admin/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ usuario: username, senha: password })
                 });
-                
                 const data = await response.json();
-                
                 if (data.sucesso) {
                     authToken = ADMIN_TOKEN;
                     currentUser = data.usuario;
-                    
                     localStorage.setItem('detran_admin_token', authToken);
                     localStorage.setItem('detran_admin_user', currentUser);
                     localStorage.setItem('detran_admin_nome', data.nome);
-                    
                     showDashboard();
                     carregarDashboardCompleto();
-                    
-                    // Carregar configurações atuais
                     carregarConfiguracoesPIX();
-                    
-                    // Iniciar relógio
                     atualizarRelogio();
                     setInterval(atualizarRelogio, 1000);
                 } else {
@@ -939,11 +270,9 @@
                 errorElement.style.display = 'block';
             }
         }
-        
         function logout() {
             if (confirm('Tem certeza que deseja sair do sistema?')) {
-                authToken = null;
-                currentUser = null;
+                authToken = null; currentUser = null;
                 localStorage.removeItem('detran_admin_token');
                 localStorage.removeItem('detran_admin_user');
                 localStorage.removeItem('detran_admin_nome');
@@ -951,361 +280,229 @@
                 showLogin();
             }
         }
-        
         function showLogin() {
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('dashboard').style.display = 'none';
         }
-        
         function showDashboard() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            
             if (refreshInterval) clearInterval(refreshInterval);
             refreshInterval = setInterval(carregarDashboardCompleto, 10000);
         }
         
-        // ============================================
-        // MODAL CONFIGURAÇÃO PIX
-        // ============================================
-        function abrirModalPix() {
-            document.getElementById('modalPix').classList.add('active');
-        }
-        
-        function fecharModalPix() {
+        function abrirModalPix() { document.getElementById('modalPix').classList.add('active'); }
+        function fecharModalPix() { 
             document.getElementById('modalPix').classList.remove('active');
             document.getElementById('resultadoTeste').style.display = 'none';
         }
         
         // ============================================
-        // CARREGAR DASHBOARD COMPLETO (DADOS REAIS)
+        // FUNÇÃO PRINCIPAL CORRIGIDA (SEM DUPLICAÇÃO)
         // ============================================
         async function carregarDashboardCompleto() {
             if (!authToken) {
                 const savedToken = localStorage.getItem('detran_admin_token');
                 const savedUser = localStorage.getItem('detran_admin_user');
-                
                 if (savedToken && savedUser) {
                     authToken = savedToken;
                     currentUser = savedUser;
-                } else {
-                    return;
-                }
+                } else return;
             }
-            
             try {
-                // Carregar dados PIX
                 await carregarDadosPIX();
-                
-                // Carregar dados cliques (CORRIGIDO)
-                await carregarDadosCliques();
-                
-                // Carregar tabela de pagamentos
+                await carregarDadosCliques(); // CORREÇÃO AQUI
                 await carregarTabelaPagamentos();
-                
             } catch (error) {
                 console.error('Erro ao carregar dashboard:', error);
             }
         }
         
-        // ============================================
-        // CARREGAR DADOS PIX (CORRETO)
-        // ============================================
         async function carregarDadosPIX() {
             try {
                 const response = await fetch(`${API_BASE}/api/admin/buscar-pix`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': authToken
-                    },
-                    body: JSON.stringify({ 
-                        pagina: 1, 
-                        limite: 1000, 
-                        categoria: 'todas' 
-                    })
+                    method: 'POST', headers: {'Content-Type': 'application/json','Authorization': authToken},
+                    body: JSON.stringify({ pagina: 1, limite: 1000, categoria: 'todas' })
                 });
-                
                 const data = await response.json();
-                
                 if (!data.sucesso || !data.resultados) return;
-                
                 const pixList = data.resultados;
                 const hoje = new Date().toDateString();
                 
-                // 1. TOTAL PAGAMENTOS GERADOS (PIX gerados)
-                const pagamentosGerados = pixList.filter(p => 
-                    p.categoria === 'gerado' || p.tipo === 'gerado'
-                );
-                const pagamentosGeradosHoje = pagamentosGerados.filter(p => 
-                    new Date(p.dataHora).toDateString() === hoje
-                );
-                
+                // 1. PAGAMENTOS GERADOS
+                const pagamentosGerados = pixList.filter(p => p.categoria === 'gerado' || p.tipo === 'gerado');
+                const pagamentosGeradosHoje = pagamentosGerados.filter(p => new Date(p.dataHora).toDateString() === hoje);
                 document.getElementById('totalPagamentosGerados').textContent = pagamentosGerados.length;
                 document.getElementById('pagamentosGeradosHoje').textContent = pagamentosGeradosHoje.length;
                 
-                // 2. TOTAL QR COPIADOS (PIX copiados)
-                const qrCopiados = pixList.filter(p => 
-                    p.categoria === 'copiado' || p.tipo === 'copiado'
-                );
-                const qrCopiadosHoje = qrCopiados.filter(p => 
-                    new Date(p.dataHora).toDateString() === hoje
-                );
-                
+                // 2. QR COPIADOS
+                const qrCopiados = pixList.filter(p => p.categoria === 'copiado' || p.tipo === 'copiado');
+                const qrCopiadosHoje = qrCopiados.filter(p => new Date(p.dataHora).toDateString() === hoje);
                 document.getElementById('totalQRCopiados').textContent = qrCopiados.length;
                 document.getElementById('qrcodesCopiadosHoje').textContent = qrCopiadosHoje.length;
                 
-                // 3. VALORES EM R$ (GERADOS)
-                const valorTotalGerados = pagamentosGerados.reduce((total, p) => 
-                    total + (parseFloat(p.valor) || 0), 0
-                );
-                const valorGeradosHoje = pagamentosGeradosHoje.reduce((total, p) => 
-                    total + (parseFloat(p.valor) || 0), 0
-                );
-                
+                // 3. VALORES GERADOS
+                const valorTotalGerados = pagamentosGerados.reduce((t,p) => t + (parseFloat(p.valor)||0),0);
+                const valorGeradosHoje = pagamentosGeradosHoje.reduce((t,p) => t + (parseFloat(p.valor)||0),0);
                 document.getElementById('totalPagamentosValor').textContent = formatarMoeda(valorTotalGerados);
                 document.getElementById('pagamentosValorHoje').textContent = formatarMoeda(valorGeradosHoje);
                 
-                // 4. VALORES EM R$ (COPIADOS)
-                const valorTotalCopiados = qrCopiados.reduce((total, p) => 
-                    total + (parseFloat(p.valor) || 0), 0
-                );
-                const valorCopiadosHoje = qrCopiadosHoje.reduce((total, p) => 
-                    total + (parseFloat(p.valor) || 0), 0
-                );
-                
+                // 4. VALORES COPIADOS
+                const valorTotalCopiados = qrCopiados.reduce((t,p) => t + (parseFloat(p.valor)||0),0);
+                const valorCopiadosHoje = qrCopiadosHoje.reduce((t,p) => t + (parseFloat(p.valor)||0),0);
                 document.getElementById('totalPixCopiadosValor').textContent = formatarMoeda(valorTotalCopiados);
                 document.getElementById('pixCopiadosValorHoje').textContent = formatarMoeda(valorCopiadosHoje);
-                
             } catch (error) {
                 console.error('Erro ao carregar dados PIX:', error);
             }
         }
         
         // ============================================
-        // CARREGAR DADOS CLIQUES (CORRIGIDO - SEM DUPLICAÇÃO)
+        // FUNÇÃO CORRIGIDA - SEM DUPLICAÇÃO DE CLIQUES
         // ============================================
         async function carregarDadosCliques() {
             try {
                 const response = await fetch(`${API_BASE}/api/admin/buscar-cliques`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': authToken
-                    },
-                    body: JSON.stringify({ 
-                        pagina: 1, 
-                        limite: 1000, 
-                        tipo: 'todos' 
-                    })
+                    method: 'POST', headers: {'Content-Type': 'application/json','Authorization': authToken},
+                    body: JSON.stringify({ pagina: 1, limite: 1000, tipo: 'todos' })
                 });
-                
                 const data = await response.json();
-                
                 if (!data.sucesso || !data.resultados) return;
-                
                 const cliquesList = data.resultados;
                 const hoje = new Date().toDateString();
                 
-                // 5. CLIQUES PÁGINA HOME (ENTRADA NO SITE)
-                // CORREÇÃO: Só conta 'pagina_visitada' com página '/'
+                // 5. CLIQUES PÁGINA HOME (APENAS ENTRADA NO SITE)
+                // CORREÇÃO: Só conta entrada real na HOME (página '/')
                 const clicksHome = cliquesList.filter(c => 
                     c.tipo === 'pagina_visitada' && 
                     c.pagina === '/' &&
                     c.elemento === 'entrada_site'
                 );
-                const clicksHomeHoje = clicksHome.filter(c => 
-                    new Date(c.dataHora).toDateString() === hoje
-                );
-                
-                console.log('Cliques home encontrados:', clicksHome.length);
-                console.log('Cliques home hoje:', clicksHomeHoje.length);
+                const clicksHomeHoje = clicksHome.filter(c => new Date(c.dataHora).toDateString() === hoje);
                 
                 document.getElementById('totalClicksHome').textContent = clicksHome.length;
                 document.getElementById('clicksHomeHoje').textContent = clicksHomeHoje.length;
                 
                 // 6. CLIQUES PÁGINA DÉBITOS (APÓS CONSULTA)
-                // CORREÇÃO: Só conta quando realmente faz consulta
+                // CORREÇÃO: Separado em 3 categorias distintas
                 const clicksDebitos = cliquesList.filter(c => 
-                    c.tipo === 'consulta' || 
-                    c.elemento === 'form_consulta' ||
-                    (c.detalhes && c.detalhes.includes('Placa:'))
+                    c.tipo === 'consulta' || // Quando faz consulta de placa/renavam
+                    (c.tipo === 'pagina_visitada' && c.pagina === '/consultar') || // Quando entra na página de consulta
+                    c.elemento === 'form_consulta' || // Quando envia formulário
+                    c.elemento === 'resultados' || // Quando vê resultados
+                    (c.detalhes && c.detalhes.includes('Placa:')) // Tem detalhes de consulta
                 );
-                const clicksDebitosHoje = clicksDebitos.filter(c => 
-                    new Date(c.dataHora).toDateString() === hoje
-                );
-                
-                console.log('Cliques débitos encontrados:', clicksDebitos.length);
-                console.log('Cliques débitos hoje:', clicksDebitosHoje.length);
+                const clicksDebitosHoje = clicksDebitos.filter(c => new Date(c.dataHora).toDateString() === hoje);
                 
                 document.getElementById('totalClicksDebitos').textContent = clicksDebitos.length;
                 document.getElementById('clicksDebitosHoje').textContent = clicksDebitosHoje.length;
+                
+                // DEBUG no console
+                console.log('=== CLICKS DEBUG ===');
+                console.log('Total cliques no banco:', cliquesList.length);
+                console.log('Cliques home:', clicksHome.length, '| Hoje:', clicksHomeHoje.length);
+                console.log('Cliques débitos:', clicksDebitos.length, '| Hoje:', clicksDebitosHoje.length);
+                console.log('=====================');
                 
             } catch (error) {
                 console.error('Erro ao carregar cliques:', error);
             }
         }
         
-        // ============================================
-        // CARREGAR TABELA DE PAGAMENTOS
-        // ============================================
         async function carregarTabelaPagamentos() {
             const tbody = document.getElementById('paymentsTableBody');
-            
             try {
                 const response = await fetch(`${API_BASE}/api/admin/buscar-pix`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': authToken
-                    },
-                    body: JSON.stringify({
-                        pagina: 1,
-                        limite: 20,
-                        categoria: 'todas'
-                    })
+                    method: 'POST', headers: {'Content-Type': 'application/json','Authorization': authToken},
+                    body: JSON.stringify({ pagina: 1, limite: 20, categoria: 'todas' })
                 });
-                
                 const data = await response.json();
-                
                 if (!data.sucesso || !data.resultados || data.resultados.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
-                                <i class="fas fa-database"></i> Nenhum pagamento registrado ainda
-                            </td>
-                        </tr>
-                    `;
-                    document.getElementById('ultimoPagamentoData').textContent = 'Nenhum pagamento registrado';
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                        <i class="fas fa-database"></i> Nenhum pagamento registrado</td></tr>`;
+                    document.getElementById('ultimoPagamentoData').textContent = 'Nenhum pagamento';
                     return;
                 }
-                
                 const pagamentos = data.resultados.slice(0, 8);
-                
-                // Atualizar data do último pagamento
                 if (pagamentos.length > 0) {
                     const ultimo = pagamentos[0];
                     const dataUltimo = new Date(ultimo.dataHora);
                     document.getElementById('ultimoPagamentoData').textContent = 
                         `${dataUltimo.getDate()} de ${getMonthName(dataUltimo.getMonth())} de ${dataUltimo.getFullYear()} às ${formatTime(dataUltimo)}`;
                 }
-                
-                // Preencher tabela
                 tbody.innerHTML = pagamentos.map(pagamento => {
                     const data = new Date(pagamento.dataHora);
                     const foiCopiado = pagamento.categoria === 'copiado' || pagamento.tipo === 'copiado';
                     const valor = parseFloat(pagamento.valor) || 0;
                     const localizacao = pagamento.cidade && pagamento.estado ? 
                         `${pagamento.cidade}, ${pagamento.estado} - BR` : 'Localização não disponível';
-                    
-                    return `
-                        <tr>
-                            <td><strong>R$ ${valor.toFixed(2).replace('.', ',')}</strong></td>
-                            <td>${pagamento.placa || '---'}</td>
-                            <td>${pagamento.renavam || '---'}</td>
-                            <td>${localizacao}</td>
-                            <td>${data.getDate()} de ${getMonthName(data.getMonth())} de ${data.getFullYear()} às ${formatTime(data)}</td>
-                            <td>
-                                <span class="status-badge ${foiCopiado ? 'success' : 'warning'}">
-                                    ${foiCopiado ? 'Sim' : 'Não'}
-                                </span>
-                            </td>
-                        </tr>
-                    `;
+                    return `<tr>
+                        <td><strong>R$ ${valor.toFixed(2).replace('.', ',')}</strong></td>
+                        <td>${pagamento.placa || '---'}</td>
+                        <td>${pagamento.renavam || '---'}</td>
+                        <td>${localizacao}</td>
+                        <td>${data.getDate()} de ${getMonthName(data.getMonth())} de ${data.getFullYear()} às ${formatTime(data)}</td>
+                        <td><span class="status-badge ${foiCopiado ? 'success' : 'warning'}">${foiCopiado ? 'Sim' : 'Não'}</span></td>
+                    </tr>`;
                 }).join('');
-                
-                // Configurar busca
                 const searchInput = document.getElementById('searchPayments');
-                if (searchInput) {
-                    searchInput.addEventListener('input', function(e) {
-                        const termo = e.target.value.toLowerCase();
-                        const linhas = tbody.querySelectorAll('tr');
-                        
-                        linhas.forEach(linha => {
-                            const texto = linha.textContent.toLowerCase();
-                            linha.style.display = texto.includes(termo) ? '' : 'none';
-                        });
+                if (searchInput) searchInput.addEventListener('input', function(e) {
+                    const termo = e.target.value.toLowerCase();
+                    tbody.querySelectorAll('tr').forEach(linha => {
+                        linha.style.display = linha.textContent.toLowerCase().includes(termo) ? '' : 'none';
                     });
-                }
-                
+                });
             } catch (error) {
                 console.error('Erro ao carregar pagamentos:', error);
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: #f44336;">
-                            <i class="fas fa-exclamation-triangle"></i> Erro ao carregar pagamentos
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: #f44336;">
+                    <i class="fas fa-exclamation-triangle"></i> Erro ao carregar</td></tr>`;
             }
         }
         
-        // ============================================
-        // CONFIGURAÇÃO PIX
-        // ============================================
         async function carregarConfiguracoesPIX() {
             try {
-                const response = await fetch(`${API_BASE}/api/admin/dashboard`, {
-                    headers: { 'Authorization': authToken }
-                });
-                
+                const response = await fetch(`${API_BASE}/api/admin/dashboard`, {headers: { 'Authorization': authToken }});
                 const data = await response.json();
-                
                 if (data.sucesso && data.dados.sistema) {
-                    const sistema = data.dados.sistema;
-                    
-                    document.getElementById('pixTipo').value = sistema.chaveTipo || 'aleatoria';
-                    document.getElementById('pixChave').value = sistema.chavePix || '';
-                    document.getElementById('pixNome').value = sistema.nomeRecebedor || 'DETRAN MS';
-                    document.getElementById('pixCidade').value = sistema.cidadeRecebedor || 'CAMPO GRANDE';
-                    document.getElementById('pixIdentificador').value = sistema.identificador || 'PAGAMENTODETRAN';
+                    const s = data.dados.sistema;
+                    document.getElementById('pixTipo').value = s.chaveTipo || 'aleatoria';
+                    document.getElementById('pixChave').value = s.chavePix || '';
+                    document.getElementById('pixNome').value = s.nomeRecebedor || 'DETRAN MS';
+                    document.getElementById('pixCidade').value = s.cidadeRecebedor || 'CAMPO GRANDE';
+                    document.getElementById('pixIdentificador').value = s.identificador || 'PAGAMENTODETRAN';
                 }
-            } catch (error) {
-                console.error('Erro ao carregar configurações:', error);
-            }
+            } catch (error) { console.error('Erro ao carregar configurações:', error); }
         }
         
         async function testarChavePIX() {
             const pixChave = document.getElementById('pixChave').value.trim();
             const resultadoDiv = document.getElementById('resultadoTeste');
-            
             if (!pixChave) {
                 resultadoDiv.innerHTML = 'Digite uma chave PIX para testar!';
                 resultadoDiv.className = 'resultado-teste erro';
                 resultadoDiv.style.display = 'block';
                 return;
             }
-            
             try {
                 const response = await fetch(`${API_BASE}/api/testar-pix`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ chavePix: pixChave })
                 });
-                
                 const data = await response.json();
-                
                 if (data.sucesso) {
-                    resultadoDiv.innerHTML = `
-                        <strong><i class="fas fa-check-circle"></i> CHAVE PIX VÁLIDA!</strong><br>
+                    resultadoDiv.innerHTML = `<strong><i class="fas fa-check-circle"></i> CHAVE PIX VÁLIDA!</strong><br>
                         <small>Tamanho: ${data.tamanho} caracteres | CRC: ${data.crc}</small><br>
-                        <small>Pode gerar PIX reais com esta chave.</small>
-                    `;
+                        <small>Pode gerar PIX reais com esta chave.</small>`;
                     resultadoDiv.className = 'resultado-teste sucesso';
                 } else {
-                    resultadoDiv.innerHTML = `
-                        <strong><i class="fas fa-exclamation-triangle"></i> ERRO:</strong><br>
-                        <small>${data.mensagem || 'Chave PIX inválida'}</small>
-                    `;
+                    resultadoDiv.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> ERRO:</strong><br>
+                        <small>${data.mensagem || 'Chave PIX inválida'}</small>`;
                     resultadoDiv.className = 'resultado-teste erro';
                 }
                 resultadoDiv.style.display = 'block';
-                
             } catch (error) {
-                resultadoDiv.innerHTML = `
-                    <strong><i class="fas fa-exclamation-triangle"></i> ERRO DE CONEXÃO:</strong><br>
-                    <small>Não foi possível testar a chave PIX</small>
-                `;
+                resultadoDiv.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> ERRO DE CONEXÃO:</strong><br>
+                    <small>Não foi possível testar a chave PIX</small>`;
                 resultadoDiv.className = 'resultado-teste erro';
                 resultadoDiv.style.display = 'block';
             }
@@ -1318,130 +515,71 @@
             const pixCidade = document.getElementById('pixCidade').value.trim();
             const pixIdentificador = document.getElementById('pixIdentificador').value.trim();
             const resultadoDiv = document.getElementById('resultadoTeste');
-            
             if (!pixChave) {
                 resultadoDiv.innerHTML = 'Digite uma chave PIX válida!';
                 resultadoDiv.className = 'resultado-teste erro';
                 resultadoDiv.style.display = 'block';
                 return;
             }
-            
             try {
                 const response = await fetch(`${API_BASE}/api/admin/config`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': authToken
-                    },
-                    body: JSON.stringify({ 
-                        chavePix: pixChave,
-                        nomeRecebedor: pixNome,
-                        cidadeRecebedor: pixCidade,
-                        pixTipo: pixTipo,
-                        pixIdentificador: pixIdentificador
-                    })
+                    method: 'POST', headers: {'Content-Type': 'application/json','Authorization': authToken},
+                    body: JSON.stringify({ chavePix: pixChave, nomeRecebedor: pixNome,
+                        cidadeRecebedor: pixCidade, pixTipo: pixTipo, pixIdentificador: pixIdentificador })
                 });
-                
                 const data = await response.json();
-                
                 if (data.sucesso) {
-                    resultadoDiv.innerHTML = `
-                        <strong><i class="fas fa-check-circle"></i> CONFIGURAÇÃO SALVA COM SUCESSO!</strong><br>
-                        <small>Os próximos PIX usarão estas informações.</small>
-                    `;
+                    resultadoDiv.innerHTML = `<strong><i class="fas fa-check-circle"></i> CONFIGURAÇÃO SALVA!</strong><br>
+                        <small>Os próximos PIX usarão estas informações.</small>`;
                     resultadoDiv.className = 'resultado-teste sucesso';
                 } else {
-                    resultadoDiv.innerHTML = `
-                        <strong><i class="fas fa-exclamation-triangle"></i> ERRO AO SALVAR:</strong><br>
-                        <small>${data.mensagem || 'Erro desconhecido'}</small>
-                    `;
+                    resultadoDiv.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> ERRO AO SALVAR:</strong><br>
+                        <small>${data.mensagem || 'Erro desconhecido'}</small>`;
                     resultadoDiv.className = 'resultado-teste erro';
                 }
                 resultadoDiv.style.display = 'block';
-                
             } catch (error) {
-                resultadoDiv.innerHTML = `
-                    <strong><i class="fas fa-exclamation-triangle"></i> ERRO DE CONEXÃO:</strong><br>
-                    <small>Não foi possível salvar a configuração</small>
-                `;
+                resultadoDiv.innerHTML = `<strong><i class="fas fa-exclamation-triangle"></i> ERRO DE CONEXÃO:</strong><br>
+                    <small>Não foi possível salvar</small>`;
                 resultadoDiv.className = 'resultado-teste erro';
                 resultadoDiv.style.display = 'block';
             }
         }
         
-        // ============================================
-        // FUNÇÕES UTILITÁRIAS
-        // ============================================
         function atualizarRelogio() {
             const now = new Date();
             const meses = ['jan.', 'fev.', 'mar.', 'abr.', 'mai.', 'jun.', 
                           'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.'];
-            
             const dia = now.getDate();
             const mes = meses[now.getMonth()];
             const ano = now.getFullYear();
             const horas = now.getHours().toString().padStart(2, '0');
             const minutos = now.getMinutes().toString().padStart(2, '0');
             const segundos = now.getSeconds().toString().padStart(2, '0');
-            
             document.getElementById('currentTime').textContent = 
                 `${dia} de ${mes} de ${ano}, ${horas}:${minutos}:${segundos}`;
         }
+        function getMonthName(m) { return ['jan.','fev.','mar.','abr.','mai.','jun.','jul.','ago.','set.','out.','nov.','dez.'][m]; }
+        function formatTime(d) { return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}`; }
+        function formatarMoeda(v) { return 'R$ ' + v.toFixed(2).replace('.', ','); }
         
-        function getMonthName(month) {
-            const meses = [
-                'jan.', 'fev.', 'mar.', 'abr.', 'mai.', 'jun.',
-                'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.'
-            ];
-            return meses[month];
-        }
-        
-        function formatTime(date) {
-            return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
-        }
-        
-        function formatarMoeda(valor) {
-            return 'R$ ' + valor.toFixed(2).replace('.', ',');
-        }
-        
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Dashboard DT-MS inicializado');
-            
-            // Verificar login salvo
             const savedToken = localStorage.getItem('detran_admin_token');
             const savedUser = localStorage.getItem('detran_admin_user');
-            
             if (savedToken && savedUser) {
-                authToken = savedToken;
-                currentUser = savedUser;
-                showDashboard();
-                carregarDashboardCompleto();
-                carregarConfiguracoesPIX();
-                atualizarRelogio();
+                authToken = savedToken; currentUser = savedUser;
+                showDashboard(); carregarDashboardCompleto();
+                carregarConfiguracoesPIX(); atualizarRelogio();
                 setInterval(atualizarRelogio, 1000);
-            } else {
-                showLogin();
-            }
-            
-            // Configurar evento Enter no login
+            } else showLogin();
             document.getElementById('password').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') login();
             });
-            
-            // Atualizar dados periodicamente
             setInterval(carregarDashboardCompleto, 10000);
-            
-            // Fechar modal ao clicar fora
             document.getElementById('modalPix').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    fecharModalPix();
-                }
+                if (e.target === this) fecharModalPix();
             });
-            
-            // Fechar modal com ESC
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && document.getElementById('modalPix').classList.contains('active')) {
                     fecharModalPix();
