@@ -557,6 +557,27 @@
         
         .hidden { display: none !important; }
         
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #1a237e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
         /* ========================================= */
         /* RESPONSIVIDADE */
         /* ========================================= */
@@ -778,7 +799,8 @@
                         <tbody id="paymentsTableBody">
                             <tr>
                                 <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
-                                    <i class="fas fa-spinner fa-spin"></i> Carregando pagamentos...
+                                    <div class="loading-spinner" style="margin: 0 auto 10px;"></div>
+                                    Carregando pagamentos...
                                 </td>
                             </tr>
                         </tbody>
@@ -900,7 +922,7 @@
                     localStorage.setItem('detran_admin_nome', data.nome);
                     
                     showDashboard();
-                    carregarDashboard();
+                    carregarDashboardCompleto();
                     
                     // Carregar configurações atuais
                     carregarConfiguracoesPIX();
@@ -940,7 +962,7 @@
             document.getElementById('dashboard').style.display = 'block';
             
             if (refreshInterval) clearInterval(refreshInterval);
-            refreshInterval = setInterval(carregarDashboard, 10000);
+            refreshInterval = setInterval(carregarDashboardCompleto, 10000);
         }
         
         // ============================================
@@ -956,9 +978,9 @@
         }
         
         // ============================================
-        // CARREGAR DASHBOARD COM DADOS REAIS
+        // CARREGAR DASHBOARD COMPLETO (DADOS REAIS)
         // ============================================
-        async function carregarDashboard() {
+        async function carregarDashboardCompleto() {
             if (!authToken) {
                 const savedToken = localStorage.getItem('detran_admin_token');
                 const savedUser = localStorage.getItem('detran_admin_user');
@@ -972,97 +994,165 @@
             }
             
             try {
-                // Carregar dados do dashboard
-                const response = await fetch(`${API_BASE}/api/admin/dashboard`, {
-                    headers: { 'Authorization': authToken }
-                });
+                // Carregar dados PIX
+                await carregarDadosPIX();
                 
-                if (response.status === 401) {
-                    logout();
-                    return;
-                }
+                // Carregar dados cliques (CORRIGIDO)
+                await carregarDadosCliques();
                 
-                if (!response.ok) throw new Error('Erro no servidor');
+                // Carregar tabela de pagamentos
+                await carregarTabelaPagamentos();
                 
-                const data = await response.json();
-                
-                if (data.sucesso) {
-                    atualizarMetricasDashboard(data.dados);
-                    atualizarTabelaPagamentos(data.dados);
-                }
             } catch (error) {
                 console.error('Erro ao carregar dashboard:', error);
             }
         }
         
-        function atualizarMetricasDashboard(dados) {
-            if (!dados || !dados.estatisticas) return;
-            
-            const stats = dados.estatisticas;
-            const hoje = new Date().toDateString();
-            
-            // 1. TOTAL PAGAMENTOS GERADOS (PIX gerados)
-            const totalPagamentos = stats.pixGerados || 0;
-            const pagamentosHoje = stats.pixHoje || 0;
-            
-            document.getElementById('totalPagamentosGerados').textContent = totalPagamentos;
-            document.getElementById('pagamentosGeradosHoje').textContent = pagamentosHoje;
-            
-            // 2. TOTAL QR COPIADOS GERADOS (PIX copiados)
-            const totalCopiados = stats.pixCopiados || 0;
-            // PIX Hoje inclui gerados e copiados, vamos estimar
-            const copiadosHoje = Math.floor(pagamentosHoje * 0.3); // Exemplo: 30% dos PIX hoje foram copiados
-            
-            document.getElementById('totalQRCopiados').textContent = totalCopiados;
-            document.getElementById('qrcodesCopiadosHoje').textContent = copiadosHoje;
-            
-            // 3. TOTAL PAGAMENTOS (VALOR GERADOS)
-            const valorTotal = parseValor(stats.valorGerados || 'R$ 0');
-            const valorHoje = parseValor(stats.valorGerados || 'R$ 0') * 0.5; // Exemplo
-            
-            document.getElementById('totalPagamentosValor').textContent = formatarMoeda(valorTotal);
-            document.getElementById('pagamentosValorHoje').textContent = formatarMoeda(valorHoje);
-            
-            // 4. TOTAL PIX COPIADOS (VALOR COPIADOS)
-            const valorTotalCopiados = parseValor(stats.valorCopiados || 'R$ 0');
-            const valorCopiadosHoje = parseValor(stats.valorCopiados || 'R$ 0') * 0.3; // Exemplo
-            
-            document.getElementById('totalPixCopiadosValor').textContent = formatarMoeda(valorTotalCopiados);
-            document.getElementById('pixCopiadosValorHoje').textContent = formatarMoeda(valorCopiadosHoje);
-            
-            // 5. CLICKS PÁGINA HOME
-            const totalCliquesHome = Math.floor((stats.totalCliques || 0) * 0.6);
-            const cliquesHomeHoje = Math.floor((stats.cliquesHoje || 0) * 0.6);
-            
-            document.getElementById('totalClicksHome').textContent = totalCliquesHome;
-            document.getElementById('clicksHomeHoje').textContent = cliquesHomeHoje;
-            
-            // 6. CLICKS PÁGINA DÉBITOS
-            const totalCliquesDebitos = Math.floor((stats.totalCliques || 0) * 0.4);
-            const cliquesDebitosHoje = Math.floor((stats.cliquesHoje || 0) * 0.4);
-            
-            document.getElementById('totalClicksDebitos').textContent = totalCliquesDebitos;
-            document.getElementById('clicksDebitosHoje').textContent = cliquesDebitosHoje;
-        }
-        
-        function parseValor(valorStr) {
-            // Converte "R$ 1.234,56" para 1234.56
-            const numero = valorStr.replace('R$', '').replace(/\./g, '').replace(',', '.').trim();
-            return parseFloat(numero) || 0;
-        }
-        
-        function formatarMoeda(valor) {
-            return 'R$ ' + valor.toFixed(2).replace('.', ',');
+        // ============================================
+        // CARREGAR DADOS PIX (CORRETO)
+        // ============================================
+        async function carregarDadosPIX() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/buscar-pix`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken
+                    },
+                    body: JSON.stringify({ 
+                        pagina: 1, 
+                        limite: 1000, 
+                        categoria: 'todas' 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!data.sucesso || !data.resultados) return;
+                
+                const pixList = data.resultados;
+                const hoje = new Date().toDateString();
+                
+                // 1. TOTAL PAGAMENTOS GERADOS (PIX gerados)
+                const pagamentosGerados = pixList.filter(p => 
+                    p.categoria === 'gerado' || p.tipo === 'gerado'
+                );
+                const pagamentosGeradosHoje = pagamentosGerados.filter(p => 
+                    new Date(p.dataHora).toDateString() === hoje
+                );
+                
+                document.getElementById('totalPagamentosGerados').textContent = pagamentosGerados.length;
+                document.getElementById('pagamentosGeradosHoje').textContent = pagamentosGeradosHoje.length;
+                
+                // 2. TOTAL QR COPIADOS (PIX copiados)
+                const qrCopiados = pixList.filter(p => 
+                    p.categoria === 'copiado' || p.tipo === 'copiado'
+                );
+                const qrCopiadosHoje = qrCopiados.filter(p => 
+                    new Date(p.dataHora).toDateString() === hoje
+                );
+                
+                document.getElementById('totalQRCopiados').textContent = qrCopiados.length;
+                document.getElementById('qrcodesCopiadosHoje').textContent = qrCopiadosHoje.length;
+                
+                // 3. VALORES EM R$ (GERADOS)
+                const valorTotalGerados = pagamentosGerados.reduce((total, p) => 
+                    total + (parseFloat(p.valor) || 0), 0
+                );
+                const valorGeradosHoje = pagamentosGeradosHoje.reduce((total, p) => 
+                    total + (parseFloat(p.valor) || 0), 0
+                );
+                
+                document.getElementById('totalPagamentosValor').textContent = formatarMoeda(valorTotalGerados);
+                document.getElementById('pagamentosValorHoje').textContent = formatarMoeda(valorGeradosHoje);
+                
+                // 4. VALORES EM R$ (COPIADOS)
+                const valorTotalCopiados = qrCopiados.reduce((total, p) => 
+                    total + (parseFloat(p.valor) || 0), 0
+                );
+                const valorCopiadosHoje = qrCopiadosHoje.reduce((total, p) => 
+                    total + (parseFloat(p.valor) || 0), 0
+                );
+                
+                document.getElementById('totalPixCopiadosValor').textContent = formatarMoeda(valorTotalCopiados);
+                document.getElementById('pixCopiadosValorHoje').textContent = formatarMoeda(valorCopiadosHoje);
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados PIX:', error);
+            }
         }
         
         // ============================================
-        // ATUALIZAR TABELA DE PAGAMENTOS
+        // CARREGAR DADOS CLIQUES (CORRIGIDO - SEM DUPLICAÇÃO)
         // ============================================
-        async function atualizarTabelaPagamentos(dados) {
+        async function carregarDadosCliques() {
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/buscar-cliques`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': authToken
+                    },
+                    body: JSON.stringify({ 
+                        pagina: 1, 
+                        limite: 1000, 
+                        tipo: 'todos' 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!data.sucesso || !data.resultados) return;
+                
+                const cliquesList = data.resultados;
+                const hoje = new Date().toDateString();
+                
+                // 5. CLIQUES PÁGINA HOME (ENTRADA NO SITE)
+                // CORREÇÃO: Só conta 'pagina_visitada' com página '/'
+                const clicksHome = cliquesList.filter(c => 
+                    c.tipo === 'pagina_visitada' && 
+                    c.pagina === '/' &&
+                    c.elemento === 'entrada_site'
+                );
+                const clicksHomeHoje = clicksHome.filter(c => 
+                    new Date(c.dataHora).toDateString() === hoje
+                );
+                
+                console.log('Cliques home encontrados:', clicksHome.length);
+                console.log('Cliques home hoje:', clicksHomeHoje.length);
+                
+                document.getElementById('totalClicksHome').textContent = clicksHome.length;
+                document.getElementById('clicksHomeHoje').textContent = clicksHomeHoje.length;
+                
+                // 6. CLIQUES PÁGINA DÉBITOS (APÓS CONSULTA)
+                // CORREÇÃO: Só conta quando realmente faz consulta
+                const clicksDebitos = cliquesList.filter(c => 
+                    c.tipo === 'consulta' || 
+                    c.elemento === 'form_consulta' ||
+                    (c.detalhes && c.detalhes.includes('Placa:'))
+                );
+                const clicksDebitosHoje = clicksDebitos.filter(c => 
+                    new Date(c.dataHora).toDateString() === hoje
+                );
+                
+                console.log('Cliques débitos encontrados:', clicksDebitos.length);
+                console.log('Cliques débitos hoje:', clicksDebitosHoje.length);
+                
+                document.getElementById('totalClicksDebitos').textContent = clicksDebitos.length;
+                document.getElementById('clicksDebitosHoje').textContent = clicksDebitosHoje.length;
+                
+            } catch (error) {
+                console.error('Erro ao carregar cliques:', error);
+            }
+        }
+        
+        // ============================================
+        // CARREGAR TABELA DE PAGAMENTOS
+        // ============================================
+        async function carregarTabelaPagamentos() {
             const tbody = document.getElementById('paymentsTableBody');
             
             try {
-                // Buscar dados PIX específicos
                 const response = await fetch(`${API_BASE}/api/admin/buscar-pix`, {
                     method: 'POST',
                     headers: {
@@ -1076,9 +1166,9 @@
                     })
                 });
                 
-                const pixData = await response.json();
+                const data = await response.json();
                 
-                if (!pixData.sucesso || !pixData.resultados || pixData.resultados.length === 0) {
+                if (!data.sucesso || !data.resultados || data.resultados.length === 0) {
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
@@ -1090,7 +1180,7 @@
                     return;
                 }
                 
-                const pagamentos = pixData.resultados.slice(0, 8); // Últimos 8
+                const pagamentos = data.resultados.slice(0, 8);
                 
                 // Atualizar data do último pagamento
                 if (pagamentos.length > 0) {
@@ -1126,15 +1216,17 @@
                 
                 // Configurar busca
                 const searchInput = document.getElementById('searchPayments');
-                searchInput.addEventListener('input', function(e) {
-                    const termo = e.target.value.toLowerCase();
-                    const linhas = tbody.querySelectorAll('tr');
-                    
-                    linhas.forEach(linha => {
-                        const texto = linha.textContent.toLowerCase();
-                        linha.style.display = texto.includes(termo) ? '' : 'none';
+                if (searchInput) {
+                    searchInput.addEventListener('input', function(e) {
+                        const termo = e.target.value.toLowerCase();
+                        const linhas = tbody.querySelectorAll('tr');
+                        
+                        linhas.forEach(linha => {
+                            const texto = linha.textContent.toLowerCase();
+                            linha.style.display = texto.includes(termo) ? '' : 'none';
+                        });
                     });
-                });
+                }
                 
             } catch (error) {
                 console.error('Erro ao carregar pagamentos:', error);
@@ -1308,6 +1400,10 @@
             return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
         }
         
+        function formatarMoeda(valor) {
+            return 'R$ ' + valor.toFixed(2).replace('.', ',');
+        }
+        
         // ============================================
         // INICIALIZAÇÃO
         // ============================================
@@ -1322,7 +1418,7 @@
                 authToken = savedToken;
                 currentUser = savedUser;
                 showDashboard();
-                carregarDashboard();
+                carregarDashboardCompleto();
                 carregarConfiguracoesPIX();
                 atualizarRelogio();
                 setInterval(atualizarRelogio, 1000);
@@ -1336,7 +1432,7 @@
             });
             
             // Atualizar dados periodicamente
-            setInterval(carregarDashboard, 10000);
+            setInterval(carregarDashboardCompleto, 10000);
             
             // Fechar modal ao clicar fora
             document.getElementById('modalPix').addEventListener('click', function(e) {
