@@ -25,6 +25,10 @@
             cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; 
             transition: all 0.3s; }
         .logout-btn:hover { background: #d32f2f; }
+        .btn-limpar-painel { background: #ff9800; color: white; border: none; padding: 10px 20px; border-radius: 5px; 
+            cursor: pointer; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; 
+            transition: all 0.3s; }
+        .btn-limpar-painel:hover { background: #f57c00; transform: translateY(-2px); }
         
         .dashboard-container { padding: 100px 40px 40px; max-width: 1400px; margin: 0 auto; }
         .dashboard-title { font-size: 22px; font-weight: 600; color: #333; margin-bottom: 30px; 
@@ -139,6 +143,7 @@
             </div>
             <div class="header-actions">
                 <button class="btn-pix-config" onclick="abrirModalPix()"><i class="fas fa-qrcode"></i> CONFIGURAR PIX</button>
+                <button class="btn-limpar-painel" onclick="limparPainel()"><i class="fas fa-broom"></i> LIMPAR PAINEL</button>
                 <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> SAIR</button>
             </div>
         </div>
@@ -270,6 +275,7 @@
                 errorElement.style.display = 'block';
             }
         }
+        
         function logout() {
             if (confirm('Tem certeza que deseja sair do sistema?')) {
                 authToken = null; currentUser = null;
@@ -280,6 +286,48 @@
                 showLogin();
             }
         }
+        
+        // FUNÇÃO PARA LIMPAR O PAINEL
+        async function limparPainel() {
+            if (!confirm('Tem certeza que deseja limpar todo o painel? Esta ação não pode ser desfeita.')) {
+                return;
+            }
+            
+            try {
+                // Resetar todos os valores das métricas para zero
+                document.getElementById('totalPagamentosGerados').textContent = '0';
+                document.getElementById('pagamentosGeradosHoje').textContent = '0';
+                document.getElementById('totalQRCopiados').textContent = '0';
+                document.getElementById('qrcodesCopiadosHoje').textContent = '0';
+                document.getElementById('totalPagamentosValor').textContent = 'R$ 0';
+                document.getElementById('pagamentosValorHoje').textContent = 'R$ 0';
+                document.getElementById('totalPixCopiadosValor').textContent = 'R$ 0';
+                document.getElementById('pixCopiadosValorHoje').textContent = 'R$ 0';
+                document.getElementById('totalClicksHome').textContent = '0';
+                document.getElementById('clicksHomeHoje').textContent = '0';
+                document.getElementById('totalClicksDebitos').textContent = '0';
+                document.getElementById('clicksDebitosHoje').textContent = '0';
+                
+                // Limpar a tabela de pagamentos
+                const tbody = document.getElementById('paymentsTableBody');
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                    <i class="fas fa-check-circle"></i> Painel limpo com sucesso</td></tr>`;
+                
+                // Resetar o último pagamento
+                document.getElementById('ultimoPagamentoData').textContent = 'Nenhum pagamento';
+                
+                // Limpar campo de pesquisa
+                document.getElementById('searchPayments').value = '';
+                
+                // Mostrar mensagem de sucesso
+                alert('Painel limpo com sucesso!');
+                
+            } catch (error) {
+                console.error('Erro ao limpar painel:', error);
+                alert('Erro ao limpar painel. Tente novamente.');
+            }
+        }
+        
         function showLogin() {
             document.getElementById('loginScreen').style.display = 'flex';
             document.getElementById('dashboard').style.display = 'none';
