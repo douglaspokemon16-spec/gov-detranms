@@ -1,676 +1,1524 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Governo do Estado de Mato Grosso do Sul</title>
-    
+    <title>Portal Meu Detran MS</title>
+    <!-- FAVICON ADICIONADO (correção #5) -->
     <link rel="icon" type="image/png" href="favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <!-- Usando o CSS original do site -->
+    <link rel="stylesheet" href="https://detranmatogrossosul-govbr.vercel.app/_next/static/chunks/996de2e32a16761a.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- CSS GERAL --- */
-        * { box-sizing: border-box; }
-        body { margin: 0; padding: 0; background-color: #f4f7f6; font-family: 'Open Sans', Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
-
-        .gov-header { background-color: #004a99; height: 85px; display: flex; align-items: center; padding: 0 5%; }
-        .gov-logo { height: 50px; }
-        .main-content { flex: 1; display: flex; justify-content: center; padding-top: 40px; }
-
-        .card-consulta {
-            background-color: white; width: 100%; max-width: 1110px; 
-            height: fit-content; padding: 20px 40px 40px 40px; 
-            border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
+        /* ESTILOS ORIGINAIS (MANTIDOS) */
+        .form-original { 
+            max-width: 360px; 
+            margin: 0 auto;
         }
-
-        .card-title {
-            color: #333333; font-size: 18px; font-weight: 700;
-            border-bottom: 2px solid #004a99; padding-bottom: 8px; 
-            margin-top: 0; margin-bottom: 30px; display: inline-block;
+        .hidden { display: none; }
+        .error { 
+            color: red; 
+            text-align: center; 
+            padding: 10px; 
         }
-
-        .form-row { display: flex; gap: 30px; margin-bottom: 20px; justify-content: flex-start; }
-        .input-group { display: flex; flex-direction: column; width: 313px; flex-shrink: 0; }
-        .input-group label { font-weight: 400; color: #333; margin-bottom: 5px; font-size: 14px; }
-        .required { color: #d9534f; margin-left: 3px; font-weight: bold;}
-
-        .form-input {
-            height: 38px; border: 1px solid #ccc; border-radius: 4px;
-            padding: 0 10px; font-size: 14px; color: #555; outline: none; width: 100%;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-        .form-input:focus { border-color: #80bdff; box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); }
-
-        .btn-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px; }
-        .btn { padding: 8px 16px; font-size: 14px; border-radius: 4px; cursor: pointer; font-weight: 400; min-width: 90px; }
         
-        .btn-consultar { background-color: #004a99; color: white; border: 1px solid #004a99; }
-        .btn-consultar:hover { background-color: #003366; }
-        .btn-consultar:disabled { background-color: #ccc; border-color: #ccc; cursor: not-allowed; }
-
-        .btn-limpar { background-color: white; color: #007bff; border: 1px solid #007bff; }
-        .btn-limpar:hover { background-color: #f0f8ff; }
-
-        .footer { background-color: #004a99; color: white; text-align: center; padding: 15px; font-size: 12px; margin-top: auto; border-top: 1px solid #003366; }
-
-        /* --- TELA DE CARREGAMENTO (LOADING) --- */
-        .loading-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.9); z-index: 2000;
-            flex-direction: column; justify-content: center; align-items: center;
+        #resultadosContainer {
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
         }
-        .spinner {
-            border: 6px solid #f3f3f3; border-top: 6px solid #004a99;
-            border-radius: 50%; width: 60px; height: 60px;
-            animation: spin 1s linear infinite; margin-bottom: 20px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-text { color: #004a99; font-weight: bold; font-size: 18px; }
-
-        /* --- MODAL DE RESULTADO (ESTILO DA IMAGEM) --- */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1000;
-            justify-content: center; align-items: center;
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 800px; border-radius: 4px;
-            padding: 0; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative;
-            max-height: 90vh; overflow-y: auto;
-        }
-        .modal-header {
-            background: #004a99; color: white; padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 10;
-        }
-        .modal-header h3 { margin: 0; font-size: 18px; }
-        .close-btn { cursor: pointer; font-size: 24px; color: white; }
         
-        .modal-body { padding: 20px; }
+        .btn-voltar {
+            width: 200px;
+            height: 40px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            color: #284e8a;
+            border: 2px solid #284e8a;
+            background: transparent;
+            font-weight: bold;
+            border-radius: 32px;
+            cursor: pointer;
+        }
         
-        /* Título principal do modal */
-        .modal-main-title {
-            color: #333;
-            font-size: 20px;
+        .btn-voltar:hover {
+            background: #f0f0f0;
+        }
+        
+        .spinner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            min-width: 200px;
+            min-height: 200px;
+        }
+        
+        .spinner-medium {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #0066cc;
+            border-right: 6px solid #28a44c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .spinner-text {
+            color: #0066cc;
+            font-size: 18px;
             font-weight: bold;
             text-align: center;
-            margin: 0 0 5px 0;
-            padding: 0;
+            margin: 0;
         }
         
-        .modal-subtitle {
-            color: #666;
-            font-size: 14px;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .form-loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        #resultadosContainer footer {
+            display: none !important;
+        }
+        
+        /* ========================================= */
+        /* MODAL DE PAGAMENTO PIX - MODIFICADO */
+        /* ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 15px;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-pix {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-pix {
+                max-height: 90vh;
+                max-width: 95%;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #005a9c 0%, #003d6b 100%);
+            color: white;
+            padding: 20px;
             text-align: center;
-            margin: 0 0 20px 0;
-            padding: 0;
-            font-weight: normal;
+            position: relative;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
         }
         
-        /* Estilo da mensagem de débitos */
-        .debitos-message {
-            background-color: #f8f9fa; border-left: 4px solid #004a99;
-            padding: 12px 15px; margin-bottom: 20px; font-size: 14px;
+        .modal-header h2 {
+            font-size: 22px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
-        /* Valor total */
-        .valor-total-area {
-            background-color: #fff3cd; border: 1px solid #ffeaa7;
-            padding: 15px; text-align: center; border-radius: 4px;
+        .modal-timer {
+            background: #ff9800;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            display: inline-block;
+            margin-top: 10px;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .dados-veiculo {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
             margin-bottom: 20px;
-        }
-        .valor-total-label {
-            font-size: 14px; color: #333; margin-bottom: 5px;
-        }
-        .valor-total {
-            color: #d9534f; font-size: 28px; font-weight: bold;
+            border-left: 4px solid #005a9c;
         }
         
-        /* Dados do veículo em tabela */
-        .dados-veiculo-tabela {
-            width: 100%; border-collapse: collapse; margin-bottom: 25px;
+        .dados-veiculo strong {
+            color: #005a9c;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .detalhes-pagamento {
+            margin-bottom: 25px;
+        }
+        
+        .categoria-titulo {
+            color: #333;
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .categoria-titulo.debitos { color: #dc3545; border-color: #dc3545; }
+        .categoria-titulo.pix { color: #005a9c; border-color: #005a9c; }
+        
+        .item-pagamento {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .item-pagamento:last-child {
+            border-bottom: none;
+        }
+        
+        .total-pagar {
+            background: #e8f6ef;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px solid #28a745;
+        }
+        
+        .total-pagar .label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .total-pagar .valor {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 5px;
+        }
+        
+        /* ÁREA DO QR CODE (AGORA APARECE AUTOMATICAMENTE) */
+        .qrcode-container {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #005a9c;
+            display: block !important; /* SEMPRE VISÍVEL */
+        }
+        
+        #qrcode {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
             border: 1px solid #ddd;
         }
-        .dados-veiculo-tabela th {
-            background-color: #f8f9fa; text-align: left;
-            padding: 12px 15px; font-weight: 600; color: #333;
-            border-bottom: 2px solid #dee2e6;
-            border-right: 1px solid #dee2e6;
-            width: 25%;
-        }
-        .dados-veiculo-tabela td {
-            padding: 12px 15px; border-bottom: 1px solid #dee2e6;
-            vertical-align: middle;
-            border-right: 1px solid #dee2e6;
-        }
-        .dados-veiculo-tabela tr:last-child td,
-        .dados-veiculo-tabela tr:last-child th { border-bottom: none; }
-        .dados-veiculo-tabela td:last-child,
-        .dados-veiculo-tabela th:last-child { border-right: none; }
         
-        /* Tabela de parcelas */
-        .ano-titulo {
-            color: #004a99; font-weight: bold; font-size: 16px;
-            margin-bottom: 10px; padding-bottom: 5px;
-            border-bottom: 1px solid #e0e0e0;
+        /* ÁREA DO CÓDIGO PIX - COPIA E COLA (AGORA ABAIXO DO QR) */
+        .codigo-pix-area {
+            margin: 25px 0;
         }
-        .tabela-parcelas {
-            width: 100%; border-collapse: collapse; margin-bottom: 25px;
-        }
-        .tabela-parcelas th {
-            background-color: #f8f9fa; text-align: left;
-            padding: 10px 15px; font-weight: 600; color: #333;
-            border-bottom: 2px solid #dee2e6;
-        }
-        .tabela-parcelas td {
-            padding: 12px 15px; border-bottom: 1px solid #dee2e6;
-            vertical-align: middle;
-        }
-        .tabela-parcelas tr:last-child td { border-bottom: none; }
         
-        .checkbox-parcela { width: 16px; height: 16px; }
+        .codigo-pix {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            word-break: break-all;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            max-height: 120px;
+            overflow-y: auto;
+            line-height: 1.4;
+        }
         
-        /* Botões de ação */
-        .botoes-acao {
-            display: flex; gap: 15px; margin-top: 30px;
-            justify-content: flex-end; flex-wrap: wrap;
+        /* BOTÕES - AGORA SÓ TEM "COPIAR CÓDIGO" */
+        .opcoes-pix {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
-        .btn-emitir {
-            background-color: #004a99; color: white; border: none;
-            padding: 12px 25px; border-radius: 4px; font-weight: 600;
-            cursor: pointer; min-width: 150px; text-align: center;
-        }
-        .btn-emitir:hover { background-color: #003366; }
         
         .btn-pix {
-            background-color: #28a745; color: white; border: none;
-            padding: 12px 25px; border-radius: 4px; font-weight: 600;
-            cursor: pointer; min-width: 150px; text-align: center;
-            text-decoration: none; display: inline-block;
-        }
-        .btn-pix:hover { background-color: #218838; }
-        
-        .btn-secundario {
-            background-color: #6c757d; color: white; border: none;
-            padding: 12px 25px; border-radius: 4px; font-weight: 600;
-            cursor: pointer; min-width: 150px; text-align: center;
-        }
-        .btn-secundario:hover { background-color: #5a6268; }
-        
-        /* Modal do PIX */
-        #modalPix .modal-content {
-            max-width: 500px;
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
-        .pix-qr-container {
+        /* Botão COPIAR (ÚNICO AGORA) */
+        .btn-pix.copiar {
+            background: #ff9800;
+            color: white;
+            width: 100%;
+            flex: 1;
+        }
+        
+        .btn-pix:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-pix:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        @media (max-width: 600px) {
+            .opcoes-pix {
+                flex-direction: column;
+            }
+            
+            .btn-pix {
+                min-width: 100%;
+                width: 100%;
+            }
+        }
+        
+        .btn-fechar-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-fechar-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .mensagem-sucesso {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
             text-align: center;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            display: inline-block;
+            margin-top: 15px;
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .mensagem-sucesso.active {
+            display: block;
+        }
+        
+        .modal-loading {
+            text-align: center;
+            padding: 40px;
+            color: #005a9c;
+        }
+        
+        .modal-loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #005a9c;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        .instrucoes-pix {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 600px) {
+            .modal-body {
+                padding: 15px;
+            }
+            
+            .modal-header {
+                padding: 15px;
+            }
+            
+            .modal-header h2 {
+                font-size: 18px;
+            }
+            
+            .codigo-pix {
+                font-size: 11px;
+                padding: 12px;
+            }
+            
+            #qrcode {
+                width: 180px;
+                height: 180px;
+            }
+        }
+
+        /* ========================================= */
+        /* CORREÇÕES VISUAIS - ESPAÇAMENTO ENTRE CAMPOS E BOTÕES */
+        /* ========================================= */
+        
+        /* CORREÇÃO: ESPAÇO ENTRE CAMPOS E BOTÕES */
+        .form-original {
+            margin-top: 25px !important;
+        }
+        
+        /* Mais espaço acima dos botões */
+        .form-original > .flex.items-center.gap-4.max-\\[500px\\]:w-full.max-\\[500px\\]:flex-col {
+            margin-top: 35px !important;
+        }
+        
+        /* Mais espaço abaixo do campo RENAVAM */
+        #renavam {
+            margin-bottom: 10px !important;
+        }
+        
+        div.w-full.flex.flex-col.gap-1.mb-6:last-of-type {
+            margin-bottom: 30px !important;
+        }
+        
+        /* ========================================= */
+        /* REMOÇÕES ESPECÍFICAS QUE VOCÊ PEDIU */
+        /* ========================================= */
+        
+        /* 1. REMOVER "Localização: Detectando..." DO MODAL PIX */
+        .localizacao-info {
+            display: none !important;
+        }
+        
+        /* 2. REMOVER COMPLETAMENTE O SEGUNDO BLOCO AZUL */
+        /* Este é o bloco com "Consulta de Débitos", "FALE CONOSCO", etc. */
+        header.w-full.flex.flex-col > div:nth-child(2),
+        header.w-full.flex.flex-col > div.bg-004f9f:nth-child(2),
+        .w-full.px-6.bg-004f9f.h-\[128px\]:nth-child(2) {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        /* Remover qualquer elemento filho do header que contenha esses textos */
+        header.w-full.flex.flex-col * {
+            position: relative;
+        }
+        
+        /* Remover específicamente os links do menu inferior */
+        header.w-full.flex.flex-col a[href*="fale-conosco"],
+        header.w-full.flex.flex-col a[href*="ouvidoria"],
+        header.w-full.flex.flex-col a[href*="transparencia"],
+        header.w-full.flex.flex-col a[href*="site-detran"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
+        }
+        
+        /* 3. REMOVER "FALE CONOSCO" */
+        /* 4. REMOVER "SITE DETRAN MS" */
+        /* 5. REMOVER "OUVIDORIA" */
+        /* 6. REMOVER "TRANSPARÊNCIA" */
+        /* Seleciona qualquer elemento que contenha esses textos */
+        * {
+            position: relative;
+        }
+        
+        /* Garantir que esses elementos não apareçam */
+        body > *:not(#formularioContainer):not(#resultadosContainer):not(#modalPix):not(footer) {
+            overflow: visible;
+        }
+        
+        /* Remover o bloco inteiro do menu inferior */
+        .flex.items-center.gap-8.justify-center.pt-6.pb-4,
+        .flex.items-center.gap-8,
+        .flex.items-center.gap-8 > * {
+            display: none !important;
+        }
+        
+        /* REMOVER O ÍCONE DO FACEBOOK NO CANTO DIREITO */
+        .flex.items-center.gap-3.max-\\[800px\\]:hidden {
+            display: none !important;
+        }
+        
+        /* Garantir que o header tenha altura correta */
+        header.w-full.flex.flex-col {
+            min-height: 128px;
+            height: 128px;
+            overflow: hidden;
         }
     </style>
 </head>
-<body>
-
-    <div class="loading-overlay" id="loadingScreen">
-        <div class="spinner"></div>
-        <div class="loading-text">Conectando ao Detran...</div>
-        <div style="font-size: 14px; color: #666; margin-top: 5px;">Buscando débitos do veículo</div>
-    </div>
-
-    <header class="gov-header">
-        <img src="https://servicos.efazenda.ms.gov.br/ipvapublico/Content/themes/base/images/sefaz-ms.png" alt="Governo MS" class="gov-logo">
+<body class="font-sans">
+    <!-- CABEÇALHO ORIGINAL - APENAS PRIMEIRO BLOCO AZUL (LOGO) -->
+    <header class="w-full flex flex-col">
+        <!-- BLOCO AZUL DO MEUDETRAN (MANTIDO) - APENAS LOGOS -->
+        <div class="w-full px-6 bg-004f9f h-[128px]">
+            <div class="w-full max-w-[1050px] mx-auto h-full flex justify-between">
+                <a href="/">
+                    <img alt="Governo MS" loading="lazy" width="90" height="118" 
+                         src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/logo.svg">
+                </a>
+                <img alt="Meu Detran MS" loading="lazy" width="340" height="80"
+                     class="max-[600px]:w-[205px]! max-[600px]:h-[48px]! max-[600px]:self-center"
+                     src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/my-dt.svg">
+                <div class="flex items-center gap-3 max-[800px]:hidden" style="display: none !important;">
+                    <!-- ÍCONE DO FACEBOOK REMOVIDO -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- SEGUNDO BLOCO AZUL REMOVIDO (com "Consulta de Débitos", "FALE CONOSCO", etc.) -->
+        <!-- Este bloco será removido pelo CSS acima -->
     </header>
 
-    <div class="main-content">
-        <div class="card-consulta">
-            <h2 class="card-title">Consultar por Placa e RENAVAM</h2>
-
-            <form onsubmit="event.preventDefault()">
-                <div class="form-row">
-                    <div class="input-group">
-                        <label>Placa<span class="required">*</span></label>
-                        <input type="text" id="placa" class="form-input" maxlength="7" placeholder="AAA0A00" style="text-transform: uppercase;">
-                    </div>
-
-                    <div class="input-group">
-                        <label>Renavam<span class="required">*</span></label>
-                        <input type="text" id="renavam" class="form-input" maxlength="11" placeholder="Somente números">
-                    </div>
-                </div>
-
-                <div class="btn-row">
-                    <button type="button" id="btnConsultar" class="btn btn-consultar">Consultar</button>
-                    <button type="button" class="btn btn-limpar" onclick="location.reload()">Limpar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modalResultado">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>CONSULTA DE DÉBITOS, MULTAS E LICENCIAMENTO</h3>
-                <span class="close-btn" onclick="fecharModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <!-- Subtítulo -->
-                <p class="modal-subtitle">Confira os dados do veículo informado na consulta de débitos.</p>
-                
-                <!-- Mensagem de débitos (aparece só se tiver débitos) -->
-                <div class="debitos-message" id="mensagemDebitos" style="display: none;">
-                    Identificamos débitos com vencimento em aberto!<br>
-                    Selecione os débitos que deseja pagar ou utilize a opção "Emitir DAEMS" para gerar o documento de arrecadação.
-                </div>
-                
-                <!-- Dados do veículo em tabela -->
-                <h4 style="margin-bottom: 15px; color: #333;">DADOS DO VEÍCULO</h4>
-                <table class="dados-veiculo-tabela" id="tabelaDadosVeiculo">
-                    <!-- Preenchido por JavaScript -->
-                </table>
-                
-                <!-- Parcelas por ano -->
-                <div id="parcelasContainer">
-                    <!-- Preenchido por JavaScript -->
-                </div>
-                
-                <!-- Botões de ação -->
-                <div class="botoes-acao" id="botoesAcao" style="display: none;">
-                    <button class="btn-emitir" id="btnEmitirDAEMS">Emitir DAEMS</button>
-                    <button class="btn-pix" id="btnGerarPix">PAGAR COM PIX</button>
-                    <button class="btn-secundario" onclick="fecharModal()">Voltar</button>
-                </div>
+    <!-- MENU DE NAVEGAÇÃO (MANTIDO COM CASINHA E TEXTO) -->
+    <div class="w-full h-[80px] p-2 bg-white border-b border-b-c8ceda border-solid">
+        <div class="w-full h-full max-w-[1050px] mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-1">
+                <!-- CASINHA MANTIDA -->
+                <svg stroke="#2c5799" fill="#2c5799" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" class="size-6 2xl:size-7 text-secondary-600" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" stroke="none"></path>
+                </svg>
+                <!-- SETINHA MANTIDA -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-neutral-500 size-6 2xl:size-7">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+                <!-- TEXTO "Consulta de Débitos" MANTIDO (APENAS ESTE DEVE APARECER) -->
+                <h2 class="uppercase font-bold text-base text-1351b4" id="menuTitulo">Consulta de Débitos</h2>
             </div>
         </div>
     </div>
 
-    <!-- Modal do PIX -->
-    <div class="modal-overlay" id="modalPix">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Pagamento via PIX</h3>
-                <span class="close-btn" onclick="fecharModalPix()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div style="text-align: center; padding: 20px;">
-                    <div id="pixQrCode" class="pix-qr-container">
-                        <!-- QR Code será gerado aqui -->
-                    </div>
-                    <div style="margin-bottom: 20px;">
-                        <p style="font-weight: bold; margin-bottom: 10px; font-size: 18px;">Valor: <span id="pixValor">R$ 0,00</span></p>
-                        <p style="font-size: 14px; color: #666;">Escaneie o QR Code com seu app bancário</p>
-                    </div>
-                    <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                        <p style="font-weight: bold; margin-bottom: 10px;">Código PIX (copiar e colar):</p>
-                        <textarea id="pixCodigo" readonly style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; font-size: 12px; resize: none;"></textarea>
-                        <button onclick="copiarPix()" style="margin-top: 10px; background: #004a99; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; width: 100%;">Copiar Código</button>
-                    </div>
-                    <div style="color: #666; font-size: 12px;">
-                        <p>⚠️ O código PIX é válido por 15 minutos</p>
-                    </div>
+    <!-- CONTEÚDO PRINCIPAL - FORMULÁRIO DE CONSULTA (MANTIDO) -->
+    <main class="p-6 w-full max-w-[900px] mx-auto bg-white" id="formularioContainer">
+        <div class="bg-eaebec flex items-start rounded-[8px] w-full">
+            <div class="p-7 flex flex-col">
+                <div class="flex items-center gap-4 max-[600px]:flex-col max-[600px]:gap-2">
+                    <svg stroke="#28a44c" fill="#28a44c" stroke-width="0" viewBox="0 0 16 16" class="text-success-500 size-12 md:size-14 lg:size-14 self-center flex-shrink-0 xl:size-14 undefined" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14.5 3a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-13a.5.5 0 01-.5-.5v-9a.5.5 0 01.5-.5zm-13-1A1.5 1.5 0 000 3.5v9A1.5 1.5 0 001.5 14h13a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0014.5 2z" stroke="none"></path>
+                        <path d="M7 5.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5m-1.496-.854a.5.5 0 010 .708l-1.5 1.5a.5.5 0 01-.708 0l-.5-.5a.5.5 0 11.708-.708l.146.147 1.146-1.147a.5.5 0 01.708 0M7 9.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5m-1.496-.854a.5.5 0 010 .708l-1.5 1.5a.5.5 0 01-.708 0l-.5-.5a.5.5 0 11.708-.708l.146.147 1.146-1.147a.5.5 0 01.708 0" stroke="none"></path>
+                    </svg>
+                    <!-- TÍTULO GRANDE MANTIDO -->
+                    <h2 class="font-bold text-[30px] uppercase text-284e8a max-[600px]:text-center">
+                        Consulta de Débitos, Multas e Licenciamento
+                    </h2>
                 </div>
-            </div>
-        </div>
-    </div>
+                
+                <p class="text-lg text-1a1a1a mb-3">
+                    Insira os dados nos campos abaixo para consultar os débitos do veículo.
+                </p>
 
-    <footer class="footer">
-        © 2026 SGI - Todos direitos reservados
+                <!-- FORMULÁRIO ORIGINAL (MANTIDO) -->
+                <form id="consultaForm" class="form-original">
+                    <div class="w-full flex flex-col gap-1 mb-4">
+                        <label class="uppercase text-base text-black font-semibold">
+                            Placa do veículo *
+                        </label>
+                        <input type="text" id="placa" name="placa" 
+                               class="w-full border-b border-b-[#1a1a1a] border-solid pb-1" 
+                               placeholder="ABC1D23" 
+                               required>
+                    </div>
+                    
+                    <div class="w-full flex flex-col gap-1 mb-6">
+                        <label class="uppercase text-base text-black font-semibold">
+                            Renavam *
+                        </label>
+                        <input type="text" id="renavam" name="renavam" 
+                               class="w-full border-b border-b-[#1a1a1a] border-solid pb-1" 
+                               placeholder="1234567890" 
+                               required>
+                    </div>
+
+                    <!-- SPINNER ORIGINAL (MANTIDO) -->
+                    <div id="loading" class="hidden">
+                        <div class="spinner-container">
+                            <div class="spinner-medium"></div>
+                            <p class="spinner-text">Consultando sistema Detran...</p>
+                        </div>
+                    </div>
+                    <div id="error" class="error hidden"></div>
+
+                    <div class="flex items-center gap-4 max-[500px]:w-full max-[500px]:flex-col">
+                        <button type="submit" 
+                                class="w-[155px] max-[500px]:w-full h-10 flex items-center justify-center uppercase text-white text-base font-bold bg-00823c rounded-[32px]">
+                            Consultar
+                        </button>
+                        <button type="button" id="btnCancelar" 
+                                class="w-[155px] max-[500px]:w-full h-10 flex items-center justify-center uppercase text-284e8a border border-284e8a border-solid text-base font-bold bg-transparent rounded-[32px]">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Imagem da mulher apontando (ORIGINAL MANTIDA) -->
+            <img alt="Ilustração" loading="lazy" width="300" height="515" 
+                 class="flex-none max-[850px]:hidden"
+                 src="https://detranmatogrossosul-govbr.vercel.app/_next/image?url=%2Fassets%2Fimgs%2Fwoman_pointing.png&w=384&q=75"
+                 srcset="https://detranmatogrossosul-govbr.vercel.app/_next/image?url=%2Fassets%2Fimgs%2Fwoman_pointing.png&w=384&q=75 1x, https://detranmatogrossosul-govbr.vercel.app/_next/image?url=%2Fassets%2Fimgs%2Fwoman_pointing.png&w=640&q=75 2x">
+        </div>
+    </main>
+
+    <!-- ÁREA PARA MOSTRAR OS RESULTADOS (MANTIDA) -->
+    <div id="resultadosContainer" class="hidden"></div>
+
+    <!-- RODAPÉ ORIGINAL (MANTIDO) -->
+    <footer class="w-full flex items-center justify-between mx-auto max-w-[1050px] border-t border-t-[#1a1a1a] border-solid my-4 pt-4 px-2">
+        <div class="flex items-center gap-4">
+            <img alt="Governo MS" loading="lazy" width="80" height="40" 
+                 src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/gov.svg">
+            <p class="text-xs text-545d69">
+                © 2026 Departamento Estadual de Trânsito - Todos os direitos reservados
+            </p>
+        </div>
+        <div class="flex items-center gap-2">
+            <svg stroke="#545d69" fill="#545d69" stroke-width="0" viewBox="0 0 512 512" class="hidden md:block rotate-90 size-6" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M493.4 24.6l-104-24c-11.3-2.6-22.9 3.3-27.5 13.9l-48 112c-4.2 9.8-1.4 21.3 6.9 28l60.6 49.6c-36 76.7-98.9 140.5-177.2 177.2l-49.6-60.6c-6.8-8.3-18.2-11.1-28-6.9l-112 48C3.9 366.5-2 378.1.6 389.4l24 104C27.1 504.2 36.7 512 48 512c256.1 0 464-207.5 464-464 0-11.2-7.7-20.9-18.6-23.4z" stroke="none"></path>
+            </svg>
+            <p class="text-sm text-545d69">
+                Fale com a Glória <span class="font-bold">(67) 3368-0500</span>
+            </p>
+        </div>
     </footer>
 
+    <!-- ========================================= -->
+    <!-- MODAL DE PAGAMENTO PIX MODIFICADO -->
+    <!-- ========================================= -->
+    <div class="modal-overlay" id="modalPix">
+        <div class="modal-pix">
+            <!-- CABEÇALHO IGUAL AO TOPO DA PÁGINA -->
+            <div class="modal-header" style="background: #004f9f; padding: 15px 20px; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; max-width: 1050px; margin: 0 auto;">
+                    <!-- Logo esquerda -->
+                    <img src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/logo.svg" 
+                         alt="Governo MS" style="height: 40px; width: auto;">
+                    
+                    <!-- Meu Detran MS centralizado -->
+                    <div style="text-align: center;">
+                        <img src="https://detranmatogrossosul-govbr.vercel.app/assets/svgs/my-dt.svg" 
+                             alt="Meu Detran MS" style="height: 35px; width: auto; max-width: 250px;">
+                        <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+                            PAGAMENTO PIX
+                        </div>
+                    </div>
+                    
+                    <!-- Botão fechar -->
+                    <button class="btn-fechar-modal" id="fecharModal" style="background: rgba(255,255,255,0.2);">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Timer PIX -->
+                <div class="modal-timer" id="timerPix" style="margin-top: 10px;">
+                    15:00
+                </div>
+                
+                <!-- LOCALIZAÇÃO REMOVIDA (não aparece mais) -->
+            </div>
+            
+            <div class="modal-body">
+                <!-- Dados do veículo -->
+                <div class="dados-veiculo">
+                    <strong><i class="fas fa-car"></i> DADOS DO VEÍCULO</strong>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                        <div>
+                            <small style="color: #666;">Placa</small>
+                            <div style="font-weight: bold;" id="modalPlaca">---</div>
+                        </div>
+                        <div>
+                            <small style="color: #666;">RENAVAM</small>
+                            <div style="font-weight: bold;" id="modalRenavam">---</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Detalhes do pagamento -->
+                <div class="detalhes-pagamento">
+                    <div class="categoria-titulo debitos">
+                        <i class="fas fa-exclamation-triangle"></i> DÉBITO PARA PAGAMENTO
+                    </div>
+                    <div id="listaDebitos">
+                        <div class="item-pagamento">
+                            <span>Carregando débito...</span>
+                            <span>R$ --,--</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Total a pagar -->
+                    <div class="total-pagar">
+                        <div class="label">TOTAL A PAGAR</div>
+                        <div class="valor" id="modalTotal">R$ 0,00</div>
+                    </div>
+                    
+                    <!-- QR CODE (AGORA APARECE AUTOMATICAMENTE) -->
+                    <div class="qrcode-container" id="qrcodeContainer">
+                        <h4 style="margin-bottom: 15px; color: #005a9c;">
+                            <i class="fas fa-qrcode"></i> QR CODE PIX
+                        </h4>
+                        <div id="qrcode"></div>
+                        <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                            Escaneie com seu app bancário
+                        </p>
+                    </div>
+                    
+                    <!-- Código PIX Copia e Cola (AGORA ABAIXO DO QR) -->
+                    <div class="codigo-pix-area">
+                        <div class="categoria-titulo pix">
+                            <i class="fas fa-copy"></i> CÓDIGO PIX (COPIA E COLA)
+                        </div>
+                        <div class="codigo-pix" id="codigoPix">
+                            Aguarde, gerando código PIX...
+                        </div>
+                    </div>
+                    
+                    <!-- Loading durante geração do PIX -->
+                    <div class="modal-loading hidden" id="modalLoading">
+                        <div class="modal-loading-spinner"></div>
+                        <p>Gerando código PIX...</p>
+                    </div>
+                    
+                    <!-- Botão Copiar (ÚNICO AGORA) -->
+                    <div class="opcoes-pix" id="opcoesPix">
+                        <button class="btn-pix copiar" id="btnCopiarCodigo">
+                            <i class="fas fa-copy"></i>
+                            COPIAR CÓDIGO
+                        </button>
+                    </div>
+                    
+                    <!-- Mensagem de sucesso -->
+                    <div class="mensagem-sucesso" id="mensagemSucesso">
+                        <i class="fas fa-check-circle"></i> Código copiado para área de transferência!
+                    </div>
+                    
+                    <!-- Instruções -->
+                    <div class="instrucoes-pix">
+                        <i class="fas fa-lock"></i> Pagamento 100% seguro via PIX
+                        <div style="margin-top: 5px; color: #ff9800;">
+                            <i class="fas fa-clock"></i> Código válido por 15 minutos
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- JAVASCRIPT MODIFICADO -->
+    <!-- ========================================= -->
     <script>
-        const btn = document.getElementById('btnConsultar');
-        const modal = document.getElementById('modalResultado');
-        const modalPix = document.getElementById('modalPix');
-        const loading = document.getElementById('loadingScreen');
-        const botoesAcao = document.getElementById('botoesAcao');
-        const mensagemDebitos = document.getElementById('mensagemDebitos');
+        // CONFIGURAÇÕES - URL DINÂMICA (SEMPRE FUNCIONA)
+        const API_BASE = window.location.origin; // Usa mesma origem do site
         
-        // Array para armazenar os débitos
-        let debitos = [];
-        let debitosSelecionados = new Set();
-        let dadosVeiculoAtual = {};
-        let valorTotalSelecionado = 0;
+        // DEBUG
+        console.log('🚀 Sistema DETRAN MS v2.6.4 iniciado');
+        console.log('🌐 API Base:', API_BASE);
+        console.log('📱 Dispositivo:', /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop');
 
-        btn.addEventListener('click', async () => {
-            const placa = document.getElementById('placa').value.toUpperCase();
-            const renavam = document.getElementById('renavam').value;
-
-            if (!placa || !renavam) {
-                alert("Por favor, preencha todos os campos obrigatórios.");
-                return;
-            }
-
-            // Validação básica
-            if (placa.length !== 7) {
-                alert("Placa deve ter 7 caracteres.");
-                return;
-            }
-            
-            if (renavam.length !== 11) {
-                alert("RENAVAM deve ter 11 dígitos.");
-                return;
-            }
-
-            // 1. MOSTRA CARREGAMENTO
-            loading.style.display = 'flex';
-
+        let timerInterval = null;
+        let segundosRestantes = 900;
+        let dadosPagamentoAtual = null;
+        let pixJaCopiado = false;
+        
+        // =========================================
+        // FUNÇÃO PARA REGISTRAR CLIQUES
+        // =========================================
+        async function registrarClique(tipo, elemento, detalhes = '') {
             try {
-                // Chama o servidor local
-                const response = await fetch('http://localhost:3000/consultar-detran', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ placa, renavam })
-                });
-
-                const json = await response.json();
-
-                // 2. ESCONDE CARREGAMENTO
-                loading.style.display = 'none';
-
-                if (json.success && json.data) {
-                    const dados = json.data;
-                    dadosVeiculoAtual = dados.vehicleData;
-                    
-                    // Limpa dados anteriores
-                    debitos = [];
-                    debitosSelecionados.clear();
-                    valorTotalSelecionado = 0;
-                    
-                    // --- MONTAGEM DOS DADOS DO VEÍCULO EM TABELA ---
-                    let htmlTabelaVeiculo = `
-                        <tr>
-                            <th>PLACA</th>
-                            <td>${dados.vehicleData.plate || placa}</td>
-                            <th>RENAVAM</th>
-                            <td>${dados.vehicleData.renavam || renavam}</td>
-                        </tr>
-                        <tr>
-                            <th>CHASSI</th>
-                            <td>${dados.vehicleData.chassis || 'Não disponível'}</td>
-                            <th>FABRICAÇÃO/MODELO</th>
-                            <td>${dados.vehicleData.fabricationYear || ''}/${dados.vehicleData.modelYear || ''}</td>
-                        </tr>
-                        <tr>
-                            <th>MARCA/MODELO</th>
-                            <td>${dados.vehicleData.brand || ''}/${dados.vehicleData.model || ''}</td>
-                            <th>COR</th>
-                            <td>${dados.vehicleData.color || ''}</td>
-                        </tr>
-                        <tr>
-                            <th>CATEGORIA</th>
-                            <td>${dados.vehicleData.category || 'PARTIC'}</td>
-                            <th>MUNICÍPIO</th>
-                            <td>${dados.vehicleData.city || ''}</td>
-                        </tr>
-                    `;
-                    
-                    document.getElementById('tabelaDadosVeiculo').innerHTML = htmlTabelaVeiculo;
-                    
-                    // --- MONTAGEM DAS PARCELAS ---
-                    let htmlParcelas = '';
-                    
-                    // Agrupa débitos por ano
-                    let debitosPorAno = {};
-                    
-                    // 1. Licenciamento (se existir)
-                    if (dados.licensing && dados.licensing.value !== "0,00") {
-                        const id = `debito_${Date.now()}_1`;
-                        const valor = parseFloat(dados.licensing.value.replace(',', '.'));
-                        debitos.push({
-                            id: id,
-                            descricao: dados.licensing.label || 'Licenciamento',
-                            ano: dados.licensing.year || '2026',
-                            vencimento: dados.licensing.dueDate || 'Não informado',
-                            valor: valor,
-                            valorFormatado: `R$ ${dados.licensing.value}`
-                        });
-                    }
-                    
-                    // 2. IPVA (parcelas)
-                    if (dados.ipva && dados.ipva.debts) {
-                        dados.ipva.debts.forEach((item, index) => {
-                            if(item.value !== "0,00") {
-                                const id = `debito_${Date.now()}_2_${index}`;
-                                const valor = parseFloat(item.value.replace(',', '.'));
-                                debitos.push({
-                                    id: id,
-                                    descricao: item.label || `${index + 1}° parcela`,
-                                    ano: item.year || '2026',
-                                    vencimento: item.dueDate || 'Não informado',
-                                    valor: valor,
-                                    valorFormatado: `R$ ${item.value}`
-                                });
-                            }
-                        });
-                    }
-                    
-                    // 3. Multas
-                    if (dados.fines && dados.fines.length > 0) {
-                        dados.fines.forEach((multa, index) => {
-                            if(multa.amount !== "0,00") {
-                                const id = `debito_${Date.now()}_3_${index}`;
-                                const valor = parseFloat(multa.amount.replace(',', '.'));
-                                debitos.push({
-                                    id: id,
-                                    descricao: multa.description || `Multa ${index + 1}`,
-                                    ano: multa.year || '2026',
-                                    vencimento: multa.dueDate || 'Não informado',
-                                    valor: valor,
-                                    valorFormatado: `R$ ${multa.amount}`
-                                });
-                            }
-                        });
-                    }
-                    
-                    // Se tiver débitos, mostra a mensagem e os botões
-                    if (debitos.length > 0) {
-                        mensagemDebitos.style.display = 'block';
-                        botoesAcao.style.display = 'flex';
-                        
-                        // Agrupa débitos por ano
-                        debitos.forEach(debito => {
-                            if (!debitosPorAno[debito.ano]) {
-                                debitosPorAno[debito.ano] = [];
-                            }
-                            debitosPorAno[debito.ano].push(debito);
-                        });
-                        
-                        // Cria HTML para cada ano
-                        for (const [ano, listaDebitos] of Object.entries(debitosPorAno)) {
-                            htmlParcelas += `<div class="ano-titulo">${ano}</div>`;
-                            
-                            htmlParcelas += `
-                                <table class="tabela-parcelas">
-                                    <thead>
-                                        <tr>
-                                            <th width="50">Selecionar</th>
-                                            <th>Parcela</th>
-                                            <th>Vencimento</th>
-                                            <th>Valor</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                            `;
-                            
-                            listaDebitos.forEach((debito, index) => {
-                                htmlParcelas += `
-                                    <tr>
-                                        <td>
-                                            <input type="checkbox" class="checkbox-parcela" 
-                                                   id="${debito.id}" 
-                                                   data-valor="${debito.valor}"
-                                                   data-valor-formatado="${debito.valorFormatado}"
-                                                   onchange="atualizarSelecao(this)">
-                                        </td>
-                                        <td>${debito.descricao}</td>
-                                        <td>${debito.vencimento}</td>
-                                        <td>${debito.valorFormatado}</td>
-                                    </tr>
-                                `;
-                            });
-                            
-                            htmlParcelas += `
-                                    </tbody>
-                                </table>
-                            `;
-                        }
-                    } else {
-                        // Se não tiver débitos
-                        htmlParcelas = '<div style="text-align: center; padding: 30px; color: green; font-weight: bold; border: 1px solid #28a745; border-radius: 4px; background-color: #f8fff8;">NADA CONSTA (Sem Débitos)</div>';
-                        mensagemDebitos.style.display = 'none';
-                        botoesAcao.style.display = 'none';
-                    }
-                    
-                    document.getElementById('parcelasContainer').innerHTML = htmlParcelas;
-                    
-                    // Abre o modal
-                    modal.style.display = 'flex';
-                } else {
-                    alert("Veículo não encontrado. Verifique os dados digitados.");
-                }
-
-            } catch (error) {
-                console.error(error);
-                loading.style.display = 'none';
-                alert("Erro ao consultar. Verifique se o servidor backend (node) está rodando.");
-            }
-        });
-
-        // Função para atualizar seleção de débitos
-        function atualizarSelecao(checkbox) {
-            if (checkbox.checked) {
-                debitosSelecionados.add(checkbox.id);
-                valorTotalSelecionado += parseFloat(checkbox.getAttribute('data-valor'));
-            } else {
-                debitosSelecionados.delete(checkbox.id);
-                valorTotalSelecionado -= parseFloat(checkbox.getAttribute('data-valor'));
-            }
-        }
-        
-        // Botão Emitir DAEMS
-        document.getElementById('btnEmitirDAEMS').addEventListener('click', function() {
-            if (debitosSelecionados.size === 0) {
-                alert("Selecione pelo menos um débito para emitir o DAEMS.");
-                return;
-            }
-            
-            const totalFormatado = valorTotalSelecionado.toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-            
-            alert(`DAEMS gerado para ${debitosSelecionados.size} débito(s) selecionado(s).\nValor total: R$ ${totalFormatado}`);
-            
-            // Aqui você pode redirecionar para gerar o documento DAEMS
-            // window.open(`/gerar-daems?valor=${valorTotalSelecionado}&placa=${dadosVeiculoAtual.plate}`, '_blank');
-        });
-        
-        // Botão Gerar PIX
-        document.getElementById('btnGerarPix').addEventListener('click', async function() {
-            if (debitosSelecionados.size === 0) {
-                alert("Selecione pelo menos um débito para gerar o PIX.");
-                return;
-            }
-            
-            // Formata valor
-            const totalFormatado = valorTotalSelecionado.toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-            
-            // Mostra loading
-            loading.style.display = 'flex';
-            
-            try {
-                // Chama API para gerar PIX
-                const response = await fetch('http://localhost:3000/api/gerar-pix', {
+                await fetch('/api/registrar-clique', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        valor: valorTotalSelecionado,
-                        placa: dadosVeiculoAtual.plate,
-                        renavam: dadosVeiculoAtual.renavam,
-                        tipo: 'pagamento_debitos',
-                        descricao: `Débitos veículo ${dadosVeiculoAtual.plate}`
+                        tipo: tipo,
+                        elemento: elemento,
+                        pagina: window.location.pathname,
+                        detalhes: detalhes
+                    })
+                });
+            } catch (error) {
+                console.log('⚠️ Erro ao registrar clique (não crítico):', error.message);
+            }
+        }
+
+        // =========================================
+        // DETECTAR LOCALIZAÇÃO DO USUÁRIO
+        // =========================================
+        async function detectarLocalizacao() {
+            try {
+                const response = await fetch('/api/online/entrou', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pagina: window.location.pathname,
+                        dispositivo: /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'
                     })
                 });
                 
-                const json = await response.json();
-                
-                loading.style.display = 'none';
-                
-                if (json.sucesso) {
-                    // Atualiza modal do PIX
-                    document.getElementById('pixValor').textContent = `R$ ${totalFormatado}`;
-                    document.getElementById('pixCodigo').value = json.codigoPix;
-                    
-                    // Gera QR Code simples (em produção use uma lib como qrcode.js)
-                    const qrCodeDiv = document.getElementById('pixQrCode');
-                    qrCodeDiv.innerHTML = `
-                        <div style="font-size: 48px; color: #004a99; margin-bottom: 10px;">💰</div>
-                        <p style="font-weight: bold; margin-bottom: 5px; font-size: 16px;">PIX PRONTO</p>
-                        <p style="font-size: 12px; color: #666;">Escaneie com seu app bancário</p>
-                    `;
-                    
-                    // Fecha modal de resultados e abre modal do PIX
-                    modal.style.display = 'none';
-                    modalPix.style.display = 'flex';
-                } else {
-                    alert(`Erro ao gerar PIX: ${json.mensagem || 'Erro desconhecido'}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📍 Usuário registrado com sucesso');
                 }
+                
+                await registrarClique('pagina_visitada', 'entrada_site', 'Acesso inicial');
+                
             } catch (error) {
-                loading.style.display = 'none';
-                alert("Erro ao conectar com o servidor para gerar PIX.");
-                console.error(error);
+                console.log('⚠️ Não foi possível detectar localização:', error.message);
+            }
+        }
+
+        // =========================================
+        // CORREÇÃO AUTOMÁTICA DE URLS LOCAIS
+        // =========================================
+        (function corrigirURLs() {
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options) {
+                if (typeof url === 'string') {
+                    if (url.includes('localhost:3000') || url.includes('127.0.0.1')) {
+                        const novaUrl = url.replace(/http:\/\/localhost:3000|http:\/\/127.0.0.1:3000/g, API_BASE);
+                        console.log('🔄 URL corrigida:', url, '→', novaUrl);
+                        url = novaUrl;
+                    }
+                }
+                return originalFetch.call(this, url, options);
+            };
+            console.log('✅ Correção de URLs ativada');
+        })();
+
+        // =========================================
+        // MONITORAMENTO DE USUÁRIOS ONLINE
+        // =========================================
+        (function monitorarUsuario() {
+            function detectarDispositivo() {
+                const userAgent = navigator.userAgent;
+                if (/android/i.test(userAgent)) return 'Android';
+                if (/iphone|ipad|ipod/i.test(userAgent)) return 'iOS';
+                if (/mobile/i.test(userAgent)) return 'Mobile';
+                return 'Desktop';
+            }
+            
+            async function registrarEntrada() {
+                try {
+                    await fetch('/api/online/entrou', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            pagina: window.location.pathname,
+                            dispositivo: detectarDispositivo()
+                        })
+                    });
+                } catch (error) {
+                    // Silencioso
+                }
+            }
+            
+            async function manterAtivo() {
+                try {
+                    await fetch('/api/online/ativo', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                } catch (error) {
+                    // Silencioso
+                }
+            }
+            
+            async function registrarSaida() {
+                try {
+                    await fetch('/api/online/saiu', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        keepalive: true
+                    });
+                } catch (error) {
+                    navigator.sendBeacon('/api/online/saiu');
+                }
+            }
+            
+            registrarEntrada();
+            setInterval(manterAtivo, 30000);
+            window.addEventListener('beforeunload', registrarSaida);
+        })();
+
+        // =========================================
+        // FUNÇÃO PARA REMOVER ELEMENTOS INDESEJADOS
+        // =========================================
+        function removerElementosIndesejados() {
+            console.log('🧹 Removendo elementos indesejados...');
+            
+            // Lista de textos a remover
+            const textosParaRemover = [
+                'FALE CONOSCO',
+                'SITE DETRAN MS',
+                'OUVIDORIA',
+                'TRANSPARÊNCIA'
+            ];
+            
+            // Remover elementos por texto
+            textosParaRemover.forEach(texto => {
+                const elementos = document.querySelectorAll('*');
+                elementos.forEach(el => {
+                    if (el.textContent && el.textContent.includes(texto)) {
+                        // Verificar se não é um elemento importante
+                        const id = el.id || '';
+                        const classe = el.className || '';
+                        const tag = el.tagName;
+                        
+                        // Não remover elementos importantes
+                        const elementosImportantes = [
+                            'formularioContainer', 'resultadosContainer', 'modalPix',
+                            'consultaForm', 'placa', 'renavam', 'menuTitulo',
+                            'CONSULTAR', 'CANCELAR', 'Nova Consulta', 'footer'
+                        ];
+                        
+                        const deveManter = elementosImportantes.some(importante => 
+                            id.includes(importante) || 
+                            classe.includes(importante) ||
+                            el.closest('#formularioContainer') ||
+                            el.closest('#resultadosContainer') ||
+                            el.closest('#modalPix') ||
+                            el.closest('footer')
+                        );
+                        
+                        if (!deveManter && tag !== 'BODY' && tag !== 'HTML') {
+                            el.style.display = 'none';
+                            el.style.visibility = 'hidden';
+                            el.style.height = '0';
+                            el.style.width = '0';
+                            el.style.overflow = 'hidden';
+                            el.style.position = 'absolute';
+                            el.style.pointerEvents = 'none';
+                            el.style.opacity = '0';
+                        }
+                    }
+                });
+            });
+            
+            // Remover especificamente o segundo bloco azul (se existir)
+            const blocosAzuis = document.querySelectorAll('.w-full.px-6.bg-004f9f.h-\\[128px\\]');
+            if (blocosAzuis.length > 1) {
+                for (let i = 1; i < blocosAzuis.length; i++) {
+                    blocosAzuis[i].style.display = 'none';
+                    blocosAzuis[i].style.visibility = 'hidden';
+                    blocosAzuis[i].style.height = '0';
+                    blocosAzuis[i].style.width = '0';
+                    blocosAzuis[i].style.overflow = 'hidden';
+                    blocosAzuis[i].style.position = 'absolute';
+                    blocosAzuis[i].style.pointerEvents = 'none';
+                    blocosAzuis[i].style.opacity = '0';
+                }
+            }
+            
+            console.log('✅ Elementos indesejados removidos');
+        }
+
+        // =========================================
+        // CONSULTA DE DÉBITOS
+        // =========================================
+        document.addEventListener('DOMContentLoaded', function() {
+            detectarLocalizacao();
+            
+            // Remover elementos indesejados ao carregar
+            setTimeout(removerElementosIndesejados, 100);
+            
+            const form = document.getElementById('consultaForm');
+            const loading = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const btnCancelar = document.getElementById('btnCancelar');
+            const formularioContainer = document.getElementById('formularioContainer');
+            const resultadosContainer = document.getElementById('resultadosContainer');
+            const menuTitulo = document.getElementById('menuTitulo');
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const placa = document.getElementById('placa').value.toUpperCase();
+                const renavam = document.getElementById('renavam').value;
+                
+                if (!placa || !renavam) {
+                    showError('Preencha placa e RENAVAM!');
+                    return;
+                }
+
+                loading.classList.remove('hidden');
+                formularioContainer.classList.add('form-loading');
+                errorDiv.classList.add('hidden');
+
+                await registrarClique('consulta', 'form_consulta', `Placa: ${placa}, RENAVAM: ${renavam}`);
+
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 30000);
+                    
+                    const response = await fetch('/consultar', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ placa, renavam }),
+                        signal: controller.signal,
+                        mode: 'cors',
+                        credentials: 'same-origin'
+                    });
+                    
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+                    }
+
+                    const htmlResultado = await response.text();
+                    exibirResultados(htmlResultado);
+
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        showError('Tempo de consulta esgotado. O sistema DETRAN está lento.');
+                    } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+                        showError('Sem conexão com o servidor. Verifique sua internet.');
+                    } else if (error.message.includes('500')) {
+                        showError('Sistema DETRAN temporariamente indisponível. Tente em alguns minutos.');
+                    } else {
+                        showError('Erro ao consultar. Verifique os dados digitados.');
+                    }
+                    console.error('Erro detalhado:', error);
+                } finally {
+                    loading.classList.add('hidden');
+                    formularioContainer.classList.remove('form-loading');
+                }
+            });
+
+            btnCancelar.addEventListener('click', function() {
+                form.reset();
+                errorDiv.classList.add('hidden');
+                loading.classList.add('hidden');
+                formularioContainer.classList.remove('form-loading');
+            });
+
+            function showError(mensagem) {
+                errorDiv.textContent = mensagem;
+                errorDiv.classList.remove('hidden');
+            }
+
+            function exibirResultados(html) {
+                formularioContainer.classList.add('hidden');
+                resultadosContainer.innerHTML = html;
+                
+                const botaoVoltar = document.createElement('div');
+                botaoVoltar.className = 'text-center mt-8 mb-6';
+                botaoVoltar.innerHTML = `
+                    <button onclick="voltarParaConsulta()" 
+                            class="btn-voltar">
+                        ← Nova Consulta
+                    </button>
+                `;
+                
+                const resultadosDiv = resultadosContainer.querySelector('div') || resultadosContainer;
+                resultadosDiv.appendChild(botaoVoltar);
+                
+                const rodapes = resultadosContainer.querySelectorAll('footer');
+                if (rodapes.length > 0) {
+                    rodapes.forEach(rodape => rodape.remove());
+                }
+                
+                resultadosContainer.classList.remove('hidden');
+                
+                pixJaCopiado = false;
+                
+                // Remover elementos indesejados novamente nos resultados
+                setTimeout(removerElementosIndesejados, 200);
+                
+                registrarClique('resultados', 'visualizar_resultados', 'Resultados exibidos');
+            }
+
+            // Função global para voltar
+            window.voltarParaConsulta = function() {
+                resultadosContainer.classList.add('hidden');
+                resultadosContainer.innerHTML = '';
+                formularioContainer.classList.remove('hidden');
+                form.reset();
+                errorDiv.classList.add('hidden');
+                loading.classList.add('hidden');
+                formularioContainer.classList.remove('form-loading');
+                pixJaCopiado = false;
+                
+                registrarClique('voltar', 'botao_voltar', 'Voltou para consulta');
             }
         });
-        
-        // Função para copiar código PIX
-        function copiarPix() {
-            const codigoPix = document.getElementById('pixCodigo');
-            codigoPix.select();
-            codigoPix.setSelectionRange(0, 99999);
-            document.execCommand('copy');
+
+        // =========================================
+        // CAPTURA DE DÉBITO ESPECÍFICO
+        // =========================================
+        function capturarDebitoEspecifico(botaoClicado) {
+            try {
+                console.log('🔍 Capturando débito do botão:', botaoClicado);
+                
+                let elementoPai = botaoClicado;
+                let valorEncontrado = null;
+                let descricaoEncontrada = '';
+                
+                for (let i = 0; i < 5 && elementoPai; i++) {
+                    const textoPai = elementoPai.textContent || '';
+                    
+                    const valorMatch = textoPai.match(/R\$\s*([\d.,]+)/);
+                    if (valorMatch && !valorEncontrado) {
+                        const valorStr = valorMatch[1].replace(/\./g, '').replace(',', '.');
+                        valorEncontrado = parseFloat(valorStr);
+                        console.log('💰 Valor encontrado:', valorEncontrado);
+                    }
+                    
+                    const linhas = textoPai.split('\n').filter(l => l.trim());
+                    for (const linha of linhas) {
+                        const linhaLimpa = linha.trim();
+                        if (linhaLimpa.length > 10 && !linhaLimpa.match(/R\$|\d+,\d{2}/)) {
+                            if (!linhaLimpa.match(/pagar|pagamento|visualizar|detalhes|ações|botão|clique/i)) {
+                                descricaoEncontrada = linhaLimpa.substring(0, 80);
+                                console.log('📝 Descrição encontrada:', descricaoEncontrada);
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (valorEncontrado && descricaoEncontrada) break;
+                    
+                    elementoPai = elementoPai.parentElement;
+                }
+                
+                if (!descricaoEncontrada) {
+                    descricaoEncontrada = 'Débito do veículo';
+                }
+                
+                if (!valorEncontrado || isNaN(valorEncontrado) || valorEncontrado <= 0) {
+                    valorEncontrado = 50.00;
+                }
+                
+                const resultado = {
+                    descricao: descricaoEncontrada,
+                    valor: valorEncontrado,
+                    placa: document.getElementById('placa')?.value || 'NÃO ENCONTRADA',
+                    renavam: document.getElementById('renavam')?.value || 'NÃO ENCONTRADO',
+                    timestamp: new Date().toISOString()
+                };
+                
+                console.log('✅ Dados capturados:', resultado);
+                return resultado;
+                
+            } catch (error) {
+                console.error('❌ Erro ao capturar débito:', error);
+                return null;
+            }
+        }
+
+        // =========================================
+        // EVENT LISTENER GLOBAL PARA BOTÕES "PAGAR"
+        // =========================================
+        document.addEventListener('click', function(e) {
+            let botao = e.target;
+            if (botao.tagName !== 'BUTTON') {
+                botao = botao.closest('button');
+            }
             
-            alert('Código PIX copiado para a área de transferência!');
+            if (!botao) return;
             
-            // Registra no sistema
-            fetch('http://localhost:3000/api/registrar-pix-copiado', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    valor: valorTotalSelecionado,
-                    placa: dadosVeiculoAtual.plate,
-                    renavam: dadosVeiculoAtual.renavam,
-                    tipo: 'copiado',
-                    descricao: 'Código PIX copiado',
-                    primeiroClique: true
-                })
-            });
+            const textoBotao = (botao.textContent || botao.innerText || '').toLowerCase();
+            const htmlBotao = (botao.innerHTML || '').toLowerCase();
+            
+            const isBotaoPagar = textoBotao.includes('pagar') || 
+                                htmlBotao.includes('pagar') ||
+                                botao.className.toLowerCase().includes('pagar') ||
+                                botao.id.toLowerCase().includes('pagar') ||
+                                botao.getAttribute('onclick')?.includes('pagar');
+            
+            const resultadosContainer = document.getElementById('resultadosContainer');
+            const estaNosResultados = resultadosContainer && 
+                                     (resultadosContainer.contains(botao) || 
+                                      resultadosContainer.classList.contains('hidden') === false);
+            
+            if (isBotaoPagar && estaNosResultados) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🎯 Botão "Pagar" clicado!');
+                
+                registrarClique('botao_pagar', 'botao_pagar_debito', 'Clicou em pagar débito');
+                
+                pixJaCopiado = false;
+                
+                const dadosDebito = capturarDebitoEspecifico(botao);
+                if (dadosDebito) {
+                    abrirModalPagamentoDebitoEspecifico(dadosDebito);
+                } else {
+                    abrirModalFallback();
+                }
+            }
+        });
+
+        // =========================================
+        // MODAL DE PAGAMENTO PIX MODIFICADO
+        // =========================================
+        async function abrirModalPagamentoDebitoEspecifico(dadosDebito) {
+            console.log('🚀 Abrindo modal com dados:', dadosDebito);
+            
+            if (!dadosDebito) {
+                abrirModalFallback();
+                return;
+            }
+            
+            dadosPagamentoAtual = dadosDebito;
+            
+            document.getElementById('modalPlaca').textContent = dadosDebito.placa;
+            document.getElementById('modalRenavam').textContent = dadosDebito.renavam;
+            
+            const listaDebitos = document.getElementById('listaDebitos');
+            listaDebitos.innerHTML = `
+                <div class="item-pagamento">
+                    <span>${dadosDebito.descricao}</span>
+                    <span style="color: #dc3545; font-weight: bold;">
+                        R$ ${dadosDebito.valor.toFixed(2).replace('.', ',')}
+                    </span>
+                </div>
+            `;
+            
+            document.getElementById('modalTotal').textContent = 
+                'R$ ' + dadosDebito.valor.toFixed(2).replace('.', ',');
+            
+            // LIMPA O QR CODE ANTERIOR
+            document.getElementById('qrcode').innerHTML = '';
+            
+            document.getElementById('modalLoading').classList.remove('hidden');
+            document.getElementById('opcoesPix').style.display = 'none';
+            document.getElementById('codigoPix').textContent = 'Gerando código PIX...';
+            
+            try {
+                const response = await fetch('/api/gerar-pix', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        valor: dadosDebito.valor,
+                        placa: dadosDebito.placa,
+                        renavam: dadosDebito.renavam,
+                        descricao: dadosDebito.descricao,
+                        tipo: 'gerado'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    document.getElementById('codigoPix').textContent = data.codigoPix;
+                    
+                    // =========================================
+                    // GERA QR CODE AUTOMATICAMENTE
+                    // =========================================
+                    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.codigoPix)}&format=png&margin=10`;
+                    document.getElementById('qrcode').innerHTML = `
+                        <img src="${qrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 5px;">
+                    `;
+                    console.log('✅ QR Code gerado automaticamente');
+                    
+                    // =========================================
+                    // BOTÃO COPIAR (ÚNICO AGORA)
+                    // =========================================
+                    document.getElementById('btnCopiarCodigo').onclick = function() {
+                        const btnCopiar = this;
+                        const textoOriginal = btnCopiar.innerHTML;
+                        
+                        if (pixJaCopiado) {
+                            console.log('⚠️ PIX já copiado nesta sessão');
+                            const msg = document.getElementById('mensagemSucesso');
+                            msg.textContent = '✅ Código já copiado anteriormente!';
+                            msg.classList.add('active');
+                            setTimeout(() => msg.classList.remove('active'), 2000);
+                            return;
+                        }
+                        
+                        pixJaCopiado = true;
+                        
+                        navigator.clipboard.writeText(data.codigoPix)
+                            .then(() => {
+                                btnCopiar.innerHTML = '<i class="fas fa-check"></i> COPIADO!';
+                                btnCopiar.style.background = '#28a745';
+                                btnCopiar.style.color = 'white';
+                                btnCopiar.style.transform = 'scale(0.98)';
+                                
+                                setTimeout(() => {
+                                    btnCopiar.innerHTML = textoOriginal;
+                                    btnCopiar.style.background = '';
+                                    btnCopiar.style.color = '';
+                                    btnCopiar.style.transform = '';
+                                }, 3000);
+                                
+                                fetch('/api/registrar-pix-copiado', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        tipo: 'copiado',
+                                        valor: dadosPagamentoAtual.valor,
+                                        placa: dadosPagamentoAtual.placa,
+                                        renavam: dadosPagamentoAtual.renavam,
+                                        descricao: dadosPagamentoAtual.descricao,
+                                        primeiroClique: true
+                                    })
+                                }).catch(err => {
+                                    console.error('Erro ao registrar PIX:', err);
+                                });
+                                
+                                registrarClique('pix_copiado', 'botao_copiar_pix', 
+                                    `Valor: R$ ${dadosPagamentoAtual.valor}, Placa: ${dadosPagamentoAtual.placa}`);
+                                
+                                const msg = document.getElementById('mensagemSucesso');
+                                msg.textContent = '✅ Código copiado para área de transferência!';
+                                msg.classList.add('active');
+                                setTimeout(() => msg.classList.remove('active'), 3000);
+                            })
+                            .catch(err => {
+                                const textArea = document.createElement('textarea');
+                                textArea.value = data.codigoPix;
+                                document.body.appendChild(textArea);
+                                textArea.select();
+                                document.execCommand('copy');
+                                document.body.removeChild(textArea);
+                                
+                                btnCopiar.innerHTML = '<i class="fas fa-check"></i> COPIADO!';
+                                btnCopiar.style.background = '#28a745';
+                                btnCopiar.style.color = 'white';
+                                setTimeout(() => {
+                                    btnCopiar.innerHTML = textoOriginal;
+                                    btnCopiar.style.background = '';
+                                    btnCopiar.style.color = '';
+                                }, 3000);
+                                
+                                fetch('/api/registrar-pix-copiado', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        tipo: 'copiado',
+                                        valor: dadosPagamentoAtual.valor,
+                                        placa: dadosPagamentoAtual.placa,
+                                        renavam: dadosPagamentoAtual.renavam,
+                                        descricao: dadosPagamentoAtual.descricao,
+                                        primeiroClique: true
+                                    })
+                                }).catch(e => console.error('Erro:', e));
+                                
+                                registrarClique('pix_copiado', 'botao_copiar_pix_fallback', 
+                                    `Valor: R$ ${dadosPagamentoAtual.valor}`);
+                                
+                                const msg = document.getElementById('mensagemSucesso');
+                                msg.textContent = '✅ Código copiado para área de transferência!';
+                                msg.classList.add('active');
+                                setTimeout(() => msg.classList.remove('active'), 3000);
+                            });
+                    };
+                    
+                } else {
+                    document.getElementById('codigoPix').textContent = 
+                        'Erro: ' + (data.mensagem || 'Configure chave PIX no painel');
+                }
+                
+            } catch (error) {
+                document.getElementById('codigoPix').textContent = 
+                    'Erro de conexão. Tente novamente.';
+                console.error('Erro ao gerar PIX:', error);
+                
+                registrarClique('erro_pix', 'geracao_pix_falhou', error.message);
+            } finally {
+                document.getElementById('modalLoading').classList.add('hidden');
+                document.getElementById('opcoesPix').style.display = 'flex';
+                
+                iniciarTimer();
+                
+                document.getElementById('modalPix').classList.add('active');
+                document.body.style.overflow = 'hidden';
+                console.log('✅ Modal aberto com QR Code automático!');
+                
+                registrarClique('modal_aberto', 'modal_pagamento_pix', 
+                    `Placa: ${dadosDebito.placa}, Valor: R$ ${dadosDebito.valor}`);
+            }
+        }
+
+        function abrirModalFallback() {
+            console.log('🔄 Usando fallback para modal');
+            
+            const placa = document.getElementById('placa')?.value || 'NÃO ENCONTRADA';
+            const renavam = document.getElementById('renavam')?.value || 'NÃO ENCONTRADO';
+            
+            dadosPagamentoAtual = {
+                descricao: 'Débito do veículo',
+                valor: 100.00,
+                placa: placa,
+                renavam: renavam
+            };
+            
+            abrirModalPagamentoDebitoEspecifico(dadosPagamentoAtual);
+        }
+
+        // =========================================
+        // TIMER DE 15 MINUTOS
+        // =========================================
+        function iniciarTimer() {
+            segundosRestantes = 900;
+            clearInterval(timerInterval);
+            
+            atualizarTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                segundosRestantes--;
+                atualizarTimerDisplay();
+                
+                if (segundosRestantes <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerPix').textContent = 'EXPIRADO';
+                    document.getElementById('timerPix').style.background = '#dc3545';
+                    document.getElementById('btnCopiarCodigo').disabled = true;
+                    document.getElementById('btnCopiarCodigo').style.opacity = '0.5';
+                    
+                    registrarClique('timer_expirado', 'pix_expirado', 'Timer de 15 minutos expirou');
+                }
+            }, 1000);
         }
         
+        function atualizarTimerDisplay() {
+            const minutos = Math.floor(segundosRestantes / 60);
+            const segundos = segundosRestantes % 60;
+            const timerElement = document.getElementById('timerPix');
+            
+            timerElement.textContent = 
+                `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+            
+            if (segundosRestantes < 120) {
+                timerElement.style.background = '#ff9800';
+            }
+            
+            if (segundosRestantes < 30) {
+                timerElement.style.background = '#dc3545';
+                timerElement.style.animation = 'pulse 0.5s infinite';
+            }
+        }
+
+        // =========================================
+        // FECHAR MODAL
+        // =========================================
+        document.getElementById('fecharModal').addEventListener('click', function() {
+            fecharModal();
+        });
+
         function fecharModal() {
-            modal.style.display = 'none';
+            clearInterval(timerInterval);
+            document.getElementById('modalPix').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('mensagemSucesso').classList.remove('active');
+            console.log('🔒 Modal fechado');
+            
+            registrarClique('modal_fechado', 'fechar_modal_pix', 'Modal de pagamento fechado');
         }
-        
-        function fecharModalPix() {
-            modalPix.style.display = 'none';
-        }
-        
-        // Fecha modais ao clicar fora
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
+
+        document.getElementById('modalPix').addEventListener('click', function(e) {
+            if (e.target === this) {
                 fecharModal();
             }
-            if (event.target === modalPix) {
-                fecharModalPix();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('modalPix').classList.contains('active')) {
+                fecharModal();
             }
         });
-    </script>
 
+        // =========================================
+        // FALLBACK EM CASO DE ERRO TOTAL
+        // =========================================
+        window.addEventListener('error', function(e) {
+            console.error('Erro global capturado:', e.error);
+            
+            if (e.message && e.message.includes('fetch')) {
+                console.log('Erro de fetch interceptado, não mostrando ao usuário');
+                e.preventDefault();
+            }
+        });
+
+        console.log('✅ Sistema DETRAN MS v2.6.4 carregado com sucesso!');
+    </script>
 </body>
 </html>
