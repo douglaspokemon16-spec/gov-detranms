@@ -804,7 +804,8 @@ app.post('/api/admin/buscar-pix', autenticarAdmin, async (req, res) => {
                 estado: p.estado || 'N/A',
                 categoria: p.categoria || (p.tipo === 'copiado' ? 'copiado' : 'gerado'),
                 valorFormatado: p.valorFormatado || `R$ ${parseFloat(p.valor || 0).toFixed(2).replace('.', ',')}`
-        }));
+            }))
+        });
         
     } catch (error) {
         console.error('Erro ao buscar PIX:', error);
