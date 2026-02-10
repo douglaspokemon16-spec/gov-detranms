@@ -397,7 +397,7 @@ app.post('/api/admin/buscar-cliques', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// ROTA PRINCIPAL: CONSULTA DETRAN - API NETLIFY COM CSS CORRIGIDO
+// ROTA PRINCIPAL: CONSULTA DETRAN - API NETLIFY
 // ============================================
 app.post('/consultar', async (req, res) => {
     try {
@@ -485,7 +485,9 @@ app.post('/consultar', async (req, res) => {
             usuario.estado = geo.estado;
         }
         
-        // CORREÇÃO DOS LINKS CSS/JS/IMAGENS
+        // ============================================
+        // CORREÇÃO DOS LINKS CSS/JS/IMAGENS (PARTE QUE ESTAVA FALTANDO!)
+        // ============================================
         console.log('🔧 Corrigindo links CSS/JS/Imagens...');
         let htmlCorrigido = resposta2.data;
         
@@ -1526,7 +1528,6 @@ const server = app.listen(PORT, () => {
     console.log('📊 Dados salvos em: /data/');
     console.log('📍 Geolocalização ativa');
     console.log('🚀 API: meudetranms-govbr.netlify.app');
-    console.log('🎨 CSS/JS/Imagens corrigidos automaticamente');
     console.log('🔑 Token fixo com seus dados');
     console.log('============================================');
 });
