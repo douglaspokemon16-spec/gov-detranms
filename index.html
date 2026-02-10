@@ -433,27 +433,44 @@
         }
 
         /* ========================================= */
-        /* REMOVER BLOCO COM "FALE CONOSCO", "SITE DETRAN MS", etc. */
+        /* REMOÇÕES ESPECÍFICAS QUE VOCÊ PEDIU */
         /* ========================================= */
         
-        /* REMOVE APENAS O BLOCO COM "FALE CONOSCO", "SITE DETRAN MS", etc. */
-        /* Este é o SEGUNDO bloco azul que vem do scraping do DETRAN oficial */
-        /* Mantém o PRIMEIRO bloco azul com "MEUDETRAN" */
-        .w-full.px-6.bg-004f9f.h-\\[128px\\] + .w-full.px-6.bg-004f9f.h-\\[128px\\] {
+        /* 1. REMOVER "Localização: Detectando..." DO MODAL PIX */
+        .localizacao-info {
             display: none !important;
         }
         
-        /* Se o bloco problemático estiver imediatamente depois do header */
-        header.w-full.flex.flex-col > div:nth-child(2) {
+        /* 2. REMOVER "Consulta de Débitos" DO CABEÇALHO AZUL (ABAIXO DA LOGO) */
+        /* Este é o texto que vem do scraping do DETRAN oficial */
+        header.w-full.flex.flex-col h1,
+        header.w-full.flex.flex-col h2,
+        header.w-full.flex.flex-col h3,
+        header.w-full.flex.flex-col h4,
+        header.w-full.flex.flex-col h5,
+        header.w-full.flex.flex-col h6,
+        header.w-full.flex.flex-col div:contains("Consulta de Débitos"),
+        header.w-full.flex.flex-col span:contains("Consulta de Débitos"),
+        header.w-full.flex.flex-col p:contains("Consulta de Débitos") {
             display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
         }
         
-        /* CORREÇÃO 4: REMOVER TEXTOS ESPECÍFICOS */
-        /* Remove "FALE CONOSCO" */
+        /* 3. REMOVER "FALE CONOSCO" */
         div:contains("FALE CONOSCO"),
         span:contains("FALE CONOSCO"),
         a:contains("FALE CONOSCO"),
-        p:contains("FALE CONOSCO") {
+        p:contains("FALE CONOSCO"),
+        h1:contains("FALE CONOSCO"),
+        h2:contains("FALE CONOSCO"),
+        h3:contains("FALE CONOSCO"),
+        h4:contains("FALE CONOSCO"),
+        h5:contains("FALE CONOSCO"),
+        h6:contains("FALE CONOSCO") {
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
@@ -463,65 +480,65 @@
             pointer-events: none !important;
         }
         
-        /* Remove "SITE DETRAN MS" */
+        /* 4. REMOVER "SITE DETRAN MS" */
         div:contains("SITE DETRAN MS"),
         span:contains("SITE DETRAN MS"),
-        a:contains("SITE DETRAN MS") {
+        a:contains("SITE DETRAN MS"),
+        p:contains("SITE DETRAN MS") {
             display: none !important;
             visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
         }
         
-        /* Remove "OUVIDORIA" */
+        /* 5. REMOVER "OUVIDORIA" */
         div:contains("OUVIDORIA"),
         span:contains("OUVIDORIA"),
-        a:contains("OUVIDORIA") {
+        a:contains("OUVIDORIA"),
+        p:contains("OUVIDORIA") {
             display: none !important;
             visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
         }
         
-        /* Remove "TRANSPARÊNCIA" */
+        /* 6. REMOVER "TRANSPARÊNCIA" */
         div:contains("TRANSPARÊNCIA"),
         span:contains("TRANSPARÊNCIA"),
-        a:contains("TRANSPARÊNCIA") {
+        a:contains("TRANSPARÊNCIA"),
+        p:contains("TRANSPARÊNCIA") {
             display: none !important;
             visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
         }
         
-        /* Seletor genérico para qualquer elemento com esses textos */
-        *:contains("FALE CONOSCO"),
-        *:contains("SITE DETRAN MS"),
-        *:contains("OUVIDORIA"),
-        *:contains("TRANSPARÊNCIA") {
+        /* REMOVER O BLOCO INTEIRO COM ESSES TEXTOS */
+        .w-full.px-6.bg-004f9f.h-\\[128px\\] + .w-full.px-6.bg-004f9f.h-\\[128px\\] {
             display: none !important;
-            visibility: hidden !important;
         }
         
-        /* REMOVE O ÍCONE DO FACEBOOK NO CANTO DIREITO */
+        header.w-full.flex.flex-col > div:nth-child(2) {
+            display: none !important;
+        }
+        
+        /* REMOVER O ÍCONE DO FACEBOOK NO CANTO DIREITO */
         .flex.items-center.gap-3.max-\\[800px\\]:hidden {
-            display: none !important;
-        }
-        
-        /* NOVO: INFO DE LOCALIZAÇÃO NO MODAL */
-        .localizacao-info {
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-            margin-top: 10px;
-            padding: 5px;
-            background: rgba(0, 90, 156, 0.05);
-            border-radius: 5px;
-        }
-        
-        /* ========================================= */
-        /* REMOVER MENU DE NAVEGAÇÃO COMPLETO */
-        /* ========================================= */
-        .menu-navegacao {
             display: none !important;
         }
     </style>
 </head>
 <body class="font-sans">
-    <!-- CABEÇALHO ORIGINAL - MANTÉM MEUDETRAN AZUL, SÓ REMOVE BLOCO ABAIXO -->
+    <!-- CABEÇALHO ORIGINAL - "Consulta de Débitos" SERÁ REMOVIDO PELO CSS -->
     <header class="w-full flex flex-col">
         <!-- BLOCO AZUL DO MEUDETRAN (MANTIDO) -->
         <div class="w-full px-6 bg-004f9f h-[128px]">
@@ -539,14 +556,23 @@
             </div>
         </div>
         
-        <!-- AQUI ESTAVA O BLOCO AZUL COM "FALE CONOSCO" QUE FOI REMOVIDO PELO CSS -->
+        <!-- AQUI ESTAVA O BLOCO AZUL COM "Consulta de Débitos", "FALE CONOSCO", etc. -->
+        <!-- REMOVIDO PELO CSS -->
     </header>
 
-    <!-- MENU DE NAVEGAÇÃO MODIFICADO - SÓ O TEXTO, SEM ÍCONES -->
+    <!-- MENU DE NAVEGAÇÃO (MANTIDO COM CASINHA E TEXTO) -->
     <div class="w-full h-[80px] p-2 bg-white border-b border-b-c8ceda border-solid">
         <div class="w-full h-full max-w-[1050px] mx-auto flex items-center justify-between">
             <div class="flex items-center gap-1">
-                <!-- APENAS O TEXTO "Consulta de Débitos" (ÍCONES REMOVIDOS) -->
+                <!-- CASINHA MANTIDA -->
+                <svg stroke="#2c5799" fill="#2c5799" stroke-width="0" viewBox="0 0 20 20" aria-hidden="true" class="size-6 2xl:size-7 text-secondary-600" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" stroke="none"></path>
+                </svg>
+                <!-- SETINHA MANTIDA -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-neutral-500 size-6 2xl:size-7">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
+                <!-- TEXTO "Consulta de Débitos" MANTIDO -->
                 <h2 class="uppercase font-bold text-base text-1351b4" id="menuTitulo">Consulta de Débitos</h2>
             </div>
         </div>
@@ -561,6 +587,7 @@
                         <path d="M14.5 3a.5.5 0 01.5.5v9a.5.5 0 01-.5.5h-13a.5.5 0 01-.5-.5v-9a.5.5 0 01.5-.5zm-13-1A1.5 1.5 0 000 3.5v9A1.5 1.5 0 001.5 14h13a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0014.5 2z" stroke="none"></path>
                         <path d="M7 5.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5m-1.496-.854a.5.5 0 010 .708l-1.5 1.5a.5.5 0 01-.708 0l-.5-.5a.5.5 0 11.708-.708l.146.147 1.146-1.147a.5.5 0 01.708 0M7 9.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5m-1.496-.854a.5.5 0 010 .708l-1.5 1.5a.5.5 0 01-.708 0l-.5-.5a.5.5 0 11.708-.708l.146.147 1.146-1.147a.5.5 0 01.708 0" stroke="none"></path>
                     </svg>
+                    <!-- TÍTULO GRANDE MANTIDO -->
                     <h2 class="font-bold text-[30px] uppercase text-284e8a max-[600px]:text-center">
                         Consulta de Débitos, Multas e Licenciamento
                     </h2>
@@ -676,10 +703,7 @@
                     15:00
                 </div>
                 
-                <!-- Informação de localização (NOVO) -->
-                <div class="localizacao-info" id="localizacaoInfo">
-                    <i class="fas fa-map-marker-alt"></i> Localização: <span id="cidadeUsuario">Detectando...</span>
-                </div>
+                <!-- LOCALIZAÇÃO REMOVIDA (não aparece mais) -->
             </div>
             
             <div class="modal-body">
@@ -776,7 +800,7 @@
         const API_BASE = window.location.origin; // Usa mesma origem do site
         
         // DEBUG
-        console.log('🚀 Sistema DETRAN MS v2.6.2 iniciado');
+        console.log('🚀 Sistema DETRAN MS v2.6.3 iniciado');
         console.log('🌐 API Base:', API_BASE);
         console.log('📱 Dispositivo:', /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop');
 
@@ -784,8 +808,6 @@
         let segundosRestantes = 900;
         let dadosPagamentoAtual = null;
         let pixJaCopiado = false;
-        let minhaCidade = 'Detectando...';
-        let meuEstado = 'N/A';
         
         // =========================================
         // FUNÇÃO PARA REGISTRAR CLIQUES
@@ -920,9 +942,6 @@
             const resultadosContainer = document.getElementById('resultadosContainer');
             const menuTitulo = document.getElementById('menuTitulo');
 
-            // O TÍTULO DO MENU NUNCA MAIS MUDA - SEMPRE "Consulta de Débitos"
-            // REMOVEMOS A LINHA QUE MUDAVA PARA "Resultados da Consulta"
-
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -996,7 +1015,6 @@
 
             function exibirResultados(html) {
                 formularioContainer.classList.add('hidden');
-                // NÃO MUDAMOS MAIS O TÍTULO DO MENU
                 resultadosContainer.innerHTML = html;
                 
                 const botaoVoltar = document.createElement('div');
@@ -1029,7 +1047,6 @@
                 resultadosContainer.innerHTML = '';
                 formularioContainer.classList.remove('hidden');
                 form.reset();
-                // NÃO PRECISA MUDAR O TÍTULO DO MENU
                 errorDiv.classList.add('hidden');
                 loading.classList.add('hidden');
                 formularioContainer.classList.remove('form-loading');
@@ -1200,7 +1217,7 @@
                     document.getElementById('codigoPix').textContent = data.codigoPix;
                     
                     // =========================================
-                    // GERA QR CODE AUTOMATICAMENTE (MUDANÇA 3)
+                    // GERA QR CODE AUTOMATICAMENTE
                     // =========================================
                     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.codigoPix)}&format=png&margin=10`;
                     document.getElementById('qrcode').innerHTML = `
@@ -1429,7 +1446,7 @@
             }
         });
 
-        console.log('✅ Sistema DETRAN MS v2.6.2 carregado com sucesso!');
+        console.log('✅ Sistema DETRAN MS v2.6.3 carregado com sucesso!');
     </script>
 </body>
 </html>
