@@ -358,7 +358,8 @@
         }
         
         // ============================================
-        // FUNÇÃO CORRIGIDA - SEM DUPLICAÇÃO DE CLIQUES
+        // FUNÇÃO CORRIGIDA - APENAS O QUE VOCÊ PEDIU
+        // "Clique Página Débitos" conta APENAS quando o modal PIX é aberto
         // ============================================
         async function carregarDadosCliques() {
             try {
@@ -372,7 +373,7 @@
                 const hoje = new Date().toDateString();
                 
                 // 5. CLIQUES PÁGINA HOME (APENAS ENTRADA NO SITE)
-                // CORREÇÃO: Só conta entrada real na HOME (página '/')
+                // Mantém a contagem original - entrada real na HOME (página '/')
                 const clicksHome = cliquesList.filter(c => 
                     c.tipo === 'pagina_visitada' && 
                     c.pagina === '/' &&
@@ -383,26 +384,17 @@
                 document.getElementById('totalClicksHome').textContent = clicksHome.length;
                 document.getElementById('clicksHomeHoje').textContent = clicksHomeHoje.length;
                 
-                // 6. CLIQUES PÁGINA DÉBITOS (APÓS CONSULTA)
-                // CORREÇÃO: Separado em 3 categorias distintas
+                // 6. CLIQUES PÁGINA DÉBITOS (AGORA APENAS QUANDO O MODAL PIX É ABERTO)
+                // CORREÇÃO: Conta APENAS quando o modal de pagamento é aberto
+                // Usa o tipo 'modal_aberto' que é registrado no index.html quando o modal abre
                 const clicksDebitos = cliquesList.filter(c => 
-                    c.tipo === 'consulta' || // Quando faz consulta de placa/renavam
-                    (c.tipo === 'pagina_visitada' && c.pagina === '/consultar') || // Quando entra na página de consulta
-                    c.elemento === 'form_consulta' || // Quando envia formulário
-                    c.elemento === 'resultados' || // Quando vê resultados
-                    (c.detalhes && c.detalhes.includes('Placa:')) // Tem detalhes de consulta
+                    c.tipo === 'modal_aberto' && // Quando o modal PIX é aberto
+                    c.elemento === 'modal_pagamento_pix' // Elemento específico do modal
                 );
                 const clicksDebitosHoje = clicksDebitos.filter(c => new Date(c.dataHora).toDateString() === hoje);
                 
                 document.getElementById('totalClicksDebitos').textContent = clicksDebitos.length;
                 document.getElementById('clicksDebitosHoje').textContent = clicksDebitosHoje.length;
-                
-                // DEBUG no console
-                console.log('=== CLICKS DEBUG ===');
-                console.log('Total cliques no banco:', cliquesList.length);
-                console.log('Cliques home:', clicksHome.length, '| Hoje:', clicksHomeHoje.length);
-                console.log('Cliques débitos:', clicksDebitos.length, '| Hoje:', clicksDebitosHoje.length);
-                console.log('=====================');
                 
             } catch (error) {
                 console.error('Erro ao carregar cliques:', error);
